@@ -6,6 +6,7 @@ public class Movement : MonoBehaviour
 {
 
     public Rigidbody rb;
+    public GameObject Bullet;
     // Start is called before the first frame update
     void Start()
     {
@@ -40,7 +41,12 @@ public class Movement : MonoBehaviour
                 rb.transform.Rotate(0, 1, 0);
             }
         }
-        
+        if (Input.GetMouseButton(0))    
+        {
+            GameObject BulletObject = Instantiate(Bullet);
+            BulletObject.transform.position = rb.transform.position;
+            BulletObject.transform.rotation = rb.transform.rotation;
+        }
 
     }
 }
