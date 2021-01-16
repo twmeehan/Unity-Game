@@ -16,7 +16,7 @@ public class Follow : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.position= new Vector3(player.position.x + (Mathf.Cos(player.rotation.eulerAngles.y*Mathf.Deg2Rad)*20), player.position.y + 10, player.position.z + (Mathf.Sin(player.rotation.eulerAngles.y * Mathf.Deg2Rad) * 20));
-        transform.eulerAngles = new Vector3(player.eulerAngles.x+90, player.eulerAngles.y-90, player.eulerAngles.z);
+        transform.position= new Vector3(player.position.x + (Mathf.Cos(player.rotation.eulerAngles.y*Mathf.Deg2Rad)*20) - 20, player.position.y+10, player.position.z + (Mathf.Sin(player.rotation.eulerAngles.y * Mathf.Deg2Rad) * 20) + 20);
+        transform.eulerAngles = new Vector3(player.eulerAngles.x, player.eulerAngles.y+180, player.eulerAngles.z);
     }
 }
