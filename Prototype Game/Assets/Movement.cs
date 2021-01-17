@@ -7,39 +7,42 @@ public class Movement : MonoBehaviour
 
     public Rigidbody rb;
     public GameObject Bullet;
+
+    public const float BaseSpeed = 100f, Acceleration = 1f, MaxSpeed = 15f;
+    public Vector3 Anglular,Direction;
+    private Vector2 lookInput, screenCenter, mouseDistance;
     // Start is called before the first frame update
+
     void Start()
     {
         Debug.Log("Hello World");
-       
+        screenCenter.x = Screen.width * 0.5f;
+        screenCenter.y = Screen.height * 0.5f;
+
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (Input.GetKey("s"))
+
+
+        transform.position += transform.right * BaseSpeed * -1 * Time.deltaTime;
+        lookInput.x = Input.mousePosition.x;
+        lookInput.y = Input.mousePosition.y;
+
+        mouseDistance.x = (lookInput.x - screenCenter.x) / screenCenter.y;
+        mouseDistance.y = (lookInput.y - screenCenter.y) / screenCenter.y;
+
+        mouseDistance = Vector2.ClampMagnitude(mouseDistance, 1f);
+
+        transform.Rotate(0f, mouseDistance.y * Time.deltaTime * 200, mouseDistance.x * Time.deltaTime * 200, Space.Self);
+        if (Input.GetKey("a"))
         {
-            rb.AddForce(Mathf.Sin(rb.transform.eulerAngles.y * Mathf.Deg2Rad) * 2000 * Time.deltaTime, 0, Mathf.Cos(rb.transform.eulerAngles.y * Mathf.Deg2Rad) * 2000 * Time.deltaTime, ForceMode.Acceleration);
-            if (Input.GetKey("a"))
-            {
-                rb.transform.Rotate(0, 1, 0);
-            }
-            if (Input.GetKey("d"))
-            {
-                rb.transform.Rotate(0, -1, 0);
-            }
+            transform.Rotate(-4, 0, 0, Space.Self);
         }
-        if (Input.GetKey("w")) 
+        if (Input.GetKey("d"))
         {
-            rb.AddForce(Mathf.Sin(rb.transform.eulerAngles.y * Mathf.Deg2Rad) *-2000* Time.deltaTime, 0, Mathf.Cos(rb.transform.eulerAngles.y * Mathf.Deg2Rad) *-2000* Time.deltaTime, ForceMode.Acceleration);
-            if (Input.GetKey("a"))
-            {
-                rb.transform.Rotate(0, -1, 0);
-            }
-            if (Input.GetKey("d"))
-            {
-                rb.transform.Rotate(0, 1, 0);
-            }
+            transform.Rotate(4, 0, 0, Space.Self);
         }
         if (Input.GetMouseButton(0))    
         {

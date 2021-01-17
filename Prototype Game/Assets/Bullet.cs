@@ -20,7 +20,7 @@ public class Bullet : MonoBehaviour
     {
         //rb.AddForce(Mathf.Sin(rb.transform.eulerAngles.y * Mathf.Deg2Rad)*speed, 0, Mathf.Cos(rb.transform.eulerAngles.y * Mathf.Deg2Rad)*speed);
         
-        transform.position += transform.forward * 200 * Time.deltaTime;
+        transform.position += transform.forward * 1000 * Time.deltaTime;
         life += Time.deltaTime;
         Debug.Log(life);
         if (life > 3f)
