@@ -22,7 +22,7 @@ public class Bullet : MonoBehaviour
         
         transform.position += transform.forward * 1000 * Time.deltaTime;
         life += Time.deltaTime;
-        Debug.Log(life);
+        //Debug.Log(life);
         if (life > 3f)
         {
             Destroy(gameObject);

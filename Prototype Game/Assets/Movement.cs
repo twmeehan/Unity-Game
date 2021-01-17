@@ -11,6 +11,8 @@ public class Movement : MonoBehaviour
     public const float BaseSpeed = 100f, Acceleration = 1f, MaxSpeed = 15f;
     public Vector3 Anglular,Direction;
     private Vector2 lookInput, screenCenter, mouseDistance;
+
+    bool wasDown = false;
     // Start is called before the first frame update
 
     void Start()
@@ -25,6 +27,7 @@ public class Movement : MonoBehaviour
     void FixedUpdate()
     {
 
+        Debug.Log(Time.deltaTime);
 
         transform.position += transform.right * BaseSpeed * -1 * Time.deltaTime;
         lookInput.x = Input.mousePosition.x;
@@ -44,11 +47,15 @@ public class Movement : MonoBehaviour
         {
             transform.Rotate(4, 0, 0, Space.Self);
         }
-        if (Input.GetMouseButton(0))    
+        if (Input.GetMouseButton(0) && !wasDown)    
         {
+            wasDown = true;
             GameObject BulletObject = Instantiate(Bullet);
             BulletObject.transform.position = rb.transform.position;
             BulletObject.transform.rotation = rb.transform.rotation;
+        } else if (!Input.GetMouseButton(0))
+        {
+            wasDown = false;
         }
 
     }
