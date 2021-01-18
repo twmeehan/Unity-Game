@@ -393,6 +393,7 @@ GameObject:
   - component: {fileID: 963194228}
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
+  - component: {fileID: 963194229}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -459,12 +460,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0.5, y: -0.5, z: -0.5, w: 0.5}
-  m_LocalPosition: {x: 13.700125, y: -0.20004654, z: 5.100005}
+  m_LocalPosition: {x: 13.700073, y: -0.2000432, z: 5.1000066}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 378900583}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: -90}
+--- !u!114 &963194229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e790ec66ffccb3d45952b641e96fa72f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rb: {fileID: 1245733200}
 --- !u!1 &1220601844 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7072797682294869373, guid: a9b4a30667be291469375e9c01cfab46,
@@ -520,7 +534,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rb: {fileID: 1245733203}
   Bullet: {fileID: 420264678445573683, guid: 4bc4f60d3581ad040a115ea40686e632, type: 3}
-  Anglular: {x: 0, y: 0, z: 0}
+  Angular: {x: 0, y: 0, z: 0}
   Direction: {x: 0, y: 0, z: 0}
 --- !u!96 &1245733205
 TrailRenderer:

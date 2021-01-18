@@ -8,8 +8,8 @@ public class Movement : MonoBehaviour
     public Rigidbody rb;
     public GameObject Bullet;
 
-    public const float BaseSpeed = 100f, Acceleration = 1f, MaxSpeed = 15f;
-    public Vector3 Anglular,Direction;
+    public const float MaxSpeed = 200f, Acceleration = 1f, ForwardAccel = 15f, MaxRotation = 4f, RotationAccel = 1f;
+    public Vector3 Angular,Direction;
     private Vector2 lookInput, screenCenter, mouseDistance;
 
     bool wasDown = false;
@@ -29,7 +29,6 @@ public class Movement : MonoBehaviour
 
         Debug.Log(Time.deltaTime);
 
-        transform.position += transform.right * BaseSpeed * -1 * Time.deltaTime;
         lookInput.x = Input.mousePosition.x;
         lookInput.y = Input.mousePosition.y;
 
@@ -38,15 +37,40 @@ public class Movement : MonoBehaviour
 
         mouseDistance = Vector2.ClampMagnitude(mouseDistance, 1f);
 
-        transform.Rotate(0f, mouseDistance.y * Time.deltaTime * 200, mouseDistance.x * Time.deltaTime * 200, Space.Self);
+        if (Input.GetKey("w"))
+        {
+            Direction.x = Mathf.Lerp(Direction.x, MaxSpeed, ForwardAccel * Time.deltaTime);
+        }
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            if (Direction.x > 30)
+            {
+                Direction.x -= 20 * Time.deltaTime;
+
+            }
+        }
+        if (mouseDistance.magnitude > 0.5)
+        {
+            Angular.x = 0;
+        }
+        Angular.Set(Angular.x,
+                mouseDistance.y * Time.deltaTime * 200,
+                mouseDistance.x * Time.deltaTime * 200);
         if (Input.GetKey("a"))
         {
-            transform.Rotate(-4, 0, 0, Space.Self);
+            Angular.Set(Mathf.Lerp(Angular.x, -MaxRotation, RotationAccel * Time.deltaTime), 
+                Angular.y, 
+                Angular.z);
         }
         if (Input.GetKey("d"))
         {
-            transform.Rotate(4, 0, 0, Space.Self);
+            Angular.Set(Mathf.Lerp(Angular.x, MaxRotation, RotationAccel * Time.deltaTime),
+                Angular.y,
+                Angular.z);
         }
+        transform.Rotate(Angular, Space.Self);
+        transform.position += transform.right * Direction.x * -1 * Time.deltaTime;
+
         if (Input.GetMouseButton(0) && !wasDown)    
         {
             wasDown = true;
