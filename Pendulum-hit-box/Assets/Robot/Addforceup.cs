@@ -14,6 +14,6 @@ public class Addforceup : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        rb.AddForce(transform.forward * 50000 * Time.deltaTime);
+        rb.AddForce(transform.forward * 1000000 * Time.deltaTime);
     }
 }
