@@ -8,8 +8,8 @@ public class Movement : MonoBehaviour
     public Rigidbody rb;
     public GameObject Bullet;
 
-    public const float MaxSpeed = 200f, Acceleration = 1f, ForwardAccel = 15f, MaxRotation = 4f, RotationAccel = 1f;
-    public Vector3 Angular,Direction;
+    public float MaxSpeed = 200f, Acceleration = 1f, ForwardAccel = 15f, MaxRotation = 4f, RotationAccel = 1f;
+    public Vector3 Angular,Direction; 
     private Vector2 lookInput, screenCenter, mouseDistance;
 
     bool wasDown = false;
@@ -17,7 +17,7 @@ public class Movement : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("Hello World");
+        Debug.Log("works");
         screenCenter.x = Screen.width * 0.5f;
         screenCenter.y = Screen.height * 0.5f;
 
@@ -36,10 +36,14 @@ public class Movement : MonoBehaviour
         mouseDistance.y = (lookInput.y - screenCenter.y) / screenCenter.y;
 
         mouseDistance = Vector2.ClampMagnitude(mouseDistance, 1f);
-        
+
         if (Input.GetKey("w"))
         {
             Direction.x = Mathf.Lerp(Direction.x, MaxSpeed, ForwardAccel * Time.deltaTime);
+        }
+        if (Input.GetKey("s"))
+        {
+            Direction.x = Mathf.Lerp(Direction.x, MaxSpeed, -1 * ForwardAccel * Time.deltaTime);
         }
         if (Input.GetKey(KeyCode.LeftShift))
         {
@@ -54,8 +58,8 @@ public class Movement : MonoBehaviour
             Angular.x = 0;
         }
         Angular.Set(Angular.x,
-                mouseDistance.y * Time.deltaTime * 200,
-                mouseDistance.x * Time.deltaTime * 200);
+                mouseDistance.y * Time.deltaTime * 20,
+                mouseDistance.x * Time.deltaTime * 20);
         if (Input.GetKey("a"))
         {
             Angular.Set(Mathf.Lerp(Angular.x, -MaxRotation, RotationAccel * Time.deltaTime), 
