@@ -12,9 +12,9 @@ public class NetworkController : MonoBehaviour
         PhotonNetwork.ConnectUsingSettings();
     }
 
-    public override void OnConnectedToMaster()
-    {
-        Debug.Log("We are now connected to the " + PhotonNetwork.CloudRegion + " server!");
-    }
+    //public override void OnConnectedToMaster()
+    //{
+    //    Debug.Log("We are now connected to the " + PhotonNetwork.CloudRegion + " server!");
+    //}
 
 }
