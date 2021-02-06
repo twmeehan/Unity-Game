@@ -1,8 +1,13 @@
 using Photon.Pun;
+using Photon.Realtime;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using MonoBehaviourPunCallBacks;
 
-public class QuickStartRoomController : MonoBehaviourPunCallBacks
-{
+
+public class RoomController : MonoBehaviourPunCallBacks
+{ 	
 	[SerializeField]
 	private int multiplayerSceneIndex;
 
@@ -15,19 +20,20 @@ public class QuickStartRoomController : MonoBehaviourPunCallBacks
 	{
 		PhotonNetwork.RemoveCallbackTarget(this);
 	}
-	
+
 	public override void OnJoinedRoom()
 	{
-		Debug.Log("Joined Room");
+		Debug.Log("Joined Room. Multiplayer game has begun.");
 		StartGame();
 	}
 
-	public void StartGame()
+	private void StartGame()
 	{
 		if (PhotonNetwork.IsMasterClient)
 		{
 			Debug.Log("Starting Game");
-			PhotonNetwork LoadLevel(multiplayerSceneIndex);
+			PhotonNetwork.LoadLevel(multiplayerSceneIndex);
 		}
-	}
+	}	
+
 }
