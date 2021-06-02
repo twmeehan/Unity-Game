@@ -2,15 +2,12 @@
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class Launcher : MonoBehaviourPunCallbacks
 {
 
     #region Private Serializable Fields
-
-
-    #endregion
-    [SerializeField] private string VersionName = "0.1";
 
     [SerializeField] private GameObject RoomPanel;
     [SerializeField] private GameObject MainMenuPanel;
@@ -22,7 +19,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     [SerializeField] private InputField RoomCode;
 
-
+    #endregion
 
 
     #region Private Fields
@@ -102,6 +99,9 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     #endregion
 
+    /// <summary>
+    /// Checks if username input has more than 3 characters. If so allow user to play
+    /// </summary>
     public void ValidateName()
     {
         if (UsernameInput.text.Length >= 3)
@@ -116,18 +116,27 @@ public class Launcher : MonoBehaviourPunCallbacks
             JoinRoomInput.interactable = false;
         }
     }
+
+    /// <summary>
+    /// Prompt User for a room code.
+    /// </summary>
     public void JoinRoom()
     {
         RoomPanel.SetActive(true);
         MainMenuPanel.SetActive(false);
         JoinOrCreate = "Join";
+        PhotonNetwork.NickName = UsernameInput.text;
 
     }
+    /// <summary>
+    /// Prompt User for a room code.
+    /// </summary>
     public void CreateRoom()
     {
         RoomPanel.SetActive(true);
         MainMenuPanel.SetActive(false);
         JoinOrCreate = "Create";
+        PhotonNetwork.NickName = UsernameInput.text;
 
     }
     public void EnterCode()
@@ -136,12 +145,35 @@ public class Launcher : MonoBehaviourPunCallbacks
         {
             if (JoinOrCreate=="Join")
             {
+                RoomOptions roomOptions = new RoomOptions();
+                roomOptions.MaxPlayers = 5;
+                PhotonNetwork.JoinOrCreateRoom(RoomCode.text,roomOptions,TypedLobby.Default);
                 Debug.Log("Joining Room " + RoomCode.text.ToString());
             }
             else
             {
+                PhotonNetwork.CreateRoom(RoomCode.text, new RoomOptions() { MaxPlayers = 5 }, null);
+
                 Debug.Log("Created Room " + RoomCode.text.ToString());
             }
+        }
+    }
+    private void OnJoinRoom()
+    {
+        PhotonNetwork.LoadLevel("Game");
+
+    }
+
+    public override void OnConnected()
+    {
+        Debug.Log("Connected");
+    }
+    public override void OnRoomListUpdate(List<RoomInfo> roomList)
+    {
+        base.OnRoomListUpdate(roomList);
+        foreach(RoomInfo info in roomList)
+        {
+            Debug.Log(info.Name.ToString());
         }
     }
 
