@@ -23,10 +23,31 @@ public class Player : MonoBehaviour
 
         if (view.IsMine)
         {
+            if (Input.GetKey(KeyCode.A))
+            {
+                Vector3 input = new Vector3(-60,0, 0);
+                transform.position += input * speed * Time.deltaTime;
+            }
 
+            if (Input.GetKey(KeyCode.D))
+            {
+                Vector3 input = new Vector3(60,0, 0);
+                transform.position += input * speed * Time.deltaTime;
+            }
+            if (Input.GetKey(KeyCode.W))
+            {
+                Vector3 input = new Vector3(0, 60, 0);
+                transform.position += input * speed * Time.deltaTime;
+            }
+
+            if (Input.GetKey(KeyCode.S))
+            {
+                Vector3 input = new Vector3(0, -60, 0);
+                transform.position += input * speed * Time.deltaTime;
+            }
         }
-        Vector3 input = new Vector3(Input.mousePosition.x - transform.position.x, Input.mousePosition.y - transform.position.y, 0);
-        transform.position += input * speed * Time.deltaTime;
+        //Vector3 input = new Vector3(Input.mousePosition.x - transform.position.x, Input.mousePosition.y - transform.position.y, 0);
+        //transform.position += input * speed * Time.deltaTime;
 
     }
 }
