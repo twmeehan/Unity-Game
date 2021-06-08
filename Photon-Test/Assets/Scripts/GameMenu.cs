@@ -9,7 +9,7 @@ public class GameMenu : MonoBehaviourPunCallbacks
 
     #region Private Serializable Fields
 
-    [SerializeField] private GameObject RoomPanel;
+    [SerializeField] private GameObject CreateRoomPanel;
     [SerializeField] private GameObject MainMenuPanel;
     [SerializeField] private GameObject JoinRoomPanel;
 
@@ -17,8 +17,6 @@ public class GameMenu : MonoBehaviourPunCallbacks
     [SerializeField] private InputField UsernameInput;
     [SerializeField] private Button CreateRoomInput;
     [SerializeField] private Button JoinRoomInput;
-
-    [SerializeField] private InputField RoomCode;
 
     #endregion
 
@@ -33,8 +31,6 @@ public class GameMenu : MonoBehaviourPunCallbacks
 
 
     #endregion
-
-    private string JoinOrCreate = "Join";
 
     #region MonoBehaviour CallBacks
 
@@ -69,7 +65,9 @@ public class GameMenu : MonoBehaviourPunCallbacks
     void Start()
     {
 
-        RoomPanel.SetActive(false);
+        CreateRoomPanel.SetActive(false);
+        MainMenuPanel.SetActive(true);
+        JoinRoomPanel.SetActive(false);
 
     }
 
@@ -123,7 +121,7 @@ public class GameMenu : MonoBehaviourPunCallbacks
     /// </summary>
     public void JoinRoom()
     {
-        RoomPanel.SetActive(false);
+        CreateRoomPanel.SetActive(false);
         JoinRoomPanel.SetActive(true);
         MainMenuPanel.SetActive(false);
         PhotonNetwork.NickName = UsernameInput.text;
@@ -135,30 +133,12 @@ public class GameMenu : MonoBehaviourPunCallbacks
     /// </summary>
     public void CreateRoom()
     {
-        RoomPanel.SetActive(true);
+        CreateRoomPanel.SetActive(true);
         MainMenuPanel.SetActive(false);
-        JoinOrCreate = "Create";
+        JoinRoomPanel.SetActive(false);
         PhotonNetwork.NickName = UsernameInput.text;
+        PhotonNetwork.JoinLobby();
 
-    }
-    public void EnterCode()
-    {
-        if (RoomCode.text.Length == 4)
-        {
-            if (JoinOrCreate == "Join")
-            {
-                RoomOptions roomOptions = new RoomOptions();
-                roomOptions.MaxPlayers = 5;
-                PhotonNetwork.JoinOrCreateRoom(RoomCode.text, roomOptions, TypedLobby.Default);
-                Debug.Log("Joining Room " + RoomCode.text.ToString());
-            }
-            else
-            {
-                PhotonNetwork.CreateRoom(RoomCode.text, new RoomOptions() { MaxPlayers = 5 }, null);
-
-                Debug.Log("Created Room " + RoomCode.text.ToString());
-            }
-        }
     }
     public override void OnJoinedRoom()
     {
