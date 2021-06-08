@@ -11,6 +11,7 @@ public class GameMenu : MonoBehaviourPunCallbacks
 
     [SerializeField] private GameObject RoomPanel;
     [SerializeField] private GameObject MainMenuPanel;
+    [SerializeField] private GameObject JoinRoomPanel;
 
 
     [SerializeField] private InputField UsernameInput;
@@ -122,10 +123,11 @@ public class GameMenu : MonoBehaviourPunCallbacks
     /// </summary>
     public void JoinRoom()
     {
-        RoomPanel.SetActive(true);
+        RoomPanel.SetActive(false);
+        JoinRoomPanel.SetActive(true);
         MainMenuPanel.SetActive(false);
-        JoinOrCreate = "Join";
         PhotonNetwork.NickName = UsernameInput.text;
+        PhotonNetwork.JoinLobby();
 
     }
     /// <summary>
@@ -168,14 +170,5 @@ public class GameMenu : MonoBehaviourPunCallbacks
     {
         Debug.Log("Connected");
     }
-    public override void OnRoomListUpdate(List<RoomInfo> roomList)
-    {
-        base.OnRoomListUpdate(roomList);
-        foreach (RoomInfo info in roomList)
-        {
-            Debug.Log(info.Name);
-        }
-    }
-
 
 }
