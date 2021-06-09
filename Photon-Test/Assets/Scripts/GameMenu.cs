@@ -138,6 +138,7 @@ public class GameMenu : MonoBehaviourPunCallbacks
         JoinRoomPanel.SetActive(false);
         PhotonNetwork.NickName = UsernameInput.text;
         PhotonNetwork.JoinLobby();
+        Debug.Log(PhotonNetwork.CountOfPlayers.ToString());
 
     }
     public override void OnJoinedRoom()
