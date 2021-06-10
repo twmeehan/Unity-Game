@@ -38,14 +38,14 @@ public class RoomListing : MonoBehaviour
     /// <param name="roomInfo"> the room that the information is set from </param>
     public void SetRoomInfo(RoomInfo roomInfo)
     {
-        
-        RoomInfo = roomInfo;
 
+        RoomInfo = roomInfo;
+        
         Code = roomInfo.Name;
 
-        RoomName.text = "Username's Room";
+        RoomName.text = Code.Substring(0, Code.IndexOf('-')) + "'s Room";
         PlayerCount.text = "Players:" + roomInfo.PlayerCount.ToString() + "/" + roomInfo.MaxPlayers.ToString();
-        RoomCode.text = "Room Code:" + roomInfo.Name.ToString();
+        RoomCode.text = "Room Code:" + Code.Substring(Code.IndexOf('-')+1);
 
     }
 

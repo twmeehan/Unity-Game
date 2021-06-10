@@ -54,23 +54,20 @@ public class CreateRoomHandler : MonoBehaviourPunCallbacks
         bool roomFound = false;
 
 
-        // WARNING - the following code is ineffective
 
-        // Generates a random code and checks if it matches an existing room; if so, try again
-        while (!roomFound)
+        // Generates a random code
+        if (roomOptions.IsVisible)
+        {
+            code = PhotonNetwork.NickName + "-" + Mathf.Floor(Random.Range(0.01f, 9.99f)).ToString() +
+                Mathf.Floor(Random.Range(0.01f, 9.99f)).ToString() +
+                Mathf.Floor(Random.Range(0.01f, 9.99f)).ToString() +
+                Mathf.Floor(Random.Range(0.01f, 9.99f)).ToString();
+        } else
         {
             code = Mathf.Floor(Random.Range(0.01f, 9.99f)).ToString() +
                 Mathf.Floor(Random.Range(0.01f, 9.99f)).ToString() +
                 Mathf.Floor(Random.Range(0.01f, 9.99f)).ToString() +
                 Mathf.Floor(Random.Range(0.01f, 9.99f)).ToString();
-            roomFound = true;
-            foreach (RoomInfo info in _roomList)
-            {
-                if (info.Name==code)
-                {
-                    roomFound = false;
-                }
-            }
         }
 
         PhotonNetwork.CreateRoom(code, roomOptions, TypedLobby.Default);

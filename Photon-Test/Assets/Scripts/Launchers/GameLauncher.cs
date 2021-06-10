@@ -25,8 +25,11 @@ public class GameLauncher : MonoBehaviour
     /// </summary>
     public void Start()
     {
-
-        code.text = PhotonNetwork.CurrentRoom.Name;
+        if (!PhotonNetwork.CurrentRoom.IsVisible)
+        {
+            code.text = PhotonNetwork.CurrentRoom.Name;
+        }
+        
 
         Vector2 StartingPos = new Vector2(200, 3000);
         PhotonNetwork.Instantiate(CharacterPrefab.name, StartingPos, Quaternion.identity);

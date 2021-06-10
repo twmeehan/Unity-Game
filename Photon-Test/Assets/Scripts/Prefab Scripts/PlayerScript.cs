@@ -4,6 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UI;
 using TMPro;
+using Photon.Realtime;
 
 /// <summary>
 /// Class - attached to CharacterPrefab; contains controls for moving as well as
@@ -56,6 +57,7 @@ public class PlayerScript : MonoBehaviour
     // Method - updated every frame and handles movement
     void Update()
     {
+        
         // If player falls too far teleport them back up
         if (transform.position.y < -3000)
         {
