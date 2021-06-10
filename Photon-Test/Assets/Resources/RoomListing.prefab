@@ -450,7 +450,7 @@ MonoBehaviour:
   RoomName: {fileID: 5322979484028051708}
   PlayerCount: {fileID: 1278225691149957256}
   RoomCode: {fileID: 4628549897621636383}
-  self: {fileID: 8198341405397961055}
+  Self: {fileID: 8198341405397961055}
 --- !u!1 &8319809031062203940
 GameObject:
   m_ObjectHideFlags: 0
