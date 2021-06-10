@@ -5,37 +5,58 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
+/// <summary>
+/// Class - attached to RoomListingPrefab script; code required to set up a room listing; room
+/// listings display infomation about a room and allow a player to join it by clicking
+/// on the prefab; listings are listed in the JoinRoomCanvas; required to have the same name as prefab
+/// </summary>
 public class RoomListing : MonoBehaviour
 {
-    [SerializeField]
-    private TextMeshProUGUI RoomName;
-    [SerializeField]
-    private TextMeshProUGUI PlayerCount;
-    [SerializeField]
-    private TextMeshProUGUI RoomCode;
+    #region Private Serializable Fields
 
-    [SerializeField]
-    public GameObject self;
-    private string code;
+    // Individual UI components in the prefab that contain info about the room
+    [SerializeField] private TextMeshProUGUI RoomName;
+    [SerializeField] private TextMeshProUGUI PlayerCount;
+    [SerializeField] private TextMeshProUGUI RoomCode;
 
+    // Reference to the prefab
+    [SerializeField] public GameObject Self;
+
+    #endregion
+
+    // Code of room being referenced
+    private string Code;
+
+    // The room that this listing is tied to
     public RoomInfo RoomInfo { get; private set; }
 
+    /// <summary>
+    /// Method - sets info for the listing; changes text display; ect
+    /// </summary>
+    /// <param name="roomInfo"> the room that the information is set from </param>
     public void SetRoomInfo(RoomInfo roomInfo)
     {
-        // WIP
+        
         RoomInfo = roomInfo;
-        code = roomInfo.Name;
+
+        Code = roomInfo.Name;
+
         RoomName.text = "Username's Room";
         PlayerCount.text = "Players:" + roomInfo.PlayerCount.ToString() + "/" + roomInfo.MaxPlayers.ToString();
         RoomCode.text = "Room Code:" + roomInfo.Name.ToString();
+
     }
+
+    // Method - runs if the listing is clicked on
     public void joinRoom()
     {
-        PhotonNetwork.JoinRoom(code);
+        PhotonNetwork.JoinRoom(Code);
     }
+
+    // Method - delete this listing
     public void delete()
     {
-        Destroy(self);
+        Destroy(Self);
     }
     
 }

@@ -5,36 +5,58 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Class - attached to Handler emtpy object; runs when CreateRoomCanvas is opened;
+/// allows user to create rooms with private/public and max players options
+/// </summary>
 public class CreateRoomHandler : MonoBehaviourPunCallbacks
 {
-    [SerializeField] private GameObject CreateRoomPanel;
-    [SerializeField] private GameObject MainMenuPanel;
-    [SerializeField] private GameObject JoinRoomPanel;
+
+    #region Private Serializable Fields
+
+    [SerializeField] private GameObject CreateRoomCanvas;
+    [SerializeField] private GameObject MainMenuCanvas;
+    [SerializeField] private GameObject JoinRoomCanvas;
+
+    // UI elements of the CreateRoomCanvas
+    [SerializeField] private Button CheckboxUnchecked;
+    [SerializeField] private Button CheckboxChecked;
+    [SerializeField] private Slider Slider;
+
+    // The number above the slider that notes how many max players are currently selected
+    [SerializeField] private Text MaxPlayers;
+
+    #endregion
 
     private List<RoomInfo> _roomList;
-    [SerializeField]
-    private Button checkboxUnchecked;
-    [SerializeField]
-    private Button checkboxChecked;
-    [SerializeField]
-    private Slider slider;
-    [SerializeField]
-    private Text maxPlayers;
 
+    /// <summary>
+    /// Method - runs when the CreateRoomButton is pressed; uses settings that user input
+    /// </summary>
     public void createRoom()
     {
+
         RoomOptions roomOptions = new RoomOptions();
-        roomOptions.MaxPlayers = (byte) Mathf.Ceil(slider.value);
-        if (checkboxChecked.interactable)
+
+        roomOptions.MaxPlayers = (byte) Mathf.Ceil(Slider.value);
+
+        // If the checkbox is checked
+        if (CheckboxChecked.interactable)
         {
             roomOptions.IsVisible = false;
         } else
         {
             roomOptions.IsVisible = true;
         }
+
+
         string code = "0000";
         bool roomFound = false;
 
+
+        // WARNING - the following code is ineffective
+
+        // Generates a random code and checks if it matches an existing room; if so, try again
         while (!roomFound)
         {
             code = Mathf.Floor(Random.Range(0.01f, 9.99f)).ToString() +
@@ -50,38 +72,46 @@ public class CreateRoomHandler : MonoBehaviourPunCallbacks
                 }
             }
         }
+
         PhotonNetwork.CreateRoom(code, roomOptions, TypedLobby.Default);
         Debug.Log("Creating Room " + code);
 
     }
+    // Method - runs when the unchecked box is clicked; switches to the checked box
     public void Check()
     {
-        Debug.Log("check");
-        checkboxChecked.interactable = true;
-        checkboxUnchecked.interactable = false;
-        checkboxChecked.transform.localPosition = new Vector3(-61, 40, 0);
-        checkboxUnchecked.transform.localPosition = new Vector3(-400,40,0);
+
+        CheckboxChecked.interactable = true;
+        CheckboxUnchecked.interactable = false;
+
+        // Moves invisible box out of the way
+        CheckboxChecked.transform.localPosition = new Vector3(-61, 40, 0);
+        CheckboxUnchecked.transform.localPosition = new Vector3(-400,40,0);
     }
+    // Method - runs when the checked box is clicked; switches to the unchecked box
     public void Uncheck()
     {
-        Debug.Log("uncheck");
 
-        checkboxChecked.interactable = false;
-        checkboxUnchecked.interactable = true;
-        checkboxChecked.transform.localPosition = new Vector3(-400, 40, 0);
-        checkboxUnchecked.transform.localPosition = new Vector3(-59.75f, 40.25f, 0);
+        CheckboxChecked.interactable = false;
+        CheckboxUnchecked.interactable = true;
+        CheckboxChecked.transform.localPosition = new Vector3(-400, 40, 0);
+        CheckboxUnchecked.transform.localPosition = new Vector3(-59.75f, 40.25f, 0);
 
     }
+    // Method - every time the slider is moved the number above the slider is updated
     public void UpdateMaxPlayers()
     {
-        maxPlayers.text = slider.value.ToString();
+        MaxPlayers.text = Slider.value.ToString();
     }
+
+    // Method - open up the MainMenuCanvas
     public void back()
     {
-        CreateRoomPanel.SetActive(false);
-        JoinRoomPanel.SetActive(false);
-        MainMenuPanel.SetActive(true);
+        CreateRoomCanvas.SetActive(false);
+        JoinRoomCanvas.SetActive(false);
+        MainMenuCanvas.SetActive(true);
     }
+    // Method - gets a list of running rooms when the client wants to open a room
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
         _roomList = roomList;
