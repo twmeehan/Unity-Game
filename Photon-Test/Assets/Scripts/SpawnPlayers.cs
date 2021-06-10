@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class SpawnPlayers : MonoBehaviour
 {
     public GameObject playerPrefab;
+    public GameObject sceneCamera;
 
     [SerializeField]
     private Text code;
@@ -16,9 +17,9 @@ public class SpawnPlayers : MonoBehaviour
 
     public void Start()
     {
-        code.text = PhotonNetwork.CurrentRoom.Name.ToString();
-        Vector2 randomPos = new Vector2(Random.Range(minX, maxX), Random.Range(minY, maxY));
+        code.text = PhotonNetwork.CurrentRoom.Name;
+        Vector2 randomPos = new Vector2(200, 3000);
         PhotonNetwork.Instantiate(playerPrefab.name, randomPos, Quaternion.identity);
-        
+        sceneCamera.SetActive(false);
     }
 }
