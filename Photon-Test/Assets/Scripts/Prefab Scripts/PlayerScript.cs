@@ -31,7 +31,7 @@ public class PlayerScript : MonoBehaviour
     public GameObject Camera;
     public Rigidbody2D rb;
     PhotonView View;
-    Animator Anim;
+    Animator anim;
 
     bool facingLeft = false;
 
@@ -39,11 +39,12 @@ public class PlayerScript : MonoBehaviour
     void Start()
     {
 
-        Anim = GetComponent<Animator>();
+        anim = Character.GetComponent<Animator>();
         View = GetComponent<PhotonView>();
 
         if (View.IsMine)
         {
+            GetComponent<Rigidbody2D>().gravityScale = 200;
             PlayerName.text = PhotonNetwork.NickName;
             Camera.SetActive(true);
         } else
@@ -68,9 +69,16 @@ public class PlayerScript : MonoBehaviour
         {
             // Left-Right
             float x = Input.GetAxisRaw("Horizontal");
-
+            if (Mathf.Abs(x) > 0)
+            {
+                anim.SetBool("isRunning", true);
+            } else
+            {
+                anim.SetBool("isRunning", false);
+            }
             if (x > 0)
             {
+                
                 if (facingLeft)
                 {
                     View.RPC("faceRight", RpcTarget.All);
@@ -90,6 +98,7 @@ public class PlayerScript : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.W) && CheckIfGrounded())
             {
 
+                anim.SetTrigger("jump");
                 rb.AddForce(new Vector2(0, JumpForce));
 
             }

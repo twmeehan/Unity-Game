@@ -225,6 +225,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5234930163276790703}
+  - component: {fileID: 7037278750202039959}
+  - component: {fileID: 7914101657327243175}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -240,7 +242,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2509955042058097129}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 17, y: 61, z: 513.36053}
+  m_LocalPosition: {x: 17, y: 61, z: 513.3605}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 6379736646145603648}
@@ -249,6 +251,49 @@ Transform:
   m_Father: {fileID: 6379736645579724804}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &7037278750202039959
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2509955042058097129}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 8a2893593bc2d3949ba3e6ff7376b88a, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &7914101657327243175
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2509955042058097129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowLayerWeightsInspector: 1
+  ShowParameterInspector: 1
+  m_SynchronizeParameters:
+  - Type: 4
+    SynchronizeType: 2
+    Name: isRunning
+  - Type: 9
+    SynchronizeType: 2
+    Name: jump
+  m_SynchronizeLayers:
+  - SynchronizeType: 0
+    LayerIndex: 0
 --- !u!1 &5103681039526707323
 GameObject:
   m_ObjectHideFlags: 0
@@ -338,6 +383,7 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 2381468652264805317}
+  - {fileID: 7914101657327243175}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -378,8 +424,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PositionModel:
     SynchronizeEnabled: 1
-    TeleportEnabled: 0
-    TeleportIfDistanceGreaterThan: 1
+    TeleportEnabled: 1
+    TeleportIfDistanceGreaterThan: 200
     InterpolateOption: 2
     InterpolateMoveTowardsSpeed: 1
     InterpolateLerpSpeed: 2
@@ -404,7 +450,7 @@ CapsuleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6379736645579724805}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
@@ -428,7 +474,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 200
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -445,7 +491,7 @@ GameObject:
   - component: {fileID: 6379736646087496457}
   - component: {fileID: 6379736646087496456}
   m_Layer: 0
-  m_Name: Helmet
+  m_Name: Alien_Helmet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -459,11 +505,10 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6379736646087496458}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0, y: -0.1699999, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 6379736647107975626}
-  m_Father: {fileID: 6379736646145603648}
+  m_Children: []
+  m_Father: {fileID: 6379736647107975626}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &6379736646087496456
@@ -528,7 +573,7 @@ GameObject:
   - component: {fileID: 6379736646145603648}
   - component: {fileID: 6379736646145603711}
   m_Layer: 0
-  m_Name: Body
+  m_Name: Alien_Torso
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -545,7 +590,7 @@ Transform:
   m_LocalPosition: {x: -2, y: -135, z: 0}
   m_LocalScale: {x: 100, y: 100, z: 1}
   m_Children:
-  - {fileID: 6379736646087496457}
+  - {fileID: 6379736647107975626}
   - {fileID: 6379736646580861003}
   - {fileID: 6379736647356067618}
   m_Father: {fileID: 5234930163276790703}
@@ -613,7 +658,7 @@ GameObject:
   - component: {fileID: 6379736646157456006}
   - component: {fileID: 6379736646157456005}
   m_Layer: 0
-  m_Name: Right Leg
+  m_Name: Alien_Right_Leg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -695,7 +740,7 @@ GameObject:
   - component: {fileID: 6379736646580861003}
   - component: {fileID: 6379736646580861002}
   m_Layer: 0
-  m_Name: Left Arm
+  m_Name: Alien_Left_Arm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -777,7 +822,7 @@ GameObject:
   - component: {fileID: 6379736646853785116}
   - component: {fileID: 6379736646853785115}
   m_Layer: 0
-  m_Name: Left Leg
+  m_Name: Alien_Left_Leg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -859,7 +904,7 @@ GameObject:
   - component: {fileID: 6379736647107975626}
   - component: {fileID: 6379736647107975625}
   m_Layer: 0
-  m_Name: Head
+  m_Name: Alien_Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -873,10 +918,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6379736647107975627}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.16999996, z: 0}
+  m_LocalPosition: {x: 0, y: 0.6699999, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 6379736646087496457}
+  m_Children:
+  - {fileID: 6379736646087496457}
+  m_Father: {fileID: 6379736646145603648}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &6379736647107975625
@@ -941,7 +987,7 @@ GameObject:
   - component: {fileID: 6379736647356067618}
   - component: {fileID: 6379736647356067617}
   m_Layer: 0
-  m_Name: Right Arm
+  m_Name: Alien_Right_Arm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
