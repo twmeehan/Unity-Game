@@ -58,7 +58,6 @@ public class PlayerScript : MonoBehaviour
     // Method - updated every frame and handles movement
     void Update()
     {
-        
         // If player falls too far teleport them back up
         if (transform.position.y < -3000)
         {
@@ -72,8 +71,13 @@ public class PlayerScript : MonoBehaviour
             if (Mathf.Abs(x) > 0)
             {
                 anim.SetBool("isRunning", true);
+                if (CheckIfGrounded() && rb.velocity.y > -300)
+                {
+                    anim.Play("Running");
+                }
             } else
             {
+
                 anim.SetBool("isRunning", false);
             }
             if (x > 0)
@@ -94,15 +98,18 @@ public class PlayerScript : MonoBehaviour
             }
             rb.velocity = new Vector2(x * Speed, rb.velocity.y);
 
-            // Jump
+            if (rb.velocity.y < -300)
+            {
+                anim.SetTrigger("falling");
+            }
+                // Jump
             if (Input.GetKeyDown(KeyCode.W) && CheckIfGrounded())
             {
-
+                
                 anim.SetTrigger("jump");
                 rb.AddForce(new Vector2(0, JumpForce));
 
             }
-            
         }
 
     }

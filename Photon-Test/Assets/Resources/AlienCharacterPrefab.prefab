@@ -291,6 +291,9 @@ MonoBehaviour:
   - Type: 9
     SynchronizeType: 2
     Name: jump
+  - Type: 9
+    SynchronizeType: 2
+    Name: falling
   m_SynchronizeLayers:
   - SynchronizeType: 0
     LayerIndex: 0
@@ -338,6 +341,7 @@ GameObject:
   - component: {fileID: 2381468652264805317}
   - component: {fileID: 7594602820811958497}
   - component: {fileID: 2933710966348331944}
+  - component: {fileID: 1852766698803719378}
   m_Layer: 0
   m_Name: AlienCharacterPrefab
   m_TagString: Untagged
@@ -383,6 +387,7 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 2381468652264805317}
+  - {fileID: 1852766698803719378}
   - {fileID: 7914101657327243175}
   sceneViewId: 0
   InstantiationId: 0
@@ -480,6 +485,22 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &1852766698803719378
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6379736645579724805}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e7cb724808c322458aa4d15f5035fa9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizeVelocity: 1
+  m_SynchronizeAngularVelocity: 0
+  m_TeleportEnabled: 0
+  m_TeleportIfDistanceGreaterThan: 3
 --- !u!1 &6379736646087496458
 GameObject:
   m_ObjectHideFlags: 0
