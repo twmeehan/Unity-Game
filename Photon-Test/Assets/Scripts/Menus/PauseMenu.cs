@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
 {
-    // THIS CODE IS COPIED FROM: youtube.com/watch?v=JivuXdrlHK0
+
     // Checks if game is paused.
     public static bool GameIsPaused = false;
 
@@ -26,6 +27,7 @@ public class PauseMenu : MonoBehaviour
         }
     }
 
+    //Resumes the Game
     public void Resume ()
     {
         pauseMenuUI.SetActive(false);
@@ -33,6 +35,7 @@ public class PauseMenu : MonoBehaviour
         GameIsPaused = false;
     }
 
+    //Pauses the Game
     void Pause ()
     {
         pauseMenuUI.SetActive(true);
@@ -40,13 +43,17 @@ public class PauseMenu : MonoBehaviour
         GameIsPaused = true;
     }
 
+    //Loads the Start Menu
     public void LoadMenu()
     {
+        SceneManager.LoadScene(1);
         Debug.Log("Loading menu...");
     }
 
+    //Quits the Game
     public void QuitGame()
     {
-        Debug.Log("Quitting game...");
+        Debug.Log("Quiting the game...");
+        Application.Quit();
     }
 }
