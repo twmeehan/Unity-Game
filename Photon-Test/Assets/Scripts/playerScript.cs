@@ -121,29 +121,41 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
     }
     public void move(float input)
     {
-        Debug.Log(input);
-        if (input == 0)
+        if (IsGrounded())
         {
-            moveSpeed = Mathf.Lerp(moveSpeed, 0, moveDecelTime*Time.deltaTime);
-        } else if (Mathf.Abs(input) > 0 && pastInput == 0)
-        {
-            moveSpeed = 0;
-            moveStartTime = Time.time;
-        } else if (input == pastInput && Mathf.Abs(moveSpeed) < 1) {
-            moveSpeed = Mathf.Lerp(0,input,(Time.time - moveStartTime) / moveAccelTime);
-            if (moveSpeed > 1)
+            Debug.Log(input);
+            if (input == 0)
             {
-                moveSpeed = 1;
-            } else if (moveSpeed < -1)
+                moveSpeed = Mathf.Lerp(moveSpeed, 0, moveDecelTime*Time.deltaTime);
+            } else if (Mathf.Abs(input) > 0 && pastInput == 0)
             {
-                moveSpeed = -1;
+                moveSpeed = 0;
+                moveStartTime = Time.time;
+            } else if (input == pastInput && Mathf.Abs(moveSpeed) < 1) {
+                moveSpeed = Mathf.Lerp(0,input,(Time.time - moveStartTime) / moveAccelTime);
+                if (moveSpeed > 1)
+                {
+                    moveSpeed = 1;
+                } else if (moveSpeed < -1)
+                {
+                    moveSpeed = -1;
+                }
+            } else if (Mathf.Abs(pastInput-input) > 1.5)
+            {
+                moveSpeed = 0;
             }
-        } else if (Mathf.Abs(pastInput-input) > 1.5)
-        {
-            moveSpeed = 0;
+            pastInput = input;
+            vel = new Vector2(moveSpeed * speed, vel.y);
+            doubleJump = true;
+            Debug.Log(jumping);
         }
-        pastInput = input;
-        vel = new Vector2(moveSpeed * speed, vel.y);
+        else if (doubleJump != true){
+            vel = new Vector2(moveSpeed * speed, vel.y);
+            Debug.Log("Not Grounded: DoubleJump"); 
+        }
+        else{
+            Debug.Log("Not Grounded");
+        }
         
     }
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
