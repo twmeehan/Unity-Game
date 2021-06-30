@@ -6,30 +6,33 @@ using UnityEngine;
 public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
 {
 
-    private  float speed = 2;
-    public float jumpForce;
-    public float grav = -3;
-    public static float dragConstant = 0.2f;
-    public Vector2 drag = new Vector2(0,0);
-    public float previousDownVel = 0;
+
+    private float grav = 0;
+    public float dragConstant = 0.2f;
+    private Vector2 drag = new Vector2(0,0);
 
     // For Move
-    public float moveSpeed = 0;
-    private float moveDecelTime = 5.0f;
-    private float moveAccelTime = 0.05f;
-    private float moveStartTime = 0;
     private float pastInput = 0;
+    private float moveSpeed = 0;
+    public float speed = 2;
+    public float moveDecelTime = 5.0f;
+    public float moveAccelTime = 0.05f;
+    public float moveStartTime = 0;
+    
 
     // For Jump
-    public Transform IsGroundedChecker;
-    public static float CheckGroundRadius = 0.18f;
+    private bool jumping = false;
+    private bool doubleJump = true;
+    public float distance = 0.3f;
+    //public Transform IsGroundedChecker;
     public LayerMask GroundLayer;
+    public float jumpForce = 3.0f;
 
     [SerializeField] private Vector2 accel = new Vector2(0,0);
     [SerializeField] private Vector2 vel = new Vector2(0,0);
     [SerializeField] private Vector2 pos = new Vector2(0,0);
 
-    private Vector2 predictedPos = new Vector2(0, 0);
+    // private Vector2 predictedPos = new Vector2(0, 0);
     
     private Transform transform;
     private Rigidbody2D rb;
@@ -46,41 +49,75 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
         PhotonNetwork.SerializationRate = 13;
 
     }
+    void Update()
+    {
+        if (view.IsMine && Input.GetKeyDown(KeyCode.Space))
+        {
+            if (IsGrounded())
+            {
 
+                doubleJump = true;
+                jumping = true;
+
+            } else if (doubleJump)
+            {
+                rb.velocity = new Vector2(0.0f,0.0f);
+                doubleJump = false;
+                jumping = true;
+
+            }
+
+        }
+    }
     // Update is called once per frame
     void FixedUpdate()
     {
         if (view.IsMine)
         {
-
-            move(Input.GetAxisRaw("Horizontal"));
-
-            drag = dragConstant * rb.velocity * -1;
-            /**
-            if (CheckIfGrounded() && (previousDownVel - rb.velocity.y) > 1)
-            {
-                rb.velocity = new Vector2(rb.velocity.x, 0);
-            } else
-            {
-                accel = new Vector2(0, grav) + drag;
-                Debug.Log("Grav");
-            }
-
-            rb.velocity += accel * Time.deltaTime;
             vel = rb.velocity;
+            jump();
+            move(Input.GetAxisRaw("Horizontal"));
+            rb.velocity = vel;
+            gravity();
+            CalcAccel();
+            
+
             pos = transform.position;
 
-            previousDownVel = rb.velocity.y;
-
-            */
         } else
         {
             transform.position = pos;
-            rb.velocity = vel;
 
         }
         
 
+    }
+    public void jump()
+    {
+        if (jumping)
+        {
+            vel += new Vector2(0.0f, jumpForce);
+            jumping = false;
+        }
+    }
+    public void CalcAccel()
+    {
+        //drag = dragConstant * rb.velocity * -1;
+        //accel = new Vector2(0.0f,0.0f);
+        accel.y = -grav;
+        rb.velocity += accel * Time.deltaTime;
+        //rb.gravityScale = grav;
+
+    }
+    public void gravity()
+    {
+        if (rb.velocity.y >= 0)
+        {
+            grav = 6.0f;
+        } else
+        {
+            grav = 15.0f;
+        }
     }
     public void move(float input)
     {
@@ -106,16 +143,8 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
             moveSpeed = 0;
         }
         pastInput = input;
-        rb.velocity = new Vector2(moveSpeed * speed, vel.y);
+        vel = new Vector2(moveSpeed * speed, vel.y);
         
-    }
-    public void move()
-    {
-        
-    }
-    public void interpolate()
-    {
-
     }
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
@@ -146,19 +175,18 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
         this.vel = vel + (accel * t);
     }
 
-    bool CheckIfGrounded()
+    bool IsGrounded()
     {
-        
-        Collider2D collider = Physics2D.OverlapCircle(IsGroundedChecker.position, CheckGroundRadius, GroundLayer);
-        if (collider != null)
+
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, distance, GroundLayer);
+        if (hit.collider != null)
         {
-            return false;
-        }
-        else
-        {
+            Debug.Log("On Ground");
             return true;
+            
         }
 
+        return false;
     }
 
 }

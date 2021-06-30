@@ -149,7 +149,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0
-  m_GravityScale: 6
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -167,15 +167,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b73ceff9d78a40947ba66ceef01503a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jumpForce: 0
-  grav: -3
-  drag: {x: 0, y: 0}
-  previousDownVel: 0
-  moveSpeed: 0
-  IsGroundedChecker: {fileID: 4410530991897306297}
+  dragConstant: 0.2
+  speed: 2
+  moveDecelTime: 5
+  moveAccelTime: 0.05
+  moveStartTime: 0
+  distance: 0.3
   GroundLayer:
     serializedVersion: 2
     m_Bits: 256
+  jumpForce: 3
   accel: {x: 0, y: 0}
   vel: {x: 0, y: 0}
   pos: {x: 0, y: 0}
