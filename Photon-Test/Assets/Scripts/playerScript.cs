@@ -22,11 +22,13 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
 
     // For Jump
     private bool jumping = false;
+    private bool spaceDown = false;
     private bool doubleJump = true;
     public float distance = 0.3f;
     //public Transform IsGroundedChecker;
     public LayerMask GroundLayer;
-    public float jumpForce = 3.0f;
+    public float jumpForce = 1.5f;
+    public float timeSinceJump = 0.0f;
 
     [SerializeField] private Vector2 accel = new Vector2(0,0);
     [SerializeField] private Vector2 vel = new Vector2(0,0);
@@ -37,6 +39,7 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
     private Transform transform;
     private Rigidbody2D rb;
     private PhotonView view;
+    private SpriteRenderer sr;
 
     // Start is called before the first frame update
     void Start()
@@ -45,6 +48,7 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
         transform = this.gameObject.GetComponent<Transform>();
         rb = this.gameObject.GetComponent<Rigidbody2D>();
         view = this.gameObject.GetComponent<PhotonView>();
+        sr = this.gameObject.GetComponent<SpriteRenderer>();
 
         PhotonNetwork.SerializationRate = 13;
 
@@ -58,15 +62,20 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
 
                 doubleJump = true;
                 jumping = true;
+                spaceDown = true;
 
             } else if (doubleJump)
             {
                 rb.velocity = new Vector2(0.0f,0.0f);
                 doubleJump = false;
                 jumping = true;
+                spaceDown = true;
 
             }
 
+        } else if (view.IsMine && Input.GetKeyUp(KeyCode.Space))
+        {
+            spaceDown = false;
         }
     }
     // Update is called once per frame
@@ -96,8 +105,15 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (jumping)
         {
+            timeSinceJump = Time.time;
             vel += new Vector2(0.0f, jumpForce);
             jumping = false;
+        } else if (spaceDown)
+        {
+            vel += new Vector2(0.0f, jumpForce * 4.0f* Time.deltaTime);
+            if ((Time.time - timeSinceJump) > 0.2f) {
+                spaceDown = false;
+            }
         }
     }
     public void CalcAccel()
@@ -121,8 +137,10 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
     }
     public void move(float input)
     {
-        if (IsGrounded())
+        //doubleJump || (!doubleJump && (Time.time - timeSinceJump) > 0.2f)
+        if (true)
         {
+            sr.color = Color.white;
             Debug.Log(input);
             if (input == 0)
             {
@@ -146,15 +164,10 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
             }
             pastInput = input;
             vel = new Vector2(moveSpeed * speed, vel.y);
-            doubleJump = true;
-            Debug.Log(jumping);
-        }
-        else if (doubleJump != true){
+        } else
+        {
+            sr.color = Color.red;
             vel = new Vector2(moveSpeed * speed, vel.y);
-            Debug.Log("Not Grounded: DoubleJump"); 
-        }
-        else{
-            Debug.Log("Not Grounded");
         }
         
     }
