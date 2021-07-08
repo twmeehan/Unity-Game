@@ -131,6 +131,13 @@ public class MenuHandler : MonoBehaviourPunCallbacks
         PhotonNetwork.JoinLobby();
 
     }
+
+    public void Exit()
+    {
+
+        Application.Quit();
+
+    }
     /// <summary>
     /// Method - open CreateRoomCanvas when "CreateRoomButton" is pressed; saves client's username
     /// </summary>
