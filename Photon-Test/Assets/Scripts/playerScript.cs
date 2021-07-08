@@ -10,25 +10,29 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
     private float grav = 0;
     public float dragConstant = 0.2f;
     private Vector2 drag = new Vector2(0,0);
+    public float maxDownwardVelocity = 15.0f;
 
     // For Move
     private float pastInput = 0;
     private float moveSpeed = 0;
-    public float speed = 2;
-    public float moveDecelTime = 5.0f;
+    public float horizontalMoveSpeed = 2;
+    public float moveDecelConstant = 5.0f;
     public float moveAccelTime = 0.05f;
-    public float moveStartTime = 0;
+    private float moveStartTime = 0;
     
 
     // For Jump
     private bool jumping = false;
+    private bool wallJumping = false;
     private bool spaceDown = false;
     private bool doubleJump = true;
-    public float distance = 0.3f;
+    public float detectionRadius = 0.3f;
     //public Transform IsGroundedChecker;
     public LayerMask GroundLayer;
-    public float jumpForce = 1.5f;
-    public float timeSinceJump = 0.0f;
+    public float jumpStrength = 1.0f;
+    private float timeSinceJump = 0.0f;
+    public float coyoteTime = 0.2f;
+    private float timeSinceGrounded;
 
     [SerializeField] private Vector2 accel = new Vector2(0,0);
     [SerializeField] private Vector2 vel = new Vector2(0,0);
@@ -57,19 +61,24 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (view.IsMine && Input.GetKeyDown(KeyCode.Space))
         {
-            if (IsGrounded())
+            if (IsGrounded() || (Time.time - timeSinceGrounded) < coyoteTime)
             {
-
+                if (touchWallLeft() && wallJumping) {
+                    moveSpeed = 1;
+                } else if (touchWallRight() && wallJumping) {
+                    moveSpeed = -1;
+                }
+            
                 doubleJump = true;
                 jumping = true;
                 spaceDown = true;
-
             } else if (doubleJump)
             {
                 rb.velocity = new Vector2(0.0f,0.0f);
+                vel = new Vector2(0.0f, 0.0f);
                 doubleJump = false;
                 jumping = true;
-                spaceDown = true;
+                spaceDown = true;   
 
             }
 
@@ -86,10 +95,29 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
             vel = rb.velocity;
             jump();
             move(Input.GetAxisRaw("Horizontal"));
+            if ((touchWallLeft() && vel.x < 0) || (touchWallRight() && vel.x > 0))
+            {
+                vel.x = 0.0f;
+            }
             rb.velocity = vel;
             gravity();
             CalcAccel();
             
+            try
+            {
+                if (Time.time - timeSinceGrounded > coyoteTime && wallJumping)
+                {
+
+                    moveSpeed = 0;
+                    wallJumping = false;
+                    
+                }
+                    } catch
+            {
+
+            }
+            
+
 
             pos = transform.position;
 
@@ -106,12 +134,12 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
         if (jumping)
         {
             timeSinceJump = Time.time;
-            vel += new Vector2(0.0f, jumpForce);
+            vel += new Vector2(0.0f, jumpStrength);
             jumping = false;
         } else if (spaceDown)
         {
-            vel += new Vector2(0.0f, jumpForce * 4.0f* Time.deltaTime);
-            if ((Time.time - timeSinceJump) > 0.2f) {
+            vel += new Vector2(0.0f, jumpStrength * 0.7f * Time.deltaTime / (Time.time - timeSinceJump));
+            if ((Time.time - timeSinceJump) > 0.4f) {
                 spaceDown = false;
             }
         }
@@ -129,22 +157,37 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (rb.velocity.y >= 0)
         {
-            grav = 6.0f;
+            grav = 9.0f;
+        } else if (rb.velocity.y < maxDownwardVelocity)
+        {
+            if (touchWallLeft())
+            {
+                grav = 2.0f;
+                
+            } else if (touchWallRight())
+            {
+                grav = 2.0f;
+                
+            } else {
+
+                grav = 15.0f;
+
+            }
         } else
         {
-            grav = 15.0f;
+
         }
     }
     public void move(float input)
     {
         //doubleJump || (!doubleJump && (Time.time - timeSinceJump) > 0.2f)
-        if (true)
+        if (!wallJumping || (Time.time - timeSinceJump) > 0.1f)
         {
             sr.color = Color.white;
             Debug.Log(input);
             if (input == 0)
             {
-                moveSpeed = Mathf.Lerp(moveSpeed, 0, moveDecelTime*Time.deltaTime);
+                moveSpeed = Mathf.Lerp(moveSpeed, 0, moveDecelConstant*Time.deltaTime);
             } else if (Mathf.Abs(input) > 0 && pastInput == 0)
             {
                 moveSpeed = 0;
@@ -163,11 +206,11 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
                 moveSpeed = 0;
             }
             pastInput = input;
-            vel = new Vector2(moveSpeed * speed, vel.y);
+            vel = new Vector2(moveSpeed * horizontalMoveSpeed, vel.y);
         } else
         {
             sr.color = Color.red;
-            vel = new Vector2(moveSpeed * speed, vel.y);
+            vel = new Vector2(moveSpeed * horizontalMoveSpeed, 2.0f);
         }
         
     }
@@ -203,15 +246,48 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
     bool IsGrounded()
     {
 
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, distance, GroundLayer);
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, detectionRadius, GroundLayer);
         if (hit.collider != null)
         {
             Debug.Log("On Ground");
+            timeSinceGrounded = Time.time;
             return true;
             
         }
 
         return false;
     }
+    bool touchWallLeft()
+    {
+
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.left, detectionRadius, GroundLayer);
+        if (hit.collider != null)
+        {
+            Debug.Log("On Ground");
+            timeSinceGrounded = Time.time;
+            wallJumping = true;
+            return true;
+
+        }
+
+        return false;
+    }
+
+    bool touchWallRight()
+    {
+
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.right, detectionRadius, GroundLayer);
+        if (hit.collider != null)
+        {
+            Debug.Log("On Ground");
+            timeSinceGrounded = Time.time;
+            wallJumping = true;
+            return true;
+
+        }
+
+        return false;
+    }
+
 
 }
