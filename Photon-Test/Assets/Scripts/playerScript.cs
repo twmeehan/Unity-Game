@@ -19,7 +19,10 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
     public float moveDecelConstant = 5.0f;
     public float moveAccelTime = 0.05f;
     private float moveStartTime = 0;
-    
+
+    public float decelGrav = 9.0f;
+    public float clingingGrav = 2.0f;
+    public float fallingGrav = 15.0f;
 
     // For Jump
     private bool jumping = false;
@@ -27,10 +30,14 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
     private bool spaceDown = false;
     private bool doubleJump = true;
     public float detectionRadius = 0.3f;
+    public float lockoutTime = 0.1f;
     //public Transform IsGroundedChecker;
     public LayerMask GroundLayer;
     public float jumpStrength = 1.0f;
+    public float jumpHoldConstant = 0.7f;
+    public float maxTimeHoldingJump = 0.4f;
     private float timeSinceJump = 0.0f;
+    public float upwardsVelocityForWalljump = 2.0f;
     public float coyoteTime = 0.2f;
     private float timeSinceGrounded;
 
@@ -105,7 +112,7 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
             
             try
             {
-                if (Time.time - timeSinceGrounded > coyoteTime && wallJumping)
+                if (Time.time - timeSinceGrounded > lockoutTime && wallJumping)
                 {
 
                     moveSpeed = 0;
@@ -138,8 +145,8 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
             jumping = false;
         } else if (spaceDown)
         {
-            vel += new Vector2(0.0f, jumpStrength * 0.7f * Time.deltaTime / (Time.time - timeSinceJump));
-            if ((Time.time - timeSinceJump) > 0.4f) {
+            vel += new Vector2(0.0f, jumpStrength * jumpHoldConstant * Time.deltaTime / (Time.time - timeSinceJump));
+            if ((Time.time - timeSinceJump) > maxTimeHoldingJump) {
                 spaceDown = false;
             }
         }
@@ -157,20 +164,20 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (rb.velocity.y >= 0)
         {
-            grav = 9.0f;
+            grav = decelGrav;
         } else if (rb.velocity.y < maxDownwardVelocity)
         {
             if (touchWallLeft())
             {
-                grav = 2.0f;
+                grav = clingingGrav;
                 
             } else if (touchWallRight())
             {
-                grav = 2.0f;
+                grav = clingingGrav;
                 
             } else {
 
-                grav = 15.0f;
+                grav = fallingGrav;
 
             }
         } else
@@ -181,7 +188,7 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
     public void move(float input)
     {
         //doubleJump || (!doubleJump && (Time.time - timeSinceJump) > 0.2f)
-        if (!wallJumping || (Time.time - timeSinceJump) > 0.1f)
+        if (!wallJumping || (Time.time - timeSinceJump) > lockoutTime)
         {
             sr.color = Color.white;
             Debug.Log(input);
@@ -210,7 +217,7 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
         } else
         {
             sr.color = Color.red;
-            vel = new Vector2(moveSpeed * horizontalMoveSpeed, 2.0f);
+            vel = new Vector2(moveSpeed * horizontalMoveSpeed, upwardsVelocityForWalljump);
         }
         
     }
