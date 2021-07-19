@@ -6,12 +6,15 @@ using UnityEngine;
 public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
 {
 
-
     private float grav = 0;
     public float dragConstant = 0.2f;
     private Vector2 drag = new Vector2(0,0);
     public float maxDownwardVelocity = 15.0f;
+    public float maxClingingVelocity = 5.0f;
 
+    // For Crouch
+    private float crouching = 1.0f;
+    public float crouchSpeed = 0.5f;
     // For Move
     private float pastInput = 0;
     private float moveSpeed = 0;
@@ -29,6 +32,12 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
     private bool wallJumping = false;
     private bool spaceDown = false;
     private bool doubleJump = true;
+
+    private float sideJumpMultiplier = 1.0f;
+    private float sideJumpStartTime = 0;
+    public float sideJumpSpeed = 0.5f;
+    public float sideMultiplierDecel = 5.0f;
+
     public float detectionRadius = 0.3f;
     public float lockoutTime = 0.1f;
     //public Transform IsGroundedChecker;
@@ -66,17 +75,34 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
     }
     void Update()
     {
+        if (view.IsMine && IsGrounded())
+        {
+            doubleJump = true;
+
+        }
         if (view.IsMine && Input.GetKeyDown(KeyCode.Space))
         {
             if (IsGrounded() || (Time.time - timeSinceGrounded) < coyoteTime)
             {
-                if (touchWallLeft() && wallJumping) {
-                    moveSpeed = 1;
-                } else if (touchWallRight() && wallJumping) {
-                    moveSpeed = -1;
+                if (touchWallLeft() && wallJumping)
+                {
+                    moveSpeed = 1f;
+                    sideJumpMultiplier = sideJumpSpeed;
+                    sideJumpStartTime = Time.time;
                 }
-            
-                doubleJump = true;
+                else if (touchWallRight() && wallJumping)
+                {
+                    moveSpeed = -1f;
+                    sideJumpMultiplier = sideJumpSpeed;
+                    sideJumpStartTime = Time.time;
+
+                }
+                else
+                {
+                    rb.velocity = new Vector2(0.0f, 0.0f);
+                    vel = new Vector2(0.0f, 0.0f);
+                }
+                // doubleJump = true;
                 jumping = true;
                 spaceDown = true;
             } else if (doubleJump)
@@ -101,6 +127,8 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
         {
             vel = rb.velocity;
             jump();
+            calcSideMultiplier();
+            crouch();
             move(Input.GetAxisRaw("Horizontal"));
             if ((touchWallLeft() && vel.x < 0) || (touchWallRight() && vel.x > 0))
             {
@@ -169,12 +197,26 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
         {
             if (touchWallLeft())
             {
+
                 grav = clingingGrav;
-                
+                if (rb.velocity.y < 0 && crouching < 1.0f)
+                {
+                    rb.velocity = new Vector2((float) rb.velocity.x,0);
+
+                }
+
             } else if (touchWallRight())
             {
+
                 grav = clingingGrav;
-                
+
+
+                if (rb.velocity.y < 0 && crouching < 1.0f)
+                {
+                    rb.velocity = new Vector2((float) rb.velocity.x, 0);
+
+                }
+
             } else {
 
                 grav = fallingGrav;
@@ -213,11 +255,11 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
                 moveSpeed = 0;
             }
             pastInput = input;
-            vel = new Vector2(moveSpeed * horizontalMoveSpeed, vel.y);
+                vel = new Vector2(moveSpeed * horizontalMoveSpeed * sideJumpMultiplier * crouching, vel.y);
         } else
         {
             sr.color = Color.red;
-            vel = new Vector2(moveSpeed * horizontalMoveSpeed, upwardsVelocityForWalljump);
+            vel = new Vector2(moveSpeed * horizontalMoveSpeed * sideJumpMultiplier * crouching, upwardsVelocityForWalljump);
         }
         
     }
@@ -250,12 +292,36 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
         this.vel = vel + (accel * t);
     }
 
+    public void calcSideMultiplier()
+    {
+        if ((Time.time - sideJumpStartTime) / sideMultiplierDecel < 1.0f)
+        {
+            sideJumpMultiplier = Mathf.Lerp(sideJumpSpeed, 1.0f , (Time.time - sideJumpStartTime)/sideMultiplierDecel);
+        } else
+        {
+            sideJumpMultiplier = 1.0f;
+        }
+    }
+
+    public void crouch()
+    {
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            crouching = crouchSpeed;
+        } else
+        {
+            crouching = 1;
+        }
+    }
+
     bool IsGrounded()
     {
+
 
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, detectionRadius, GroundLayer);
         if (hit.collider != null)
         {
+
             Debug.Log("On Ground");
             timeSinceGrounded = Time.time;
             return true;
