@@ -167,6 +167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b73ceff9d78a40947ba66ceef01503a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  predictionConst: 0.5
   dragConstant: 0.2
   maxDownwardVelocity: 15
   maxClingingVelocity: 2

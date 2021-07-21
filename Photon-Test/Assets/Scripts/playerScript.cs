@@ -6,6 +6,7 @@ using UnityEngine;
 public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
 {
 
+    public float predictionConst = 0.5f; 
     private float grav = 0;
     public float dragConstant = 0.2f;
     private Vector2 drag = new Vector2(0,0);
@@ -54,8 +55,16 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField] private Vector2 vel = new Vector2(0,0);
     [SerializeField] private Vector2 pos = new Vector2(0,0);
 
+    private Vector2 startPos = new Vector2(0, 0);
+    private Vector2 startVel = new Vector2(0, 0);
+
+    private float lastPacket = 0.0f;
+
+    private float lag = 0.1f;
+
+
     // private Vector2 predictedPos = new Vector2(0, 0);
-    
+
     private Transform transform;
     private Rigidbody2D rb;
     private PhotonView view;
@@ -70,7 +79,7 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
         view = this.gameObject.GetComponent<PhotonView>();
         sr = this.gameObject.GetComponent<SpriteRenderer>();
 
-        PhotonNetwork.SerializationRate = 13;
+        PhotonNetwork.SerializationRate = 20;
 
     }
     void Update()
@@ -158,7 +167,10 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
 
         } else
         {
-            transform.position = pos;
+            Debug.Log(Time.time + " - " + lastPacket + "/" + lag + " = "+(Time.time - lastPacket) / lag);
+            transform.position = Vector2.Lerp(startPos, pos, (float)(Time.time - lastPacket) / lag);
+            rb.velocity = Vector2.Lerp(startVel, vel, (float)(Time.time - lastPacket) / lag);
+
 
         }
         
@@ -280,7 +292,12 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
             pos = (Vector2) stream.ReceiveNext();
             accel = (Vector2) stream.ReceiveNext();
 
-            float lag = Mathf.Abs((float)(PhotonNetwork.Time - info.timestamp));
+            this.startPos = transform.position;
+            this.startVel = rb.velocity;
+
+
+            lastPacket = (float) Time.time;
+            lag = Mathf.Abs((float)(PhotonNetwork.Time - info.timestamp));
             lagComp(pos, vel, accel, lag);
             
         }
@@ -288,8 +305,18 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
     }
     public void lagComp(Vector2 pos, Vector2 vel, Vector2 accel, float t)
     {
-        this.pos += pos + (0.5f * accel * t * t + vel * t);
-        this.vel = vel + (accel * t);
+
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, (0.5f * accel * t * t + vel * t), 1, GroundLayer);
+        if (hit.collider != null)
+        {
+            //this.pos = hit.point;
+            //this.vel = Vector2.zero;
+        }
+        else
+        {
+            this.pos += (0.5f * accel * t * t + vel * t) * predictionConst;
+            this.vel += (accel * t) * predictionConst;
+        }
     }
 
     public void calcSideMultiplier()
