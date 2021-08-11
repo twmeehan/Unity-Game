@@ -79,11 +79,10 @@ public class playerScript : MonoBehaviourPunCallbacks
         view = this.gameObject.GetComponent<PhotonView>();
         sr = this.gameObject.GetComponent<SpriteRenderer>();
 
-        PhotonNetwork.SerializationRate = 20;
+        PhotonNetwork.SerializationRate = 30;
 
     }
     
-    /*
     void Update()
     {
         if (view.IsMine && (IsGrounded() || touchWallLeft() || touchWallRight()))
@@ -131,7 +130,6 @@ public class playerScript : MonoBehaviourPunCallbacks
             spaceDown = false;
         }
     }
-    */
     
     // Update is called once per frame
     void FixedUpdate()
@@ -139,23 +137,20 @@ public class playerScript : MonoBehaviourPunCallbacks
         if (view.IsMine)
         {
             vel = rb.velocity;
-            //jump();
-            //calcSideMultiplier();
-            //crouch();
+            jump();
+            calcSideMultiplier();
+            crouch();
             move(Input.GetAxisRaw("Horizontal"));
             
-            /*
             if ((touchWallLeft() && vel.x < 0) || (touchWallRight() && vel.x > 0))
             {
                 vel.x = 0.0f;
             }
-            */
             
             rb.velocity = vel;
             
-            //gravity();
-            //CalcAccel();
-            /*
+            gravity();
+            CalcAccel();
             try
             {
                 if (Time.time - timeSinceGrounded > lockoutTime && wallJumping)
@@ -169,7 +164,6 @@ public class playerScript : MonoBehaviourPunCallbacks
             {
 
             }
-            */
 
             pos = transform.position;
             
