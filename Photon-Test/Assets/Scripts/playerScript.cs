@@ -79,7 +79,7 @@ public class playerScript : MonoBehaviourPunCallbacks
         view = this.gameObject.GetComponent<PhotonView>();
         sr = this.gameObject.GetComponent<SpriteRenderer>();
 
-        PhotonNetwork.SerializationRate = 30;
+        PhotonNetwork.SerializationRate = 20;
 
     }
     
