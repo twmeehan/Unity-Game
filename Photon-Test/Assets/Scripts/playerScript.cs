@@ -84,7 +84,7 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
     }
     void Update()
     {
-        if (view.IsMine && IsGrounded())
+        if (view.IsMine && (IsGrounded() || touchWallLeft() || touchWallRight()))
         {
             doubleJump = true;
 
