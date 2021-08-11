@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
+public class playerScript : MonoBehaviourPunCallbacks
 {
 
     public float predictionConst = 0.5f; 
@@ -82,6 +82,8 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
         PhotonNetwork.SerializationRate = 20;
 
     }
+    
+    /*
     void Update()
     {
         if (view.IsMine && (IsGrounded() || touchWallLeft() || touchWallRight()))
@@ -129,24 +131,31 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
             spaceDown = false;
         }
     }
+    */
+    
     // Update is called once per frame
     void FixedUpdate()
     {
         if (view.IsMine)
         {
             vel = rb.velocity;
-            jump();
-            calcSideMultiplier();
-            crouch();
+            //jump();
+            //calcSideMultiplier();
+            //crouch();
             move(Input.GetAxisRaw("Horizontal"));
+            
+            /*
             if ((touchWallLeft() && vel.x < 0) || (touchWallRight() && vel.x > 0))
             {
                 vel.x = 0.0f;
             }
-            rb.velocity = vel;
-            gravity();
-            CalcAccel();
+            */
             
+            rb.velocity = vel;
+            
+            //gravity();
+            //CalcAccel();
+            /*
             try
             {
                 if (Time.time - timeSinceGrounded > lockoutTime && wallJumping)
@@ -160,16 +169,19 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
             {
 
             }
-            
-
+            */
 
             pos = transform.position;
+            
 
-        } else
+        }
+        else
         {
+            /*
             Debug.Log(Time.time + " - " + lastPacket + "/" + lag + " = "+(Time.time - lastPacket) / lag);
             transform.position = Vector2.Lerp(startPos, pos, (float)(Time.time - lastPacket) / lag);
             rb.velocity = Vector2.Lerp(startVel, vel, (float)(Time.time - lastPacket) / lag);
+            */
 
 
         }
@@ -275,6 +287,8 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
         }
         
     }
+
+    /*
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
 
@@ -303,6 +317,7 @@ public class playerScript : MonoBehaviourPunCallbacks, IPunObservable
         }
 
     }
+    */
     public void lagComp(Vector2 pos, Vector2 vel, Vector2 accel, float t)
     {
 

@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 2921149654355087828}
   - component: {fileID: -1973646120853350663}
   - component: {fileID: 5006008294984794028}
+  - component: {fileID: -2143344436185880401}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -54,7 +55,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 5006008294984794028}
+  - {fileID: -2143344436185880401}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -154,7 +155,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 7
 --- !u!114 &5006008294984794028
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -193,3 +194,36 @@ MonoBehaviour:
   accel: {x: 0, y: 0}
   vel: {x: 0, y: 0}
   pos: {x: 0, y: 0}
+--- !u!114 &-2143344436185880401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4410530991897306296}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8efc6b1d64977384eb3405357896c656, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_PositionModel:
+    SynchronizeEnabled: 1
+    TeleportEnabled: 0
+    TeleportIfDistanceGreaterThan: 0.1
+    InterpolateOption: 4
+    InterpolateMoveTowardsSpeed: 1
+    InterpolateLerpSpeed: 10
+    ExtrapolateOption: 1
+    ExtrapolateSpeed: 1
+    ExtrapolateIncludingRoundTripTime: 1
+    ExtrapolateNumberOfStoredPositions: 1
+  m_RotationModel:
+    SynchronizeEnabled: 1
+    InterpolateOption: 1
+    InterpolateRotateTowardsSpeed: 180
+    InterpolateLerpSpeed: 5
+  m_ScaleModel:
+    SynchronizeEnabled: 0
+    InterpolateOption: 0
+    InterpolateMoveTowardsSpeed: 1
+    InterpolateLerpSpeed: 0
