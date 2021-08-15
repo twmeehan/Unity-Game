@@ -1,4 +1,5 @@
 ﻿using Photon.Pun;
+using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,10 +7,10 @@ using UnityEngine;
 public class playerScript : MonoBehaviourPunCallbacks
 {
 
-    public float predictionConst = 0.5f; 
+    public float predictionConst = 0.5f;
     private float grav = 0;
     public float dragConstant = 0.2f;
-    private Vector2 drag = new Vector2(0,0);
+    private Vector2 drag = new Vector2(0, 0);
     public float maxDownwardVelocity = 15.0f;
     public float maxClingingVelocity = 5.0f;
 
@@ -51,16 +52,11 @@ public class playerScript : MonoBehaviourPunCallbacks
     public float coyoteTime = 0.2f;
     private float timeSinceGrounded;
 
-    [SerializeField] private Vector2 accel = new Vector2(0,0);
-    [SerializeField] private Vector2 vel = new Vector2(0,0);
-    [SerializeField] private Vector2 pos = new Vector2(0,0);
+    [SerializeField] private Vector2 accel = new Vector2(0, 0);
+    [SerializeField] private Vector2 vel = new Vector2(0, 0);
+    [SerializeField] private Vector2 pos = new Vector2(0, 0);
+    [SerializeField] private Vector2 externalForce = new Vector2(0.0f, 0.0f);
 
-    private Vector2 startPos = new Vector2(0, 0);
-    private Vector2 startVel = new Vector2(0, 0);
-
-    private float lastPacket = 0.0f;
-
-    private float lag = 0.1f;
 
 
     // private Vector2 predictedPos = new Vector2(0, 0);
@@ -80,9 +76,8 @@ public class playerScript : MonoBehaviourPunCallbacks
         sr = this.gameObject.GetComponent<SpriteRenderer>();
 
         PhotonNetwork.SerializationRate = 20;
-
     }
-    
+
     void Update()
     {
         if (view.IsMine && (IsGrounded() || touchWallLeft() || touchWallRight()))
@@ -109,28 +104,31 @@ public class playerScript : MonoBehaviourPunCallbacks
                 }
                 else
                 {
+                    blast();
                     rb.velocity = new Vector2(0.0f, 0.0f);
                     vel = new Vector2(0.0f, 0.0f);
                 }
                 // doubleJump = true;
                 jumping = true;
                 spaceDown = true;
-            } else if (doubleJump)
+            }
+            else if (doubleJump)
             {
-                rb.velocity = new Vector2(0.0f,0.0f);
+                rb.velocity = new Vector2(0.0f, 0.0f);
                 vel = new Vector2(0.0f, 0.0f);
                 doubleJump = false;
                 jumping = true;
-                spaceDown = true;   
+                spaceDown = true;
 
             }
 
-        } else if (view.IsMine && Input.GetKeyUp(KeyCode.Space))
+        }
+        else if (view.IsMine && Input.GetKeyUp(KeyCode.Space))
         {
             spaceDown = false;
         }
     }
-    
+
     // Update is called once per frame
     void FixedUpdate()
     {
@@ -141,14 +139,13 @@ public class playerScript : MonoBehaviourPunCallbacks
             calcSideMultiplier();
             crouch();
             move(Input.GetAxisRaw("Horizontal"));
-            
+
             if ((touchWallLeft() && vel.x < 0) || (touchWallRight() && vel.x > 0))
             {
                 vel.x = 0.0f;
             }
-            
+
             rb.velocity = vel;
-            
             gravity();
             CalcAccel();
             try
@@ -158,15 +155,16 @@ public class playerScript : MonoBehaviourPunCallbacks
 
                     moveSpeed = 0;
                     wallJumping = false;
-                    
+
                 }
-                    } catch
+            }
+            catch
             {
 
             }
 
             pos = transform.position;
-            
+
 
         }
         else
@@ -179,7 +177,7 @@ public class playerScript : MonoBehaviourPunCallbacks
 
 
         }
-        
+
 
     }
     public void jump()
@@ -189,17 +187,23 @@ public class playerScript : MonoBehaviourPunCallbacks
             timeSinceJump = Time.time;
             vel += new Vector2(0.0f, jumpStrength);
             jumping = false;
-        } else if (spaceDown)
+        }
+        else if (spaceDown)
         {
             vel += new Vector2(0.0f, jumpStrength * jumpHoldConstant * Time.deltaTime / (Time.time - timeSinceJump));
-            if ((Time.time - timeSinceJump) > maxTimeHoldingJump) {
+            if ((Time.time - timeSinceJump) > maxTimeHoldingJump)
+            {
                 spaceDown = false;
             }
         }
     }
     public void CalcAccel()
     {
-        //drag = dragConstant * rb.velocity * -1;
+        externalForce = Vector2.Lerp(externalForce, Vector2.zero,0.2f);
+        if (externalForce.magnitude<0.2f)
+        {
+            externalForce = Vector2.zero;
+        }
         //accel = new Vector2(0.0f,0.0f);
         accel.y = -grav;
         rb.velocity += accel * Time.deltaTime;
@@ -211,7 +215,8 @@ public class playerScript : MonoBehaviourPunCallbacks
         if (rb.velocity.y >= 0)
         {
             grav = decelGrav;
-        } else if (rb.velocity.y < maxDownwardVelocity)
+        }
+        else if (rb.velocity.y < maxDownwardVelocity)
         {
             if (touchWallLeft())
             {
@@ -219,11 +224,12 @@ public class playerScript : MonoBehaviourPunCallbacks
                 grav = clingingGrav;
                 if (rb.velocity.y < 0 && crouching < 1.0f)
                 {
-                    rb.velocity = new Vector2((float) rb.velocity.x,0);
+                    rb.velocity = new Vector2((float)rb.velocity.x, 0);
 
                 }
 
-            } else if (touchWallRight())
+            }
+            else if (touchWallRight())
             {
 
                 grav = clingingGrav;
@@ -231,16 +237,19 @@ public class playerScript : MonoBehaviourPunCallbacks
 
                 if (rb.velocity.y < 0 && crouching < 1.0f)
                 {
-                    rb.velocity = new Vector2((float) rb.velocity.x, 0);
+                    rb.velocity = new Vector2((float)rb.velocity.x, 0);
 
                 }
 
-            } else {
+            }
+            else
+            {
 
                 grav = fallingGrav;
 
             }
-        } else
+        }
+        else
         {
 
         }
@@ -251,35 +260,42 @@ public class playerScript : MonoBehaviourPunCallbacks
         if (!wallJumping || (Time.time - timeSinceJump) > lockoutTime)
         {
             sr.color = Color.white;
-            Debug.Log(input);
             if (input == 0)
             {
-                moveSpeed = Mathf.Lerp(moveSpeed, 0, moveDecelConstant*Time.deltaTime);
-            } else if (Mathf.Abs(input) > 0 && pastInput == 0)
+                moveSpeed = Mathf.Lerp(moveSpeed, 0, moveDecelConstant * Time.deltaTime);
+            }
+            else if (Mathf.Abs(input) > 0 && pastInput == 0)
             {
                 moveSpeed = 0;
                 moveStartTime = Time.time;
-            } else if (input == pastInput && Mathf.Abs(moveSpeed) < 1) {
-                moveSpeed = Mathf.Lerp(0,input,(Time.time - moveStartTime) / moveAccelTime);
+            }
+            else if (input == pastInput && Mathf.Abs(moveSpeed) < 1)
+            {
+                moveSpeed = Mathf.Lerp(0, input, (Time.time - moveStartTime) / moveAccelTime);
                 if (moveSpeed > 1)
                 {
                     moveSpeed = 1;
-                } else if (moveSpeed < -1)
+                }
+                else if (moveSpeed < -1)
                 {
                     moveSpeed = -1;
                 }
-            } else if (Mathf.Abs(pastInput-input) > 1.5)
+            }
+            else if (Mathf.Abs(pastInput - input) > 1.5)
             {
                 moveSpeed = 0;
             }
             pastInput = input;
-                vel = new Vector2(moveSpeed * horizontalMoveSpeed * sideJumpMultiplier * crouching, vel.y);
-        } else
+            vel = new Vector2(moveSpeed * horizontalMoveSpeed * sideJumpMultiplier * crouching, vel.y);
+            addExternalForce();
+        }
+        else
         {
             sr.color = Color.red;
             vel = new Vector2(moveSpeed * horizontalMoveSpeed * sideJumpMultiplier * crouching, upwardsVelocityForWalljump);
+            addExternalForce();
         }
-        
+
     }
 
     /*
@@ -332,11 +348,17 @@ public class playerScript : MonoBehaviourPunCallbacks
     {
         if ((Time.time - sideJumpStartTime) / sideMultiplierDecel < 1.0f)
         {
-            sideJumpMultiplier = Mathf.Lerp(sideJumpSpeed, 1.0f , (Time.time - sideJumpStartTime)/sideMultiplierDecel);
-        } else
+            sideJumpMultiplier = Mathf.Lerp(sideJumpSpeed, 1.0f, (Time.time - sideJumpStartTime) / sideMultiplierDecel);
+        }
+        else
         {
             sideJumpMultiplier = 1.0f;
         }
+    }
+
+    public void addExternalForce()
+    {
+        vel += externalForce;
     }
 
     public void crouch()
@@ -344,7 +366,8 @@ public class playerScript : MonoBehaviourPunCallbacks
         if (Input.GetKey(KeyCode.LeftShift))
         {
             crouching = crouchSpeed;
-        } else
+        }
+        else
         {
             crouching = 1;
         }
@@ -358,10 +381,9 @@ public class playerScript : MonoBehaviourPunCallbacks
         if (hit.collider != null)
         {
 
-            Debug.Log("On Ground");
             timeSinceGrounded = Time.time;
             return true;
-            
+
         }
 
         return false;
@@ -372,7 +394,6 @@ public class playerScript : MonoBehaviourPunCallbacks
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.left, detectionRadius, GroundLayer);
         if (hit.collider != null)
         {
-            Debug.Log("On Ground");
             timeSinceGrounded = Time.time;
             wallJumping = true;
             return true;
@@ -388,7 +409,6 @@ public class playerScript : MonoBehaviourPunCallbacks
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.right, detectionRadius, GroundLayer);
         if (hit.collider != null)
         {
-            Debug.Log("On Ground");
             timeSinceGrounded = Time.time;
             wallJumping = true;
             return true;
@@ -398,5 +418,51 @@ public class playerScript : MonoBehaviourPunCallbacks
         return false;
     }
 
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
 
+        if (stream.IsWriting)
+        {
+
+            stream.SendNext(externalForce);
+
+        }
+        else
+        {
+
+            externalForce = (Vector2)stream.ReceiveNext();
+
+        }
+
+    }
+    public void blast()
+    {
+        foreach(Collider2D collider in Physics2D.OverlapCircleAll(transform.position, 2.0f))
+        {
+            try
+            {
+                collider.gameObject.SendMessage("applykb", 
+                    (Vector2) Vector3.Scale((collider.gameObject.transform.position -
+                    transform.position).normalized, new Vector3(5f*(1 - (collider.gameObject.transform.position -
+                    transform.position).magnitude), 5f*(1 - (collider.gameObject.transform.position -
+                    transform.position).magnitude), 5f*(1 - (collider.gameObject.transform.position -
+                    transform.position).magnitude))));
+            } catch
+            {
+
+            }
+        }
+            
+    }
+    void applykb(Vector2 kb)
+    {
+        externalForce += kb;
+        Debug.Log("BOOM");
+        view.RPC("applykbNET", RpcTarget.All, externalForce);
+    }
+    [PunRPC]
+    void applykbNET(Vector2 vel)
+    {
+        this.externalForce = vel;
+    }
 }
