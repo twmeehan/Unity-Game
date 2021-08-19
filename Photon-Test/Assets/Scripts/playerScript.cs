@@ -104,7 +104,6 @@ public class playerScript : MonoBehaviourPunCallbacks
                 }
                 else
                 {
-                    blast();
                     rb.velocity = new Vector2(0.0f, 0.0f);
                     vel = new Vector2(0.0f, 0.0f);
                 }
@@ -134,6 +133,7 @@ public class playerScript : MonoBehaviourPunCallbacks
     {
         if (view.IsMine)
         {
+            //Debug.Log(externalForce);
             vel = rb.velocity;
             jump();
             calcSideMultiplier();
@@ -163,7 +163,8 @@ public class playerScript : MonoBehaviourPunCallbacks
 
             }
 
-            pos = transform.position;
+            addExternalForce();
+
 
 
         }
@@ -199,11 +200,13 @@ public class playerScript : MonoBehaviourPunCallbacks
     }
     public void CalcAccel()
     {
+        
         externalForce = Vector2.Lerp(externalForce, Vector2.zero,0.2f);
         if (externalForce.magnitude<0.2f)
         {
             externalForce = Vector2.zero;
         }
+        
         //accel = new Vector2(0.0f,0.0f);
         accel.y = -grav;
         rb.velocity += accel * Time.deltaTime;
@@ -287,13 +290,11 @@ public class playerScript : MonoBehaviourPunCallbacks
             }
             pastInput = input;
             vel = new Vector2(moveSpeed * horizontalMoveSpeed * sideJumpMultiplier * crouching, vel.y);
-            addExternalForce();
         }
         else
         {
             sr.color = Color.red;
             vel = new Vector2(moveSpeed * horizontalMoveSpeed * sideJumpMultiplier * crouching, upwardsVelocityForWalljump);
-            addExternalForce();
         }
 
     }
@@ -358,7 +359,8 @@ public class playerScript : MonoBehaviourPunCallbacks
 
     public void addExternalForce()
     {
-        vel += externalForce;
+        rb.velocity += new Vector2(externalForce.x,0.0f);
+        transform.position += new Vector3(0.0f, externalForce.y * Time.deltaTime,0.0f);
     }
 
     public void crouch()
@@ -435,25 +437,7 @@ public class playerScript : MonoBehaviourPunCallbacks
         }
 
     }
-    public void blast()
-    {
-        foreach(Collider2D collider in Physics2D.OverlapCircleAll(transform.position, 2.0f))
-        {
-            try
-            {
-                collider.gameObject.SendMessage("applykb", 
-                    (Vector2) Vector3.Scale((collider.gameObject.transform.position -
-                    transform.position).normalized, new Vector3(5f*(1 - (collider.gameObject.transform.position -
-                    transform.position).magnitude), 5f*(1 - (collider.gameObject.transform.position -
-                    transform.position).magnitude), 5f*(1 - (collider.gameObject.transform.position -
-                    transform.position).magnitude))));
-            } catch
-            {
-
-            }
-        }
-            
-    }
+    
     void applykb(Vector2 kb)
     {
         externalForce += kb;

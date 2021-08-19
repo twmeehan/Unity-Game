@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 2105445385417070986}
   m_LocalRotation: {x: -0.00000067427754, y: -0.00000017136335, z: 0.000000015832484,
     w: 1}
-  m_LocalPosition: {x: 0.0000034272732, y: -0.000013455762, z: -0.0000000023570954}
+  m_LocalPosition: {x: 0.000003427837, y: 0.001371623, z: 0.0000004208432}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 6832989632744186649}
@@ -54,7 +54,7 @@ MonoBehaviour:
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 3625435661781158770}
   m_Lens:
-    FieldOfView: 12
+    FieldOfView: 25
     OrthographicSize: 5
     NearClipPlane: 0.3
     FarClipPlane: 1000
@@ -94,8 +94,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8146998120259420629}
-  m_LocalRotation: {x: -0.00008293614, y: -0.000021077693, z: 0.0000019473957, w: 1}
-  m_LocalPosition: {x: 0.00042155708, y: -0.0016587815, z: -10}
+  m_LocalRotation: {x: -0.0025892071, y: -0.0006580344, z: 0.00006079622, w: 0.9999965}
+  m_LocalPosition: {x: 0.013162399, y: -0.0400126, z: -9.999918}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 6792288496463220829}
@@ -127,7 +127,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 12
+  field of view: 25
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
@@ -280,10 +280,10 @@ MonoBehaviour:
   m_ZDamping: 1
   m_TargetMovementOnly: 1
   m_ScreenX: 0.5
-  m_ScreenY: 0.5
+  m_ScreenY: 0.51333326
   m_CameraDistance: 10
-  m_DeadZoneWidth: 0.148
-  m_DeadZoneHeight: 0.238
+  m_DeadZoneWidth: 0
+  m_DeadZoneHeight: 0
   m_DeadZoneDepth: 0
   m_UnlimitedSoftZone: 0
   m_SoftZoneWidth: 0.8
@@ -318,6 +318,7 @@ GameObject:
   - component: {fileID: 3898863194399770638}
   - component: {fileID: 2096549637136722041}
   - component: {fileID: 2101128451836188130}
+  - component: {fileID: 7007851327004084595}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -548,6 +549,21 @@ MonoBehaviour:
   m_SynchronizeAngularVelocity: 0
   m_TeleportEnabled: 1
   m_TeleportIfDistanceGreaterThan: 3
+--- !u!114 &7007851327004084595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8500530624377671488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 653ea59af2b407440894b49606ce4941, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Bullet: {fileID: 7538049408113383947, guid: b68937aefb0e8ab4e927b07ef4a1e9c5, type: 3}
+  view: {fileID: 7124350043204002762}
+  camera: {fileID: 4745963471615489382}
 --- !u!1 &8728739976162127125
 GameObject:
   m_ObjectHideFlags: 0
