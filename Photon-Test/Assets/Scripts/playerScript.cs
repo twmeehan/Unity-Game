@@ -7,20 +7,18 @@ using UnityEngine;
 public class playerScript : MonoBehaviourPunCallbacks
 {
 
-    public float predictionConst = 0.5f;
-    private float grav = 0;
-    public float dragConstant = 0.2f;
-    private Vector2 drag = new Vector2(0, 0);
+    public float drag = 0.2f;
+
     public float maxDownwardVelocity = 15.0f;
     public float maxClingingVelocity = 5.0f;
 
-    // For Crouch
-    private float crouching = 1.0f;
-    public float crouchSpeed = 0.5f;
     // For Move
     private float pastInput = 0;
     private float moveSpeed = 0;
-    public float horizontalMoveSpeed = 2;
+
+    private float xVel = 0;
+
+    public float speed = 2;
     public float moveDecelConstant = 5.0f;
     public float moveAccelTime = 0.05f;
     private float moveStartTime = 0;
@@ -52,9 +50,6 @@ public class playerScript : MonoBehaviourPunCallbacks
     public float coyoteTime = 0.2f;
     private float timeSinceGrounded;
 
-    [SerializeField] private Vector2 accel = new Vector2(0, 0);
-    [SerializeField] private Vector2 vel = new Vector2(0, 0);
-    [SerializeField] private Vector2 pos = new Vector2(0, 0);
     [SerializeField] private Vector2 externalForce = new Vector2(0.0f, 0.0f);
 
 
@@ -78,76 +73,165 @@ public class playerScript : MonoBehaviourPunCallbacks
         PhotonNetwork.SerializationRate = 20;
     }
 
+    // Update() Method - Called every frame to handle jump mechanics. 
+    // For some reason it only works in Update() not FixedUpdate()
     void Update()
     {
+
+        // If touching the ground, the player becomes able to double jump again
         if (view.IsMine && (IsGrounded() || touchWallLeft() || touchWallRight()))
         {
+
             doubleJump = true;
 
         }
+
+        // If space is pressed by the owner of the photon view, the player executes the jump code
         if (view.IsMine && Input.GetKeyDown(KeyCode.Space))
         {
+
+            // Executes if the player is on the ground or has been on the ground in the past few milliseconds
             if (IsGrounded() || (Time.time - timeSinceGrounded) < coyoteTime)
             {
+
+                /*
+                // If touching wall or in the middle of a wall jump
                 if (touchWallLeft() && wallJumping)
                 {
-                    moveSpeed = 1f;
-                    sideJumpMultiplier = sideJumpSpeed;
-                    sideJumpStartTime = Time.time;
-                }
-                else if (touchWallRight() && wallJumping)
-                {
-                    moveSpeed = -1f;
-                    sideJumpMultiplier = sideJumpSpeed;
+
+                    moveSpeed = sideJumpSpeed;
                     sideJumpStartTime = Time.time;
 
                 }
-                else
+
+                else if (touchWallRight() && wallJumping)
                 {
-                    rb.velocity = new Vector2(0.0f, 0.0f);
-                    vel = new Vector2(0.0f, 0.0f);
+
+                    moveSpeed = -sideJumpSpeed;
+                    sideJumpStartTime = Time.time;
+
+
                 }
-                // doubleJump = true;
+                */
+                
+                // Else if normal jumping and player is falling
+                if (rb.velocity.y < 0)
+                {
+
+                    // Cancel downwards velocity
+                    rb.velocity = new Vector2(rb.velocity.x, 0.0f);
+
+                }
+
+                // boolean jump determains when the player first presses
                 jumping = true;
+
+                // spaceDown lasts till the player lets go of space or goes past the max holding time
                 spaceDown = true;
+
             }
+
+            // If not normal jumping then check if the player can double jump
             else if (doubleJump)
             {
-                rb.velocity = new Vector2(0.0f, 0.0f);
-                vel = new Vector2(0.0f, 0.0f);
+
+                // Cancel downwards velocity
+                if (rb.velocity.y < 0)
+                {
+                    
+                    rb.velocity = new Vector2(rb.velocity.x, 0.0f);
+
+                }
+
+                // remove the ability to doubleJump so that player cannot double jump again until they land
                 doubleJump = false;
+
+                // boolean jump determains when the player first presses
                 jumping = true;
+
+                // spaceDown lasts till the player lets go of space or goes past the max holding time
                 spaceDown = true;
 
             }
 
         }
+
+        // check if player is no longer holding space to stop their upward acceleration
         else if (view.IsMine && Input.GetKeyUp(KeyCode.Space))
         {
+
             spaceDown = false;
+
+        }
+
+    }
+
+    /* 
+     * Jump() Method - called by FixedUpdate() every frame, calculates jump strength based
+     * on input determained in Update()
+     */
+    public void jump()
+    {
+
+        // runs when the player first presses space
+        if (jumping)
+        {
+
+            // does smth. I forgot what
+            timeSinceJump = Time.time;
+
+            rb.velocity += new Vector2(0.0f, jumpStrength);
+            jumping = false;
+
+        }
+
+        // continues to run as long as player is still holding space
+        else if (spaceDown)
+        {
+
+            rb.velocity += new Vector2(0.0f, jumpHoldConstant * Time.deltaTime);
+
+            // player can only hold space for maxTimeHoldingJump seconds
+            if ((Time.time - timeSinceJump) > maxTimeHoldingJump)
+            {
+                spaceDown = false;
+            }
         }
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+
         if (view.IsMine)
         {
-            //Debug.Log(externalForce);
-            vel = rb.velocity;
+
+            //Debug.Log(rb.velocity.x);
             jump();
-            calcSideMultiplier();
-            crouch();
+
+            //calcSideMultiplier();
+            //crouch();
+            
+/*
+            if ((touchWallLeft() && rb.velocity.x < 0) || (touchWallRight() && rb.velocity.x > 0))
+            {
+                pastxVel = 0;
+                xVel = 0;
+                rb.velocity = new Vector2(0.0f, rb.velocity.y);
+            }
+            if (rb.velocity.x == 0)
+            {
+                pastxVel = 0;
+                xVel = 0;
+            }
+            */
+            
+
+            gravity();
+            //CalcAccel();
             move(Input.GetAxisRaw("Horizontal"));
 
-            if ((touchWallLeft() && vel.x < 0) || (touchWallRight() && vel.x > 0))
-            {
-                vel.x = 0.0f;
-            }
-
-            rb.velocity = vel;
-            gravity();
-            CalcAccel();
+            /*
             try
             {
                 if (Time.time - timeSinceGrounded > lockoutTime && wallJumping)
@@ -162,8 +246,12 @@ public class playerScript : MonoBehaviourPunCallbacks
             {
 
             }
+            */
+            
 
-            addExternalForce();
+
+
+            //addExternalForce();
 
 
 
@@ -181,23 +269,6 @@ public class playerScript : MonoBehaviourPunCallbacks
 
 
     }
-    public void jump()
-    {
-        if (jumping)
-        {
-            timeSinceJump = Time.time;
-            vel += new Vector2(0.0f, jumpStrength);
-            jumping = false;
-        }
-        else if (spaceDown)
-        {
-            vel += new Vector2(0.0f, jumpStrength * jumpHoldConstant * Time.deltaTime / (Time.time - timeSinceJump));
-            if ((Time.time - timeSinceJump) > maxTimeHoldingJump)
-            {
-                spaceDown = false;
-            }
-        }
-    }
     public void CalcAccel()
     {
         
@@ -208,47 +279,42 @@ public class playerScript : MonoBehaviourPunCallbacks
         }
         
         //accel = new Vector2(0.0f,0.0f);
-        accel.y = -grav;
-        rb.velocity += accel * Time.deltaTime;
+        //accel.y = -grav;
+        //rb.velocity += accel * Time.deltaTime;
         //rb.gravityScale = grav;
 
     }
     public void gravity()
     {
+
         if (rb.velocity.y >= 0)
         {
-            grav = decelGrav;
+
+            rb.gravityScale = decelGrav;
+
         }
+
         else if (rb.velocity.y < maxDownwardVelocity)
         {
+
             if (touchWallLeft())
             {
 
-                grav = clingingGrav;
-                if (rb.velocity.y < 0 && crouching < 1.0f)
-                {
-                    rb.velocity = new Vector2((float)rb.velocity.x, 0);
+                rb.gravityScale = clingingGrav;
 
-                }
 
             }
             else if (touchWallRight())
             {
 
-                grav = clingingGrav;
+                rb.gravityScale = clingingGrav;
 
-
-                if (rb.velocity.y < 0 && crouching < 1.0f)
-                {
-                    rb.velocity = new Vector2((float)rb.velocity.x, 0);
-
-                }
 
             }
             else
             {
 
-                grav = fallingGrav;
+                rb.gravityScale = fallingGrav;
 
             }
         }
@@ -259,22 +325,37 @@ public class playerScript : MonoBehaviourPunCallbacks
     }
     public void move(float input)
     {
-        //doubleJump || (!doubleJump && (Time.time - timeSinceJump) > 0.2f)
+        
+        // briefly locks movement for lockoutTime seconds after wall jumping
         if (!wallJumping || (Time.time - timeSinceJump) > lockoutTime)
         {
+
             sr.color = Color.white;
+
+            // if user stops moving, slow down
             if (input == 0)
             {
+
                 moveSpeed = Mathf.Lerp(moveSpeed, 0, moveDecelConstant * Time.deltaTime);
+
             }
+
+            // if the user inputs movement after being still
             else if (Mathf.Abs(input) > 0 && pastInput == 0)
             {
+
+                // get ready to accelerate
                 moveSpeed = 0;
                 moveStartTime = Time.time;
+
             }
+
+            // if the user input remains the same
             else if (input == pastInput && Mathf.Abs(moveSpeed) < 1)
             {
+                // accelerate over moveAccelTime then clamp the speed at 1
                 moveSpeed = Mathf.Lerp(0, input, (Time.time - moveStartTime) / moveAccelTime);
+
                 if (moveSpeed > 1)
                 {
                     moveSpeed = 1;
@@ -283,18 +364,55 @@ public class playerScript : MonoBehaviourPunCallbacks
                 {
                     moveSpeed = -1;
                 }
+
             }
+
+            // if the user suddenly changes direction, stop and start accelerating the other way
             else if (Mathf.Abs(pastInput - input) > 1.5)
             {
                 moveSpeed = 0;
             }
+
             pastInput = input;
-            vel = new Vector2(moveSpeed * horizontalMoveSpeed * sideJumpMultiplier * crouching, vel.y);
+
+            xVel = moveSpeed * speed * sideJumpMultiplier;
+
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, new Vector2(-0.1f,-1.0f).normalized, detectionRadius, GroundLayer);
+            RaycastHit2D hit2 = Physics2D.Raycast(transform.position, new Vector2(0.1f, -1.0f).normalized, detectionRadius, GroundLayer);
+
+            Vector2 direction = Vector2.right;
+
+            if (hit.collider != null && hit2.collider != null)
+            {
+
+                direction = (hit2.point - hit.point).normalized;
+
+            }
+            
+            hit = Physics2D.Raycast(transform.position, direction, xVel * Time.deltaTime, GroundLayer);
+            if (hit.collider != null)
+            {
+
+                xVel = 0;
+
+            }
+            else
+            {
+
+                transform.position += (Vector3)direction * xVel * Time.deltaTime;
+
+            }
+
         }
+
+        // runs while user can't move because of a wall jump
         else
         {
+
             sr.color = Color.red;
-            vel = new Vector2(moveSpeed * horizontalMoveSpeed * sideJumpMultiplier * crouching, upwardsVelocityForWalljump);
+
+            xVel = moveSpeed * speed * sideJumpMultiplier;
+
         }
 
     }
@@ -329,50 +447,30 @@ public class playerScript : MonoBehaviourPunCallbacks
 
     }
     */
-    public void lagComp(Vector2 pos, Vector2 vel, Vector2 accel, float t)
-    {
 
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, (0.5f * accel * t * t + vel * t), 1, GroundLayer);
-        if (hit.collider != null)
-        {
-            //this.pos = hit.point;
-            //this.vel = Vector2.zero;
-        }
-        else
-        {
-            this.pos += (0.5f * accel * t * t + vel * t) * predictionConst;
-            this.vel += (accel * t) * predictionConst;
-        }
-    }
-
-    public void calcSideMultiplier()
+    public void wallJump()
     {
         if ((Time.time - sideJumpStartTime) / sideMultiplierDecel < 1.0f)
         {
-            sideJumpMultiplier = Mathf.Lerp(sideJumpSpeed, 1.0f, (Time.time - sideJumpStartTime) / sideMultiplierDecel);
-        }
-        else
-        {
-            sideJumpMultiplier = 1.0f;
+            moveSpeed = Mathf.Lerp(moveSpeed, sign(moveSpeed), (Time.time - sideJumpStartTime) / sideMultiplierDecel);
         }
     }
 
+    public int sign(float f)
+    {
+        if (f > 0)
+        {
+            return 1;
+        } else if (f < 0)
+        {
+            return -1;
+        }
+        return 0;
+    }
     public void addExternalForce()
     {
         rb.velocity += new Vector2(externalForce.x,0.0f);
         transform.position += new Vector3(0.0f, externalForce.y * Time.deltaTime,0.0f);
-    }
-
-    public void crouch()
-    {
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            crouching = crouchSpeed;
-        }
-        else
-        {
-            crouching = 1;
-        }
     }
 
     bool IsGrounded()
@@ -397,7 +495,7 @@ public class playerScript : MonoBehaviourPunCallbacks
         if (hit.collider != null)
         {
             timeSinceGrounded = Time.time;
-            wallJumping = true;
+            //wallJumping = true;
             return true;
 
         }
@@ -412,7 +510,7 @@ public class playerScript : MonoBehaviourPunCallbacks
         if (hit.collider != null)
         {
             timeSinceGrounded = Time.time;
-            wallJumping = true;
+            //wallJumping = true;
             return true;
 
         }
