@@ -6,25 +6,43 @@ using UnityEngine;
 
 public class playerScript : MonoBehaviourPunCallbacks
 {
-
+    // the rate at which rb.velocity will decelerate
     public float drag = 0.2f;
 
+    // the highest speed rb.velocity.y can reach
     public float maxDownwardVelocity = 15.0f;
+
+    // the highest speed rb.velocity.y can reach when touching a wall
     public float maxClingingVelocity = 5.0f;
 
-    // For Move
+    // the value of Input.GetAxisRaw("Horizontal") from the previous frame
     private float pastInput = 0;
+
+    // the speed at which the player should be moving just based on player input
     private float moveSpeed = 0;
 
+    // the actual speed at which the player is moving
     private float xVel = 0;
 
+    // multiplies player input moveSpeed by scalar speed
     public float speed = 2;
+
+    // linear interpolates for deceleration based on this constant 
     public float moveDecelConstant = 5.0f;
+
+    // the time it takes for the player to accelerate
     public float moveAccelTime = 0.05f;
+
+    // used to calculate moveSpeed when accelerating
     private float moveStartTime = 0;
 
+    // the gravScale when player is moving upwards
     public float decelGrav = 9.0f;
+
+    // the gravScale when player is sliding down a wall
     public float clingingGrav = 2.0f;
+
+    // the gravScale when player is falling
     public float fallingGrav = 15.0f;
 
     // For Jump
