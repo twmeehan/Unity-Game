@@ -4,128 +4,144 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Class playerScript - controls player movement and gravity if character is
+// controled by the user running the script
 public class playerScript : MonoBehaviourPunCallbacks
 {
 
-    public float predictionConst = 0.5f;
-    private float grav = 0;
-    public float dragConstant = 0.2f;
-    private Vector2 drag = new Vector2(0, 0);
-    public float maxDownwardVelocity = 15.0f;
-    public float maxClingingVelocity = 5.0f;
+    // private variables
 
-    // For Crouch
-    private float crouching = 1.0f;
-    public float crouchSpeed = 0.5f;
-    // For Move
+    // true if player is touching ground
+    private bool isGrounded = false;
+
+    // is true if the player is in the middle of a jump
+    private bool jumping = false;
+
+    // is true while user is still holding space
+    private bool spaceDown = false;
+
+    // if player is able to double jump
+    private bool doubleJump = false;
+
+    // used to calculate when the player can no longer continue jumping
+    private float timeSinceJump = 0.0f;
+
+    // the value of Input.GetAxisRaw("Horizontal") from the previous frame
     private float pastInput = 0;
+
+    // the speed at which the player should be moving just based on player input
     private float moveSpeed = 0;
-    public float horizontalMoveSpeed = 2;
-    public float moveDecelConstant = 5.0f;
-    public float moveAccelTime = 0.05f;
+
+    // used to calculate moveSpeed when accelerating
     private float moveStartTime = 0;
 
-    public float decelGrav = 9.0f;
-    public float clingingGrav = 2.0f;
-    public float fallingGrav = 15.0f;
-
-    // For Jump
-    private bool jumping = false;
-    private bool wallJumping = false;
-    private bool spaceDown = false;
-    private bool doubleJump = true;
-
-    private float sideJumpMultiplier = 1.0f;
-    private float sideJumpStartTime = 0;
-    public float sideJumpSpeed = 0.5f;
-    public float sideMultiplierDecel = 5.0f;
-
-    public float detectionRadius = 0.3f;
-    public float lockoutTime = 0.1f;
-    //public Transform IsGroundedChecker;
-    public LayerMask GroundLayer;
-    public float jumpStrength = 1.0f;
-    public float jumpHoldConstant = 0.7f;
-    public float maxTimeHoldingJump = 0.4f;
-    private float timeSinceJump = 0.0f;
-    public float upwardsVelocityForWalljump = 2.0f;
-    public float coyoteTime = 0.2f;
     private float timeSinceGrounded;
-
-    [SerializeField] private Vector2 accel = new Vector2(0, 0);
-    [SerializeField] private Vector2 vel = new Vector2(0, 0);
-    [SerializeField] private Vector2 pos = new Vector2(0, 0);
-    [SerializeField] private Vector2 externalForce = new Vector2(0.0f, 0.0f);
-
-
-
-    // private Vector2 predictedPos = new Vector2(0, 0);
 
     private Transform transform;
     private Rigidbody2D rb;
     private PhotonView view;
-    private SpriteRenderer sr;
+
+
+    // Public variables
+
+    public movement Movement;
+
+    public gravity Gravity;
+
+    public jump Jump;
+
+    public LayerMask GroundLayer;
+
+    // distance from center of character (or feet) to ground
+    public float detectionRadius = 0.3f;
+
+    // margin time for player to jump even after going over a ledge
+    public float coyoteTime = 0.2f;
+
+    //public Transform IsGroundedChecker;
 
     // Start is called before the first frame update
     void Start()
     {
 
+        
         transform = this.gameObject.GetComponent<Transform>();
         rb = this.gameObject.GetComponent<Rigidbody2D>();
         view = this.gameObject.GetComponent<PhotonView>();
-        sr = this.gameObject.GetComponent<SpriteRenderer>();
-
         PhotonNetwork.SerializationRate = 20;
     }
 
+    // Update() Method - Called every frame to handle jump mechanics. 
+    // For some reason it only works in Update() not FixedUpdate()
     void Update()
     {
-        if (view.IsMine && (IsGrounded() || touchWallLeft() || touchWallRight()))
+
+
+        // If touching the ground, the player becomes able to double jump again
+        if (view.IsMine && isGrounded && Jump.doubleJump)
         {
+
             doubleJump = true;
 
         }
+
+        // doubleJump always available
+        if (Jump.infiniteJump)
+        {
+
+            doubleJump = true;
+
+        }
+        
+
+        // If space is pressed by the owner of the photon view, the player executes the jump code
         if (view.IsMine && Input.GetKeyDown(KeyCode.Space))
         {
-            if (IsGrounded() || (Time.time - timeSinceGrounded) < coyoteTime)
-            {
-                if (touchWallLeft() && wallJumping)
-                {
-                    moveSpeed = 1f;
-                    sideJumpMultiplier = sideJumpSpeed;
-                    sideJumpStartTime = Time.time;
-                }
-                else if (touchWallRight() && wallJumping)
-                {
-                    moveSpeed = -1f;
-                    sideJumpMultiplier = sideJumpSpeed;
-                    sideJumpStartTime = Time.time;
 
-                }
-                else
-                {
-                    rb.velocity = new Vector2(0.0f, 0.0f);
-                    vel = new Vector2(0.0f, 0.0f);
-                }
-                // doubleJump = true;
+            // Executes if the player is on the ground or has been on the ground in the past few milliseconds
+            if (isGrounded || (Time.time - timeSinceGrounded) < coyoteTime)
+            {
+
+                rb.velocity = new Vector2(rb.velocity.x, 0.0f);
+
+
+                // boolean jump determains when the player first presses
                 jumping = true;
+
+                // spaceDown lasts till the player lets go of space or goes past the max holding time
                 spaceDown = true;
+
             }
+
+            // If not normal jumping then check if the player can double jump
             else if (doubleJump)
             {
-                rb.velocity = new Vector2(0.0f, 0.0f);
-                vel = new Vector2(0.0f, 0.0f);
+
+                // Cancel downwards velocity
+                rb.velocity = new Vector2(rb.velocity.x, 0.0f);
+
+
+                // remove the ability to doubleJump so that player cannot double jump again until they land
                 doubleJump = false;
+
+                // boolean jump determains when the player first presses
                 jumping = true;
+
+                // spaceDown lasts till the player lets go of space or goes past the max holding time
                 spaceDown = true;
 
             }
 
         }
+
+        // check if player is no longer holding space to stop their upward acceleration
         else if (view.IsMine && Input.GetKeyUp(KeyCode.Space))
         {
+
             spaceDown = false;
+
         }
+
     }
 
     // Update is called once per frame
@@ -133,320 +149,179 @@ public class playerScript : MonoBehaviourPunCallbacks
     {
         if (view.IsMine)
         {
-            //Debug.Log(externalForce);
-            vel = rb.velocity;
+
+            // calculate whether player is on the ground
+            isGrounded = false;
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, detectionRadius, GroundLayer);
+            if (hit.collider != null)
+            {
+
+                timeSinceGrounded = Time.time;
+                isGrounded = true;
+
+            }
+
             jump();
-            calcSideMultiplier();
-            crouch();
             move(Input.GetAxisRaw("Horizontal"));
-
-            if ((touchWallLeft() && vel.x < 0) || (touchWallRight() && vel.x > 0))
-            {
-                vel.x = 0.0f;
-            }
-
-            rb.velocity = vel;
             gravity();
-            CalcAccel();
-            try
-            {
-                if (Time.time - timeSinceGrounded > lockoutTime && wallJumping)
-                {
-
-                    moveSpeed = 0;
-                    wallJumping = false;
-
-                }
-            }
-            catch
-            {
-
-            }
-
-            addExternalForce();
-
-
-
-        }
-        else
-        {
-            /*
-            Debug.Log(Time.time + " - " + lastPacket + "/" + lag + " = "+(Time.time - lastPacket) / lag);
-            transform.position = Vector2.Lerp(startPos, pos, (float)(Time.time - lastPacket) / lag);
-            rb.velocity = Vector2.Lerp(startVel, vel, (float)(Time.time - lastPacket) / lag);
-            */
-
 
         }
 
 
     }
+
+    /* 
+     * Jump() Method - called by FixedUpdate() every frame, calculates jump strength based
+     * on input determained in Update()
+     */
     public void jump()
     {
+
+        // runs when the player first presses space
         if (jumping)
         {
+
+            // does smth. I forgot what
             timeSinceJump = Time.time;
-            vel += new Vector2(0.0f, jumpStrength);
+
+            rb.velocity = new Vector2(0.0f, Jump.jumpStrength);
             jumping = false;
+
         }
+
+        // continues to run as long as player is still holding space
         else if (spaceDown)
         {
-            vel += new Vector2(0.0f, jumpStrength * jumpHoldConstant * Time.deltaTime / (Time.time - timeSinceJump));
-            if ((Time.time - timeSinceJump) > maxTimeHoldingJump)
+
+            rb.velocity += new Vector2(0.0f, Jump.jumpHoldConstant * Time.deltaTime);
+
+            // player can only hold space for maxTimeHoldingJump seconds
+            if ((Time.time - timeSinceJump) > Jump.maxTimeHoldingJump)
             {
                 spaceDown = false;
             }
         }
     }
-    public void CalcAccel()
-    {
-        
-        externalForce = Vector2.Lerp(externalForce, Vector2.zero,0.2f);
-        if (externalForce.magnitude<0.2f)
-        {
-            externalForce = Vector2.zero;
-        }
-        
-        //accel = new Vector2(0.0f,0.0f);
-        accel.y = -grav;
-        rb.velocity += accel * Time.deltaTime;
-        //rb.gravityScale = grav;
 
-    }
+    /* 
+     * gravity() Method - called by FixedUpdate() every frame, calculates the speed of gravity
+     */
     public void gravity()
     {
         if (rb.velocity.y >= 0)
         {
-            grav = decelGrav;
-        }
-        else if (rb.velocity.y < maxDownwardVelocity)
-        {
-            if (touchWallLeft())
-            {
-
-                grav = clingingGrav;
-                if (rb.velocity.y < 0 && crouching < 1.0f)
-                {
-                    rb.velocity = new Vector2((float)rb.velocity.x, 0);
-
-                }
-
-            }
-            else if (touchWallRight())
-            {
-
-                grav = clingingGrav;
-
-
-                if (rb.velocity.y < 0 && crouching < 1.0f)
-                {
-                    rb.velocity = new Vector2((float)rb.velocity.x, 0);
-
-                }
-
-            }
-            else
-            {
-
-                grav = fallingGrav;
-
-            }
+            rb.gravityScale = Gravity.decelGrav;
         }
         else
         {
-
+            rb.gravityScale = Gravity.fallingGrav;
+        }
+        if (rb.velocity.y < -Gravity.maxDownwardVelocity)
+        {
+            // if player is already going too fast, stop accelerating
+            rb.gravityScale = 0;
         }
     }
+
+    /* 
+     * move() Method - called by FixedUpdate() every frame, calculates moveSpeed based
+     * on input parameter
+     */
     public void move(float input)
     {
-        //doubleJump || (!doubleJump && (Time.time - timeSinceJump) > 0.2f)
-        if (!wallJumping || (Time.time - timeSinceJump) > lockoutTime)
+
+        // if user stops moving, slow down
+        if (input == 0)
         {
-            sr.color = Color.white;
-            if (input == 0)
+
+            moveSpeed = Mathf.Lerp(moveSpeed, 0, Movement.moveDecelConstant * Time.deltaTime);
+
+        }
+
+        // if the user inputs movement after being still
+        else if (Mathf.Abs(input) > 0 && pastInput == 0)
+        {
+
+            // get ready to accelerate
+            moveSpeed = 0;
+            moveStartTime = Time.time;
+
+        }
+
+        // if the user input remains the same
+        else if (input == pastInput && Mathf.Abs(moveSpeed) < 1)
+        {
+
+            // accelerate over moveAccelTime then clamp the speed at 1
+            moveSpeed = Mathf.Lerp(0, input, (Time.time - moveStartTime) / Movement.moveAccelTime);
+
+            if (moveSpeed > 1)
             {
-                moveSpeed = Mathf.Lerp(moveSpeed, 0, moveDecelConstant * Time.deltaTime);
+                moveSpeed = 1;
             }
-            else if (Mathf.Abs(input) > 0 && pastInput == 0)
+            else if (moveSpeed < -1)
             {
-                moveSpeed = 0;
-                moveStartTime = Time.time;
+                moveSpeed = -1;
             }
-            else if (input == pastInput && Mathf.Abs(moveSpeed) < 1)
-            {
-                moveSpeed = Mathf.Lerp(0, input, (Time.time - moveStartTime) / moveAccelTime);
-                if (moveSpeed > 1)
-                {
-                    moveSpeed = 1;
-                }
-                else if (moveSpeed < -1)
-                {
-                    moveSpeed = -1;
-                }
-            }
-            else if (Mathf.Abs(pastInput - input) > 1.5)
-            {
-                moveSpeed = 0;
-            }
-            pastInput = input;
-            vel = new Vector2(moveSpeed * horizontalMoveSpeed * sideJumpMultiplier * crouching, vel.y);
-        }
-        else
-        {
-            sr.color = Color.red;
-            vel = new Vector2(moveSpeed * horizontalMoveSpeed * sideJumpMultiplier * crouching, upwardsVelocityForWalljump);
-        }
-
-    }
-
-    /*
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-
-        if (stream.IsWriting)
-        {
-
-            stream.SendNext(vel);
-            stream.SendNext(pos);
-            stream.SendNext(accel);
-
-        } else
-        {
-
-            vel = (Vector2) stream.ReceiveNext();
-            pos = (Vector2) stream.ReceiveNext();
-            accel = (Vector2) stream.ReceiveNext();
-
-            this.startPos = transform.position;
-            this.startVel = rb.velocity;
-
-
-            lastPacket = (float) Time.time;
-            lag = Mathf.Abs((float)(PhotonNetwork.Time - info.timestamp));
-            lagComp(pos, vel, accel, lag);
-            
-        }
-
-    }
-    */
-    public void lagComp(Vector2 pos, Vector2 vel, Vector2 accel, float t)
-    {
-
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, (0.5f * accel * t * t + vel * t), 1, GroundLayer);
-        if (hit.collider != null)
-        {
-            //this.pos = hit.point;
-            //this.vel = Vector2.zero;
-        }
-        else
-        {
-            this.pos += (0.5f * accel * t * t + vel * t) * predictionConst;
-            this.vel += (accel * t) * predictionConst;
-        }
-    }
-
-    public void calcSideMultiplier()
-    {
-        if ((Time.time - sideJumpStartTime) / sideMultiplierDecel < 1.0f)
-        {
-            sideJumpMultiplier = Mathf.Lerp(sideJumpSpeed, 1.0f, (Time.time - sideJumpStartTime) / sideMultiplierDecel);
-        }
-        else
-        {
-            sideJumpMultiplier = 1.0f;
-        }
-    }
-
-    public void addExternalForce()
-    {
-        rb.velocity += new Vector2(externalForce.x,0.0f);
-        transform.position += new Vector3(0.0f, externalForce.y * Time.deltaTime,0.0f);
-    }
-
-    public void crouch()
-    {
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            crouching = crouchSpeed;
-        }
-        else
-        {
-            crouching = 1;
-        }
-    }
-
-    bool IsGrounded()
-    {
-
-
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, detectionRadius, GroundLayer);
-        if (hit.collider != null)
-        {
-
-            timeSinceGrounded = Time.time;
-            return true;
 
         }
 
-        return false;
-    }
-    bool touchWallLeft()
-    {
-
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.left, detectionRadius, GroundLayer);
-        if (hit.collider != null)
+        // if the user suddenly changes direction, stop and start accelerating the other way
+        else if (Mathf.Abs(pastInput - input) > 1.5)
         {
-            timeSinceGrounded = Time.time;
-            wallJumping = true;
-            return true;
-
+            moveSpeed = 0;
         }
 
-        return false;
-    }
-
-    bool touchWallRight()
-    {
-
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.right, detectionRadius, GroundLayer);
-        if (hit.collider != null)
-        {
-            timeSinceGrounded = Time.time;
-            wallJumping = true;
-            return true;
-
-        }
-
-        return false;
-    }
-
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-
-        if (stream.IsWriting)
-        {
-
-            stream.SendNext(externalForce);
-
-        }
-        else
-        {
-
-            externalForce = (Vector2)stream.ReceiveNext();
-
-        }
-
+        pastInput = input;
+        rb.velocity = new Vector2(moveSpeed * Movement.speed, rb.velocity.y);
+       
     }
     
-    void applykb(Vector2 kb)
-    {
-        externalForce += kb;
-        Debug.Log("BOOM");
-        view.RPC("applykbNET", RpcTarget.All, externalForce);
-    }
-    [PunRPC]
-    void applykbNET(Vector2 vel)
-    {
-        this.externalForce = vel;
-    }
+}
+[System.Serializable]
+public class gravity
+{
+
+    // the gravScale when player is moving upwards
+    public float decelGrav;
+
+    // the gravScale when player is falling
+    public float fallingGrav;
+
+    // the highest speed rb.velocity.y can reach
+    public float maxDownwardVelocity;
+
+}
+
+[System.Serializable]
+public class movement
+{
+
+    // multiplies player input moveSpeed by scalar speed
+    public float speed;
+
+    // the time it takes for the player to accelerate
+    public float moveAccelTime;
+
+    // linear interpolates for deceleration based on this constant 
+    public float moveDecelConstant;
+
+}
+
+[System.Serializable]
+public class jump
+{
+
+    // stength of initial force when player first presses space
+    public float jumpStrength;
+
+    // the force that continuely is applied as player holds space
+    public float jumpHoldConstant;
+
+    public float maxTimeHoldingJump;
+
+    public bool doubleJump;
+
+    public bool infiniteJump;
+
 }
