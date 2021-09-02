@@ -50,6 +50,8 @@ public class playerScript : MonoBehaviourPunCallbacks
 
     public jump Jump;
 
+    public GameObject camera;
+
     public LayerMask GroundLayer;
 
     // distance from center of character (or feet) to ground
@@ -64,11 +66,15 @@ public class playerScript : MonoBehaviourPunCallbacks
     void Start()
     {
 
-        
         transform = this.gameObject.GetComponent<Transform>();
         rb = this.gameObject.GetComponent<Rigidbody2D>();
         view = this.gameObject.GetComponent<PhotonView>();
         PhotonNetwork.SerializationRate = 20;
+
+        if (view.IsMine)
+        {
+            camera.SetActive(true);
+        }
     }
 
     // Update() Method - Called every frame to handle jump mechanics. 

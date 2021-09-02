@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 2105445385417070986}
   m_LocalRotation: {x: -0.00000067427754, y: -0.00000017136335, z: 0.000000015832484,
     w: 1}
-  m_LocalPosition: {x: 0.0000008531035, y: -0.0000033769695, z: -0.000000020487846}
+  m_LocalPosition: {x: 0.0000008605479, y: -0.0000033769772, z: -0.000000020833}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 6832989632744186649}
@@ -86,7 +86,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5283788742346241034
 Transform:
   m_ObjectHideFlags: 0
@@ -94,8 +94,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8146998120259420629}
-  m_LocalRotation: {x: 0.03603907, y: 0.009159398, z: -0.0008461382, w: -0.9993081}
-  m_LocalPosition: {x: 0.05546168, y: -0.16504851, z: -2.4939926}
+  m_LocalRotation: {x: 0.036068022, y: 0.0091667585, z: -0.00084681774, w: -0.999307}
+  m_LocalPosition: {x: 0.055693235, y: -0.16519248, z: -2.4939787}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 6792288496463220829}
@@ -319,7 +319,7 @@ GameObject:
   - component: {fileID: 2096549637136722041}
   - component: {fileID: 2101128451836188130}
   - component: {fileID: 7007851327004084595}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Character
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -487,11 +487,12 @@ MonoBehaviour:
     maxTimeHoldingJump: 0.4
     doubleJump: 0
     infiniteJump: 0
+  camera: {fileID: 8146998120259420629}
   GroundLayer:
     serializedVersion: 2
     m_Bits: 256
   detectionRadius: 0.34
-  coyoteTime: 0.3
+  coyoteTime: 0.2
 --- !u!114 &2096549637136722041
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -548,7 +549,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8500530624377671488}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 653ea59af2b407440894b49606ce4941, type: 3}
   m_Name: 
