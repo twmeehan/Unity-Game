@@ -31,7 +31,7 @@ public class GameLauncher : MonoBehaviour
         }
         
 
-        Vector2 StartingPos = new Vector2(200, 3000);
+        Vector2 StartingPos = new Vector2(0, 0);
         PhotonNetwork.Instantiate(CharacterPrefab.name, StartingPos, Quaternion.identity).GetComponent<CapsuleCollider2D>().enabled = true;
 
         MainCamera.SetActive(false);
