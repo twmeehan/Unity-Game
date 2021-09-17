@@ -57,7 +57,7 @@ public class PlayerScript : MonoBehaviour
     public LayerMask GroundLayer;
 
     // distance from center of character (or feet) to ground
-    public float detectionRadius;
+    public float distanceFromGround;
 
     // margin time for player to jump even after going over a ledge
     public float coyoteTime;
@@ -161,7 +161,7 @@ public class PlayerScript : MonoBehaviour
 
             // calculate whether player is on the ground
             isGrounded = false;
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, detectionRadius, GroundLayer);
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, distanceFromGround, GroundLayer);
             if (hit.collider != null)
             {
 

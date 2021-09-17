@@ -500,24 +500,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Movement:
-    speed: 3
+    speed: 7.5
     moveAccelTime: 0.1
     moveDecelConstant: 8
   Gravity:
-    decelGrav: 2
-    fallingGrav: 3.5
+    decelGrav: 5
+    fallingGrav: 5.5
     maxDownwardVelocity: 10
   Jump:
-    jumpStrength: 5.5
+    jumpStrength: 15
     jumpHoldConstant: 16
     maxTimeHoldingJump: 0.4
-    doubleJump: 0
+    doubleJump: 1
     infiniteJump: 0
   camera: {fileID: 1433571594038417628}
   GroundLayer:
     serializedVersion: 2
     m_Bits: 256
-  detectionRadius: 0.7
+  distanceFromGround: 0.65
   coyoteTime: 0.2
 --- !u!70 &1605620245991645168
 CapsuleCollider2D:
