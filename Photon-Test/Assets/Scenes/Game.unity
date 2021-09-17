@@ -760,7 +760,7 @@ GameObject:
   - component: {fileID: 937758203}
   - component: {fileID: 937758202}
   - component: {fileID: 937758201}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: RoomCode Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1135,7 +1135,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.644849}
   m_AnchorMax: {x: 0.5, y: 0.903849}
-  m_AnchoredPosition: {x: 0, y: 0.84371185}
+  m_AnchoredPosition: {x: 0, y: 0.8437042}
   m_SizeDelta: {x: 345.71545, y: 1.6873932}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1394737706
@@ -1370,7 +1370,7 @@ GameObject:
   - component: {fileID: 1536869698}
   - component: {fileID: 1536869700}
   - component: {fileID: 1536869699}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: RoomCode Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}

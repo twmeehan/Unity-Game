@@ -517,7 +517,7 @@ MonoBehaviour:
   GroundLayer:
     serializedVersion: 2
     m_Bits: 256
-  detectionRadius: 0.34
+  detectionRadius: 0.7
   coyoteTime: 0.2
 --- !u!70 &1605620245991645168
 CapsuleCollider2D:
