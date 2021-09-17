@@ -25,12 +25,21 @@ public class GameLauncher : MonoBehaviour
     /// </summary>
     public void Start()
     {
+        /*
+
+        string[] array = new string[1];
+        array[0] = "TIM";
+        PhotonNetwork.CurrentRoom.SetPropertiesListedInLobby(array);
+
+        */
+        PhotonNetwork.CurrentRoom.CustomProperties.Remove('n');
+        PhotonNetwork.CurrentRoom.CustomProperties.Add('n',"Tim");
+
         if (!PhotonNetwork.CurrentRoom.IsVisible)
         {
             code.text = PhotonNetwork.CurrentRoom.Name;
         }
         
-
         Vector2 StartingPos = new Vector2(0, 0);
         PhotonNetwork.Instantiate(CharacterPrefab.name, StartingPos, Quaternion.identity);
 

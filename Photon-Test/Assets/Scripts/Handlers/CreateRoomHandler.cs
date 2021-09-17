@@ -52,8 +52,13 @@ public class CreateRoomHandler : MonoBehaviourPunCallbacks
 
         string code = "0000";
         bool roomFound = false;
+        ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
+        h.Add("n", "noTim");
+        roomOptions.CustomRoomProperties = h;
 
-
+        string[] str = new string[1];
+        str[0] = "n";
+        roomOptions.CustomRoomPropertiesForLobby = str;
 
         // Generates a random code
         if (roomOptions.IsVisible)
@@ -69,7 +74,6 @@ public class CreateRoomHandler : MonoBehaviourPunCallbacks
                 Mathf.Floor(Random.Range(0.01f, 9.99f)).ToString() +
                 Mathf.Floor(Random.Range(0.01f, 9.99f)).ToString();
         }
-
         PhotonNetwork.CreateRoom(code, roomOptions, TypedLobby.Default);
         Debug.Log("Creating Room " + code);
 

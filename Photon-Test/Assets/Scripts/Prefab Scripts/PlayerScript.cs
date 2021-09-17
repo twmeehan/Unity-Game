@@ -52,6 +52,8 @@ public class PlayerScript : MonoBehaviour
 
     public GameObject camera;
 
+    private Animator anim;
+
     public LayerMask GroundLayer;
 
     // distance from center of character (or feet) to ground
@@ -66,9 +68,10 @@ public class PlayerScript : MonoBehaviour
     void Start()
     {
 
-        transform = this.gameObject.GetComponent<Transform>();
-        rb = this.gameObject.GetComponent<Rigidbody2D>();
-        view = this.gameObject.GetComponent<PhotonView>();
+        //anim = this.GetComponent<Animator>();
+        transform = this.GetComponent<Transform>();
+        rb = this.GetComponent<Rigidbody2D>();
+        view = this.GetComponent<PhotonView>();
         PhotonNetwork.SerializationRate = 20;
 
         if (view.IsMine)
@@ -82,7 +85,7 @@ public class PlayerScript : MonoBehaviour
     void Update()
     {
 
-
+        //anim.SetBool("isRunning", true);
         // If touching the ground, the player becomes able to double jump again
         if (view.IsMine && isGrounded && Jump.doubleJump)
         {

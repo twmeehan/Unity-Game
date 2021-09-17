@@ -43,7 +43,7 @@ public class JoinRoomHandler : MonoBehaviourPunCallbacks
         
         foreach (RoomInfo info in roomList)
         {
-
+            Debug.Log(info.CustomProperties.ToString());
             // checks for any new listings that have old duplicate listings
             /// <example>
             /// A player joins a room, updating all other clients through the .OnRoomListUpdate()

@@ -69,7 +69,7 @@ namespace Photon.Realtime
         public int masterClientId;
 
         /// <summary>Backing field for property.</summary>
-        protected string[] propertiesListedInLobby;
+        public string[] propertiesListedInLobby;
 
         /// <summary>Read-only "cache" of custom properties of a room. Set via Room.SetCustomProperties (not available for RoomInfo class!).</summary>
         /// <remarks>All keys are string-typed and the values depend on the game/application.</remarks>
