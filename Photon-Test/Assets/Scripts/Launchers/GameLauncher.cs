@@ -32,8 +32,12 @@ public class GameLauncher : MonoBehaviour
         PhotonNetwork.CurrentRoom.SetPropertiesListedInLobby(array);
 
         */
-        PhotonNetwork.CurrentRoom.CustomProperties.Remove('n');
-        PhotonNetwork.CurrentRoom.CustomProperties.Add('n',"Tim");
+
+        ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
+        h = PhotonNetwork.CurrentRoom.CustomProperties;
+        h.Remove("n");
+        h.Add("n","Bob");
+        PhotonNetwork.CurrentRoom.SetCustomProperties(h);
 
         if (!PhotonNetwork.CurrentRoom.IsVisible)
         {

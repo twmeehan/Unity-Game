@@ -1,4 +1,5 @@
-﻿using Photon.Pun;
+﻿using ExitGames.Client.Photon.StructWrapping;
+using Photon.Pun;
 using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
@@ -43,7 +44,7 @@ public class JoinRoomHandler : MonoBehaviourPunCallbacks
         
         foreach (RoomInfo info in roomList)
         {
-            Debug.Log(info.CustomProperties.ToString());
+
             // checks for any new listings that have old duplicate listings
             /// <example>
             /// A player joins a room, updating all other clients through the .OnRoomListUpdate()

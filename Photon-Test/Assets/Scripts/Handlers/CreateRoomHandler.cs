@@ -40,41 +40,43 @@ public class CreateRoomHandler : MonoBehaviourPunCallbacks
 
         roomOptions.MaxPlayers = (byte) Mathf.Ceil(Slider.value);
 
-        // If the checkbox is checked
-        if (CheckboxChecked.interactable)
-        {
-            roomOptions.IsVisible = false;
-        } else
-        {
-            roomOptions.IsVisible = true;
-        }
-
-
         string code = "0000";
         bool roomFound = false;
         ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
-        h.Add("n", "noTim");
+        h.Add("n", PhotonNetwork.NickName); // name
+
+        // If the checkbox is checked
+        if (CheckboxChecked.interactable)
+        {
+
+            h.Add("p", true); // private / public
+
+        }
+        else
+        {
+
+            h.Add("p", false); // private / public
+
+        }
+
+
+
+        h.Add("r", false); // running
+        h.Add("t", "Standard"); // type
+
         roomOptions.CustomRoomProperties = h;
 
-        string[] str = new string[1];
-        str[0] = "n";
-        roomOptions.CustomRoomPropertiesForLobby = str;
+        roomOptions.CustomRoomPropertiesForLobby = new string[] { "n", "p", "r", "t" };
 
-        // Generates a random code
-        if (roomOptions.IsVisible)
+        do
         {
-            code = PhotonNetwork.NickName + "-" + Mathf.Floor(Random.Range(0.01f, 9.99f)).ToString() +
-                Mathf.Floor(Random.Range(0.01f, 9.99f)).ToString() +
-                Mathf.Floor(Random.Range(0.01f, 9.99f)).ToString() +
-                Mathf.Floor(Random.Range(0.01f, 9.99f)).ToString();
-        } else
-        {
-            code = Mathf.Floor(Random.Range(0.01f, 9.99f)).ToString() +
-                Mathf.Floor(Random.Range(0.01f, 9.99f)).ToString() +
-                Mathf.Floor(Random.Range(0.01f, 9.99f)).ToString() +
-                Mathf.Floor(Random.Range(0.01f, 9.99f)).ToString();
-        }
-        PhotonNetwork.CreateRoom(code, roomOptions, TypedLobby.Default);
+            // Generates a random code
+            code = Random.Range(0, 9999).ToString();
+            while (code.Length < 4)
+            {
+                code.Insert(0, "0");
+            }
+        } while (!PhotonNetwork.CreateRoom(code, roomOptions, TypedLobby.Default));
         Debug.Log("Creating Room " + code);
 
     }
