@@ -3,6 +3,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.Threading;
 
 /// <summary>
 /// Class - attached to Handler emtpy object; runs when Menu.unity scene is opened;
@@ -139,19 +140,45 @@ public class MenuHandler : MonoBehaviourPunCallbacks
 
     }
     /// <summary>
-    /// Method - open CreateRoomCanvas when "CreateRoomButton" is pressed; saves client's username
+    /// Method - runs when the CreateRoomButton is pressed
     /// </summary>
     public void CreateRoom()
     {
 
-        CreateRoomCanvas.SetActive(true);
         MainMenuCanvas.SetActive(false);
         JoinRoomCanvas.SetActive(false);
 
         PhotonNetwork.NickName = UsernameInput.text;
 
-        // Used to get a list of rooms running
-        PhotonNetwork.JoinLobby();
+        RoomOptions roomOptions = new RoomOptions();
+
+        roomOptions.MaxPlayers = 10;
+
+        string code = "0000";
+        ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
+        h.Add("n", PhotonNetwork.NickName); // name
+        h.Add("p", true); // private / public
+        h.Add("r", false); // running
+        h.Add("t", "Standard"); // type
+        roomOptions.CustomRoomProperties = h;
+
+        roomOptions.CustomRoomPropertiesForLobby = new string[] { "n", "p", "r", "t" };
+
+        // Generates a random code
+        code = Random.Range(0, 9999).ToString();
+        while (code.Length < 4)
+        {
+            code.Insert(0, "0");
+        }
+        Debug.Log(code);
+        
+        if(PhotonNetwork.CreateRoom(code, roomOptions, TypedLobby.Default))
+        {
+            Debug.Log("created room");
+        } else
+        {
+            Debug.Log("failed to create room");
+        }
 
     }
     /// <summary>

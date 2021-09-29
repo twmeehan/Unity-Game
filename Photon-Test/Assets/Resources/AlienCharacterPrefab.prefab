@@ -505,14 +505,14 @@ MonoBehaviour:
     moveDecelConstant: 8
   Gravity:
     decelGrav: 5
-    fallingGrav: 5.5
+    fallingGrav: 9
     maxDownwardVelocity: 10
   Jump:
     jumpStrength: 15
     jumpHoldConstant: 16
     maxTimeHoldingJump: 0.4
-    doubleJump: 1
-    infiniteJump: 0
+    doubleJump: 0
+    infiniteJump: 1
   camera: {fileID: 1433571594038417628}
   GroundLayer:
     serializedVersion: 2
