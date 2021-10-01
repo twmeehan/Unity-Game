@@ -33,12 +33,6 @@ public class GameLauncher : MonoBehaviour
 
         */
 
-        ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
-        h = PhotonNetwork.CurrentRoom.CustomProperties;
-        h.Remove("n");
-        h.Add("n","Bob");
-        PhotonNetwork.CurrentRoom.SetCustomProperties(h);
-
         if (!PhotonNetwork.CurrentRoom.IsVisible)
         {
             code.text = PhotonNetwork.CurrentRoom.Name;

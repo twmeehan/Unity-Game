@@ -26,6 +26,7 @@ public class MenuHandler : MonoBehaviourPunCallbacks
 
     #endregion
 
+    private float timeSinceStart;
     #region MonoBehaviour CallBacks
 
     public override void OnConnectedToMaster()
@@ -49,7 +50,7 @@ public class MenuHandler : MonoBehaviourPunCallbacks
         // #Critical
         // this makes sure we can use PhotonNetwork.LoadLevel() on the master client and all clients in the same room sync their level automatically
         PhotonNetwork.AutomaticallySyncScene = true;
-
+        timeSinceStart = Time.time;
 
     }
 
@@ -145,9 +146,6 @@ public class MenuHandler : MonoBehaviourPunCallbacks
     public void CreateRoom()
     {
 
-        MainMenuCanvas.SetActive(false);
-        JoinRoomCanvas.SetActive(false);
-
         PhotonNetwork.NickName = UsernameInput.text;
 
         RoomOptions roomOptions = new RoomOptions();
@@ -171,8 +169,15 @@ public class MenuHandler : MonoBehaviourPunCallbacks
             code.Insert(0, "0");
         }
         Debug.Log(code);
-        
-        if(PhotonNetwork.CreateRoom(code, roomOptions, TypedLobby.Default))
+        if (Time.time - timeSinceStart < 1)
+        {
+            return;
+        }
+
+        MainMenuCanvas.SetActive(false);
+        JoinRoomCanvas.SetActive(false);
+
+        if (PhotonNetwork.CreateRoom(code, roomOptions, TypedLobby.Default))
         {
             Debug.Log("created room");
         } else
@@ -186,7 +191,7 @@ public class MenuHandler : MonoBehaviourPunCallbacks
     /// </summary>
     public override void OnJoinedRoom()
     {
-        PhotonNetwork.LoadLevel("Game");
+        PhotonNetwork.LoadLevel("Waiting");
 
     }
 

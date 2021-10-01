@@ -48,36 +48,43 @@ public class RoomListing : MonoBehaviour
 
         RoomCode = RoomInfo.Name;
 
-        roomInfo.CustomProperties.TryGetValue("n", out object val);
-        RoomName.text = val.ToString() + "'s Room";
-
-        PlayerCount.text = "Players:" + roomInfo.PlayerCount.ToString() + "/" + roomInfo.MaxPlayers.ToString();
-
-        roomInfo.CustomProperties.TryGetValue("t", out val);
-        GameType.text = "Game Type:" + val.ToString();
-
-        roomInfo.CustomProperties.TryGetValue("r", out val);
-        if (val.Equals(true))
+        try
         {
+            roomInfo.CustomProperties.TryGetValue("n", out object val);
+            RoomName.text = val.ToString() + "'s Room";
 
-            Status.text = "In Progress";
-            button.interactable = false;
-            return;
+            PlayerCount.text = "Players:" + roomInfo.PlayerCount.ToString() + "/" + roomInfo.MaxPlayers.ToString();
 
-        }
+            roomInfo.CustomProperties.TryGetValue("t", out val);
+            GameType.text = "Game Type:" + val.ToString();
 
-        roomInfo.CustomProperties.TryGetValue("p", out val);
-        if (val.Equals(true)) {
+            roomInfo.CustomProperties.TryGetValue("r", out val);
+            if (val.Equals(true))
+            {
 
-            Status.text = "Private";
-            button.interactable = false;
+                Status.text = "In Progress";
+                button.interactable = false;
+                return;
 
-        }
-        else
+            }
+
+            roomInfo.CustomProperties.TryGetValue("p", out val);
+            if (val.Equals(true))
+            {
+
+                Status.text = "Private";
+                button.interactable = false;
+
+            }
+            else
+            {
+
+                Status.text = "Public";
+                button.interactable = true;
+
+            }
+        } catch
         {
-
-            Status.text = "Public";
-            button.interactable = true;
 
         }
 
