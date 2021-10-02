@@ -50,7 +50,8 @@ public class MenuHandler : MonoBehaviourPunCallbacks
         // #Critical
         // this makes sure we can use PhotonNetwork.LoadLevel() on the master client and all clients in the same room sync their level automatically
         PhotonNetwork.AutomaticallySyncScene = true;
-        timeSinceStart = Time.time;
+
+        
 
     }
 
@@ -163,21 +164,13 @@ public class MenuHandler : MonoBehaviourPunCallbacks
         roomOptions.CustomRoomPropertiesForLobby = new string[] { "n", "p", "r", "t" };
 
         // Generates a random code
-        code = Random.Range(0, 9999).ToString();
-        while (code.Length < 4)
-        {
-            code.Insert(0, "0");
-        }
+        code = Random.Range(1111, 9999).ToString();
         Debug.Log(code);
-        if (Time.time - timeSinceStart < 1)
-        {
-            return;
-        }
 
         MainMenuCanvas.SetActive(false);
         JoinRoomCanvas.SetActive(false);
 
-        if (PhotonNetwork.CreateRoom(code, roomOptions, TypedLobby.Default))
+        if (PhotonNetwork.JoinOrCreateRoom(code, roomOptions, TypedLobby.Default))
         {
             Debug.Log("created room");
         } else

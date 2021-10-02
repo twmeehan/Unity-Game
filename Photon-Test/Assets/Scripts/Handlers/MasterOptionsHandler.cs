@@ -10,9 +10,10 @@ public class MasterOptionsHandler : MonoBehaviourPunCallbacks
     public Toggle InfinateJump;
 
     // Update is called once per frame
-    void Update()
+    void Awake()
     {
-        
+        privateOnChange();
+        infiniteOnChange();
     }
     public void privateOnChange()
     {
