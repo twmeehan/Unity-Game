@@ -30,9 +30,15 @@ public class ListPlayersHandler : MonoBehaviourPunCallbacks
     public override void OnMasterClientSwitched(Player newMasterClient)
     {
         base.OnMasterClientSwitched(newMasterClient);
-        foreach (GameObject entry in Content)
+        for (int i=0; i < Content.childCount; i++)
         {
-            entry.GetComponent<NameEntryScript>().OnMasterChange();
+            Content.GetChild(i).GetComponent<NameEntryScript>().OnMasterChange();
+        }
+        foreach (Player p in PhotonNetwork.PlayerList)
+        {
+
+            OnPlayerLeftRoom(p);
+
         }
     }
     public override void OnPlayerEnteredRoom(Player newPlayer)
@@ -45,10 +51,11 @@ public class ListPlayersHandler : MonoBehaviourPunCallbacks
     public override void OnPlayerLeftRoom(Player newPlayer)
     {
         base.OnPlayerLeftRoom(newPlayer);
-        foreach (GameObject entry in Content) {
-            if (entry.name == newPlayer.NickName)
+        for (int i = 0; i < Content.childCount; i++)
+        {
+            if (Content.GetChild(i).GetComponent<NameEntryScript>().name.text == newPlayer.NickName)
             {
-                Destroy(entry);
+                Destroy(Content.GetChild(i).gameObject);
             }
         }
 
