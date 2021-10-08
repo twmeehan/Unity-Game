@@ -37,5 +37,5 @@ public class WaitingRoomHandler : MonoBehaviourPunCallbacks
         Debug.Log("Joined Lobby");
         PhotonNetwork.LoadLevel("Menu");
     }
-    
+
 }

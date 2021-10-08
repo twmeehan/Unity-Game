@@ -4,35 +4,54 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ListPlayersHandler : MonoBehaviour
+public class ListPlayersHandler : MonoBehaviourPunCallbacks
 {
+
+    // Required to create a list of public rooms
+    [SerializeField] public Transform Content;
+    [SerializeField] public GameObject NameEntryPrefab;
+
     // Start is called before the first frame update
     void Start()
     {
-        
-    }
-    private void OnGUI()
-    {
-        if (!PhotonNetwork.InRoom)
-        {
-            return;
-        }
-
-        GUILayout.BeginVertical();
-
         foreach (Player p in PhotonNetwork.PlayerList)
         {
-            GUILayout.Label(p.NickName);
-
-            // You can also use this one instead of the above one
-            // GUILayout.Label(p.ToStringFull());
+            NameEntryScript entry = Instantiate(NameEntryPrefab, Content).GetComponent<NameEntryScript>();
+            entry.SetEntryInfo(p);
+            
         }
 
-        GUILayout.EndVertical();
     }
     // Update is called once per frame
     void Update()
     {
         
     }
+    public override void OnMasterClientSwitched(Player newMasterClient)
+    {
+        base.OnMasterClientSwitched(newMasterClient);
+        foreach (GameObject entry in Content)
+        {
+            entry.GetComponent<NameEntryScript>().OnMasterChange();
+        }
+    }
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        base.OnPlayerEnteredRoom(newPlayer);
+        NameEntryScript entry = Instantiate(NameEntryPrefab, Content).GetComponent<NameEntryScript>();
+        entry.SetEntryInfo(newPlayer);
+
+    }
+    public override void OnPlayerLeftRoom(Player newPlayer)
+    {
+        base.OnPlayerLeftRoom(newPlayer);
+        foreach (GameObject entry in Content) {
+            if (entry.name == newPlayer.NickName)
+            {
+                Destroy(entry);
+            }
+        }
+
+    }
+
 }
