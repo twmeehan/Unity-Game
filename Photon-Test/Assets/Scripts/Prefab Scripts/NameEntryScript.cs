@@ -23,12 +23,8 @@ public class NameEntryScript : MonoBehaviour
     // Update is called once per frame
     public void OnMasterChange()
     {
-        if (player.IsMasterClient)
-        {
-            name.text = name.text + "~";
-        }
 
-        if (PhotonNetwork.IsMasterClient)
+        if (PhotonNetwork.IsMasterClient && name.text != PhotonNetwork.NickName)
         {
             kick.interactable = true;
         } else

@@ -34,12 +34,6 @@ public class ListPlayersHandler : MonoBehaviourPunCallbacks
         {
             Content.GetChild(i).GetComponent<NameEntryScript>().OnMasterChange();
         }
-        foreach (Player p in PhotonNetwork.PlayerList)
-        {
-
-            OnPlayerLeftRoom(p);
-
-        }
     }
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
