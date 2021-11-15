@@ -15,10 +15,6 @@ public class GameLauncher : MonoBehaviour
     public GameObject CharacterPrefab;
     public GameObject MainCamera;
 
-    // Text that is displayed at the center of the scene
-    [SerializeField]
-    private Text code;
-
     /// <summary>
     /// Method - runs on init; displays room code on screen; instantiates character prefab
     /// on Photon servers; disables scene camera(MainCamera)
@@ -32,13 +28,8 @@ public class GameLauncher : MonoBehaviour
         PhotonNetwork.CurrentRoom.SetPropertiesListedInLobby(array);
 
         */
-
-        if (!PhotonNetwork.CurrentRoom.IsVisible)
-        {
-            code.text = PhotonNetwork.CurrentRoom.Name;
-        }
         
-        Vector2 StartingPos = new Vector2(0, 5);
+        Vector2 StartingPos = new Vector2(0, 2);
         PhotonNetwork.Instantiate(CharacterPrefab.name, StartingPos, Quaternion.identity);
 
         MainCamera.SetActive(false);
