@@ -1,9 +1,10 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class PauseMenu : MonoBehaviour
+public class PauseMenu : MonoBehaviourPunCallbacks
 {
 
     // Checks if game is paused.
@@ -39,15 +40,16 @@ public class PauseMenu : MonoBehaviour
     void Pause ()
     {
         pauseMenuUI.SetActive(true);
-        Time.timeScale = 0f;
+        Time.timeScale = 1f;
         GameIsPaused = true;
     }
 
     //Loads the Start Menu
     public void LoadMenu()
     {
-        SceneManager.LoadScene(1);
-        Debug.Log("Loading menu...");
+        Debug.Log("Leaving Room");
+        PhotonNetwork.LeaveRoom();
+
     }
 
     //Quits the Game
@@ -55,5 +57,11 @@ public class PauseMenu : MonoBehaviour
     {
         Debug.Log("Quiting the game...");
         Application.Quit();
+    }
+    public override void OnLeftRoom()
+    {
+        base.OnLeftRoom();
+        Debug.Log("Joined Lobby");
+        PhotonNetwork.LoadLevel("Menu");
     }
 }

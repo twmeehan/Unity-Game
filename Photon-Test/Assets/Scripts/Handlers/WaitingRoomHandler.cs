@@ -42,6 +42,11 @@ public class WaitingRoomHandler : MonoBehaviourPunCallbacks, IOnEventCallback
     }
     public void startGame()
     {
+        ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
+        h = PhotonNetwork.CurrentRoom.CustomProperties;
+        h.Remove("r");
+        h.Add("r", true);
+        PhotonNetwork.CurrentRoom.SetCustomProperties(h);
         Debug.Log("Starting game...");
         RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
         PhotonNetwork.RaiseEvent(StartGameCode, null, raiseEventOptions, SendOptions.SendReliable);
