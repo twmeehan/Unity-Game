@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BasicCharacter : MonoBehaviour, IPunObservable
+public class BasicCharacter : MonoBehaviourPun, IPunObservable
 {
     Transform transform;
     Rigidbody2D rb;
@@ -27,9 +27,9 @@ public class BasicCharacter : MonoBehaviour, IPunObservable
 
     // private variables
     private bool infected = false;
-    private char room;
+    private string room;
     private bool sleeping = false;
-    private BedScript bed;
+
     private int buttonType = 0;
 
     private int DISABLED = 0;
@@ -57,39 +57,49 @@ public class BasicCharacter : MonoBehaviour, IPunObservable
     // Update is called once per frame
     void Update()
     {
-        RaycastHit2D currentRoom = Physics2D.Raycast(transform.position, Vector2.up, 0.1f, RoomLayer);
-        if (currentRoom.collider != null)
-        {
-            room = currentRoom.collider.gameObject.name[0];
-        }
-        if (view.IsMine && !sleeping) {
+        
+        if (view.IsMine) {
 
-            RaycastHit2D currentBed = Physics2D.Raycast(transform.position, Vector2.up, 0.1f, BedLayer);
-            if (currentBed.collider != null)
+            RaycastHit2D currentRoom = Physics2D.Raycast(transform.position, Vector2.up, 0.1f, RoomLayer);
+            if (currentRoom.collider != null)
             {
-
-                button.interactable = true;
-                buttonType = GET_INTO_BED;
-                //button.image.sprite=...
-
-            }
-            else
-            {
-
-                button.interactable = false;
-                buttonType = DISABLED;
-                //button.image.sprite=...
-
+                room = currentRoom.collider.gameObject.name;
             }
 
-            move();
+            if (!sleeping)
+            {
+                RaycastHit2D currentBed = Physics2D.Raycast(transform.position, Vector2.up, 0.1f, BedLayer);
+                if (currentBed.collider != null)
+                {
 
+                    button.interactable = true;
+                    buttonType = GET_INTO_BED;
+                    //button.image.sprite=...
+
+                }
+                else
+                {
+
+                    button.interactable = false;
+                    buttonType = DISABLED;
+                    //button.image.sprite=...
+
+                }
+
+                move();
+
+            } else // runs if sleeping
+            {
+                RaycastHit2D currentBed = Physics2D.Raycast(transform.position, Vector2.up, 0.1f, BedLayer);
+                if (currentBed.collider != null && !currentBed.collider.gameObject.GetComponent<BedScript>().player.Equals(this.gameObject.GetComponent<PhotonView>().Owner.UserId))
+                    KickFromBed();
+            }
         }
         
     }
     // Called by BedScript when a player successfully gets into a bed
     [PunRPC]
-    public void JoinBed(BedScript s, Transform t)
+    public void JoinBedRPC(object[] objectArray)
     {
 
         sleeping = true;
@@ -97,32 +107,35 @@ public class BasicCharacter : MonoBehaviour, IPunObservable
         rb.gravityScale = 0;
 
         // Move player to the center of bed
-        this.transform.position = t.position;
+        this.transform.position = new Vector2((float)objectArray[0], (float)objectArray[1]);
 
         //anim.SetBool("Sleeping");
-
-        bed = s;
 
         button.enabled = true;
         //button.image.sprite=...
         buttonType = LEAVE_BED;
     }
+    public void JoinBed(Transform t)
+    {
+        object[] objectArray = { t.position.x,t.position.y };
+        view.RPC("JoinBedRPC", RpcTarget.All, objectArray as object);
 
-    [PunRPC]
-    // Called by BedScript whenever this player leaves a bed
+    }
     public void KickFromBed()
     {
+        // only run on controller's client
+
+        rb.velocity = new Vector2(rb.velocity.x, jump_strength/2);
 
         // TODO: Play animation or add particles or smth
         sleeping = false;
-        bed = null;
-
     }
 
     // Called when the player presses the button to leave bed
     public void WakeUp()
     {
-        bed.LeaveBed();
+        RaycastHit2D currentBed = Physics2D.Raycast(transform.position, Vector2.up, 0.1f, BedLayer);
+        currentBed.collider.gameObject.GetComponent<BedScript>().LeaveBed();
     }
 
     // Called when the player presses the button to enter bed
@@ -189,23 +202,23 @@ public class BasicCharacter : MonoBehaviour, IPunObservable
 
         }
     }
-
+    
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-
+        Debug.Log("OnPhotonSerializeView Running");
         if (stream.IsWriting)
         {
             stream.SendNext(sleeping);
             stream.SendNext(infected);
-            stream.SendNext(bed);
             stream.SendNext(room);
         }
         else
         {
             sleeping = (bool) stream.ReceiveNext();
             infected = (bool) stream.ReceiveNext();
-            bed = (BedScript) stream.ReceiveNext();
-            room = (char) stream.ReceiveNext();
+            room = (string) stream.ReceiveNext();
         }
+
     }
+    
 }

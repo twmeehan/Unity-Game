@@ -3,71 +3,78 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BedScript : MonoBehaviour, IPunObservable
+public class BedScript : MonoBehaviour
 {
+
+    PhotonView view;
 
     public GameObject covers;
     public Transform transform;
+    public LayerMask PlayerLayer;
 
-    private GameObject player;
+    public string player;
     
     // Start is called before the first frame update
     void Start()
     {
 
+        view = this.gameObject.GetComponent<PhotonView>();
         // The covers are disabled so there is no breathing animation playing when the bed is created
         covers.GetComponent<SpriteRenderer>().enabled = false;
+
+        PhotonNetwork.SerializationRate = 20;
 
     }
 
     // Called by the player when they want to join this bed
-    public void  EnterBed(GameObject p)
+    public void EnterBed(GameObject p)
     {
 
-        // If there is a player in this bed, yeet them
-        if (this.player != null)
-            player.GetComponent<BasicCharacter>().KickFromBed();
-
         // The new player joins the bed and BasicCharacter.JoinBed() tells the player to start sleeping animations
-        player = p;
-        p.GetComponent<BasicCharacter>().JoinBed(this, transform);
+        player = p.GetComponent<PhotonView>().Owner.UserId;
+        p.GetComponent<BasicCharacter>().JoinBed(transform);
 
         // The covers are enabled and begin playing a breathing animation
         covers.GetComponent<SpriteRenderer>().enabled = true;
+
+        updateOtherClients();
 
     }
     // Called by the player when they want to leave their bed
     public void LeaveBed()
     {
 
-        // If there is a player in this bed, yeet them
-        if (this.player != null)
-            player.GetComponent<BasicCharacter>().KickFromBed();
-        player = null;
+        player = "";
 
         // The covers are disabled so there is no breathing animation playing
         covers.GetComponent<SpriteRenderer>().enabled = false;
 
+        updateOtherClients();
     }
 
+    public void updateOtherClients()
+    {
+        view.RPC("updateOtherClientsRPC", RpcTarget.All, player, covers.GetComponent<SpriteRenderer>().enabled);
+    }
+    [PunRPC]
+    public void updateOtherClientsRPC(string newSleeper, bool isBedInUse)
+    {
+        this.player = newSleeper;
+        covers.GetComponent<SpriteRenderer>().enabled = isBedInUse;
+    }
     // Used to get the object that contains the BasicCharacter script for the player that is sleeping
     public GameObject getPlayer()
     {
-        return player;
+
+        RaycastHit2D[] nearbyPlayers = Physics2D.CircleCastAll(transform.position, 0.5f, Vector2.up, PlayerLayer);
+        foreach (RaycastHit2D nearbyPlayer in nearbyPlayers) {
+            if (nearbyPlayer.collider.gameObject.GetComponent<PhotonView>().Owner.UserId.Equals(player))
+                return nearbyPlayer.collider.gameObject;
+
+        }
+
+        return null;
+
     }
 
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-
-        if (stream.IsWriting)
-        {
-            stream.SendNext(player);
-            stream.SendNext(covers);
-        }
-        else
-        {
-            player = (GameObject) stream.ReceiveNext();
-            covers = (GameObject)stream.ReceiveNext();
-        }
-    }
 }

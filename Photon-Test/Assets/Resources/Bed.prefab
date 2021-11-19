@@ -40,6 +40,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7567461107243709530}
   - component: {fileID: 7567461107243709533}
+  - component: {fileID: 1300575497144991507}
   - component: {fileID: 7567461107243709532}
   - component: {fileID: 7567461107243709528}
   - component: {fileID: 7567461107243709531}
@@ -117,6 +118,28 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1300575497144991507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7567461107243709535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!114 &7567461107243709532
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -131,6 +154,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   covers: {fileID: 7567461107371715007}
   transform: {fileID: 7567461106051421022}
+  PlayerLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  player: 
 --- !u!50 &7567461107243709528
 Rigidbody2D:
   serializedVersion: 4
@@ -247,7 +274,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_Sprite: {fileID: 21300000, guid: 03d08e5e79582b041bd536ce69a20920, type: 3}
   m_Color: {r: 1, g: 0.2971698, b: 0.2971698, a: 1}
   m_FlipX: 0
