@@ -2,7 +2,9 @@
 using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 // Class playerScript - controls player movement and gravity if character is
 // controled by the user running the script
@@ -11,11 +13,21 @@ public class PlayerScript : MonoBehaviour
 
     // private variables
 
+    private bool frozen = false;
+    private bool infected = false;
+
+    private string room;
+
+    private bool sleeping = false;
+
     // true if player is touching ground
     private bool isGrounded = false;
 
     // is true if the player is in the middle of a jump
-    private bool jumping = false;
+    private bool isJumping = false;
+
+    // if player has pressed space close to but not on ground
+    private bool jumpBuffered = false;
 
     // is true while user is still holding space
     private bool spaceDown = false;
@@ -26,22 +38,20 @@ public class PlayerScript : MonoBehaviour
     // used to calculate when the player can no longer continue jumping
     private float timeSinceJump = 0.0f;
 
-    // the value of Input.GetAxisRaw("Horizontal") from the previous frame
-    private float pastInput = 0;
-
-    // the speed at which the player should be moving just based on player input
-    private float moveSpeed = 0;
-
-    // used to calculate moveSpeed when accelerating
-    private float moveStartTime = 0;
-
     private float timeSinceGrounded;
 
     private Transform transform;
     private Rigidbody2D rb;
     private PhotonView view;
+    private Animator anim;
 
+    private int buttonType = 0;
 
+    private int DISABLED = 0;
+    private int GET_INTO_BED = 1;
+    private int LEAVE_BED = 2;
+
+    float deltaTime;
     // Public variables
 
     public movement Movement;
@@ -50,11 +60,17 @@ public class PlayerScript : MonoBehaviour
 
     public jump Jump;
 
+    public layers layers;
+
     public GameObject camera;
 
-    private Animator anim;
+    public TextMeshProUGUI name;
 
-    public LayerMask GroundLayer;
+    public Button button;
+
+    public float yeetStrength;
+
+    public Transform feetPos;
 
     // distance from center of character (or feet) to ground
     public float distanceFromGround;
@@ -72,83 +88,46 @@ public class PlayerScript : MonoBehaviour
         transform = this.GetComponent<Transform>();
         rb = this.GetComponent<Rigidbody2D>();
         view = this.GetComponent<PhotonView>();
+
         PhotonNetwork.SerializationRate = 20;
 
         if (view.IsMine)
         {
             camera.SetActive(true);
         }
+
+        name.text = view.Owner.NickName;
+
     }
 
     // Update() Method - Called every frame to handle jump mechanics. 
     // For some reason it only works in Update() not FixedUpdate()
-    void Update()
+    public void Update()
+    {
+        deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
+        float fps = 1.0f / deltaTime;
+        Debug.Log(Mathf.Ceil(fps).ToString());
+
+        // calculate whether player is on the ground
+        isGrounded = Physics2D.OverlapCircle(feetPos.position, distanceFromGround, layers.groundLayer);
+        if (isGrounded)
+            timeSinceGrounded = Time.time;
+        if ((isGrounded || Time.time - timeSinceGrounded < coyoteTime) && Jump.doubleJump)
+            doubleJump = true;
+
+        if (view.IsMine && !frozen)
+        {
+            if (Jump.bufferJump)
+                jumpBuffer();
+            jump();
+        }
+    }
+    public void jumpBuffer()
     {
 
-        //anim.SetBool("isRunning", true);
-        // If touching the ground, the player becomes able to double jump again
-        if (view.IsMine && isGrounded && Jump.doubleJump)
+        if (Input.GetKeyDown(KeyCode.Space) && Physics2D.OverlapCircle(feetPos.position, Jump.jumpBufferDistance, layers.groundLayer) && rb.velocity.y < 0)
         {
-
-            doubleJump = true;
-
-        }
-
-        // doubleJump always available
-        if (Jump.infiniteJump)
-        {
-
-            doubleJump = true;
-
-        }
-
-
-        // If space is pressed by the owner of the photon view, the player executes the jump code
-        if (view.IsMine && Input.GetKeyDown(KeyCode.Space))
-        {
-
-            // Executes if the player is on the ground or has been on the ground in the past few milliseconds
-            if (isGrounded || (Time.time - timeSinceGrounded) < coyoteTime)
-            {
-
-                rb.velocity = new Vector2(rb.velocity.x, 0.0f);
-
-
-                // boolean jump determains when the player first presses
-                jumping = true;
-
-                // spaceDown lasts till the player lets go of space or goes past the max holding time
-                spaceDown = true;
-
-            }
-
-            // If not normal jumping then check if the player can double jump
-            else if (doubleJump)
-            {
-
-                // Cancel downwards velocity
-                rb.velocity = new Vector2(rb.velocity.x, 0.0f);
-
-
-                // remove the ability to doubleJump so that player cannot double jump again until they land
-                doubleJump = false;
-
-                // boolean jump determains when the player first presses
-                jumping = true;
-
-                // spaceDown lasts till the player lets go of space or goes past the max holding time
-                spaceDown = true;
-
-            }
-
-        }
-
-        // check if player is no longer holding space to stop their upward acceleration
-        else if (view.IsMine && Input.GetKeyUp(KeyCode.Space))
-        {
-
-            spaceDown = false;
-
+            jumpBuffered = true;
         }
 
     }
@@ -159,20 +138,12 @@ public class PlayerScript : MonoBehaviour
         if (view.IsMine)
         {
 
-            // calculate whether player is on the ground
-            isGrounded = false;
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, distanceFromGround, GroundLayer);
-            if (hit.collider != null)
+            if (!frozen)
             {
-
-                timeSinceGrounded = Time.time;
-                isGrounded = true;
+                move();
+                gravity();
 
             }
-
-            jump();
-            move(Input.GetAxisRaw("Horizontal"));
-            gravity();
 
         }
 
@@ -185,31 +156,25 @@ public class PlayerScript : MonoBehaviour
      */
     public void jump()
     {
-
-        // runs when the player first presses space
-        if (jumping)
+        if ((isGrounded || Jump.infiniteJump || doubleJump || Time.time-timeSinceGrounded<coyoteTime) && (Input.GetKeyDown(KeyCode.Space) || jumpBuffered))
         {
-
-            // does smth. I forgot what
+            jumpBuffered = false;
+            isJumping = true;
+            if (!(isGrounded && Time.time - timeSinceGrounded < coyoteTime))
+                doubleJump = false;
+            rb.velocity = new Vector2(rb.velocity.x, Jump.jumpStrength);
             timeSinceJump = Time.time;
-
-            rb.velocity = new Vector2(0.0f, Jump.jumpStrength);
-            jumping = false;
-
         }
-
-        // continues to run as long as player is still holding space
-        else if (spaceDown)
+        if (Input.GetKey(KeyCode.Space) && isJumping == true && Time.time - timeSinceJump < Jump.maxTimeHoldingJump)
         {
+            rb.velocity = new Vector2(rb.velocity.x, Jump.jumpStrength + (Time.time - timeSinceJump)*Jump.jumpAccel);
 
-            rb.velocity += new Vector2(0.0f, Jump.jumpHoldConstant * Time.deltaTime);
-
-            // player can only hold space for maxTimeHoldingJump seconds
-            if ((Time.time - timeSinceJump) > Jump.maxTimeHoldingJump)
-            {
-                spaceDown = false;
-            }
+        } else if (isJumping)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y/1.5f);
+            isJumping = false;
         }
+        
     }
 
     /* 
@@ -236,54 +201,133 @@ public class PlayerScript : MonoBehaviour
      * move() Method - called by FixedUpdate() every frame, calculates moveSpeed based
      * on input parameter
      */
-    public void move(float input)
+    public void move()
     {
 
-        // if user stops moving, slow down
-        if (input == 0)
+        float input = Input.GetAxisRaw("Horizontal");
+
+        if (input == 0 && Mathf.Abs(rb.velocity.x) > Movement.decelSpeed * Time.deltaTime)
+            rb.velocity = new Vector2(rb.velocity.x - Mathf.Sign(rb.velocity.x) * Movement.decelSpeed * Time.deltaTime, rb.velocity.y);
+        else if (input == 0)
+            rb.velocity = new Vector2(0, rb.velocity.y);
+        else if (Mathf.Abs(rb.velocity.x/Movement.maxSpeed - input) > 1.2f)
+            rb.velocity = new Vector2(input * Movement.maxSpeed * 0.5f, rb.velocity.y);
+        else
         {
-
-            moveSpeed = Mathf.Lerp(moveSpeed, 0, Movement.moveDecelConstant * Time.deltaTime);
-
+            rb.velocity = new Vector2(rb.velocity.x + input * Time.deltaTime * Movement.accelSpeed, rb.velocity.y);
+            if (Mathf.Abs(rb.velocity.x) > Movement.maxSpeed)
+                rb.velocity = new Vector2(input * Movement.maxSpeed, rb.velocity.y);
         }
 
-        // if the user inputs movement after being still
-        else if (Mathf.Abs(input) > 0 && pastInput == 0)
+    }
+    public string checkCurrentRoom()
+    {
+        RaycastHit2D currentRoom = Physics2D.Raycast(transform.position, Vector2.up, 0.1f, layers.roomLayer);
+        if (currentRoom.collider != null)
         {
 
-            // get ready to accelerate
-            moveSpeed = 0;
-            moveStartTime = Time.time;
+            this.room = currentRoom.collider.gameObject.name;
+            return room;
 
         }
-
-        // if the user input remains the same
-        else if (input == pastInput && Mathf.Abs(moveSpeed) < 1)
+        return "";
+    }
+    public void bed()
+    {
+        if (!sleeping)
         {
-
-            // accelerate over moveAccelTime then clamp the speed at 1
-            moveSpeed = Mathf.Lerp(0, input, (Time.time - moveStartTime) / Movement.moveAccelTime);
-
-            if (moveSpeed > 1)
+            RaycastHit2D currentBed = Physics2D.Raycast(transform.position, Vector2.up, 0.1f, layers.bedLayer);
+            if (currentBed.collider != null)
             {
-                moveSpeed = 1;
+
+                button.interactable = true;
+                buttonType = GET_INTO_BED;
+                //button.image.sprite=...
+
             }
-            else if (moveSpeed < -1)
+            else
             {
-                moveSpeed = -1;
+
+                button.interactable = false;
+                buttonType = DISABLED;
+                //button.image.sprite=...
+
             }
 
-        }
+            frozen = false;
 
-        // if the user suddenly changes direction, stop and start accelerating the other way
-        else if (Mathf.Abs(pastInput - input) > 1.5)
+        }
+        else // runs if sleeping
         {
-            moveSpeed = 0;
+            frozen = true;
+
+            RaycastHit2D currentBed = Physics2D.Raycast(transform.position, Vector2.up, 0.1f, layers.bedLayer);
+            if (currentBed.collider != null && !currentBed.collider.gameObject.GetComponent<BedScript>().player.Equals(this.gameObject.GetComponent<PhotonView>().Owner.UserId))
+                KickFromBed();
         }
+    }
+    [PunRPC]
+    public void JoinBedRPC(object[] objectArray)
+    {
 
-        pastInput = input;
-        rb.velocity = new Vector2(moveSpeed * Movement.speed, rb.velocity.y);
+        sleeping = true;
+        rb.velocity = new Vector2(0, 0);
+        rb.gravityScale = 0;
 
+        // Move player to the center of bed
+        this.transform.position = new Vector2((float)objectArray[0], (float)objectArray[1]);
+
+        //anim.SetBool("Sleeping");
+
+        button.enabled = true;
+        //button.image.sprite=...
+        buttonType = LEAVE_BED;
+    }
+    public void JoinBed(Transform t)
+    {
+        object[] objectArray = { t.position.x, t.position.y };
+        view.RPC("JoinBedRPC", RpcTarget.All, objectArray as object);
+
+    }
+    public void KickFromBed()
+    {
+        // only run on controller's client
+
+        rb.velocity = new Vector2(rb.velocity.x, yeetStrength);
+
+        // TODO: Play animation or add particles or smth
+        sleeping = false;
+    }
+
+    // Called when the player presses the button to leave bed
+    public void WakeUp()
+    {
+        RaycastHit2D currentBed = Physics2D.Raycast(transform.position, Vector2.up, 0.1f, layers.bedLayer);
+        currentBed.collider.gameObject.GetComponent<BedScript>().LeaveBed();
+    }
+
+    // Called when the player presses the button to enter bed
+    public void Sleep()
+    {
+
+        RaycastHit2D currentBed = Physics2D.Raycast(transform.position, Vector2.up, 0.1f, layers.bedLayer);
+        currentBed.collider.gameObject.GetComponent<BedScript>().EnterBed(this.gameObject);
+
+    }
+    public void ButtonPressed()
+    {
+        switch (buttonType)
+        {
+            case 0:
+                Debug.Log("Error");
+                break;
+            case 1:
+                Sleep();
+                break;
+            case 2:
+                WakeUp();
+                break;
+        }
     }
 
 }
@@ -307,13 +351,13 @@ public class movement
 {
 
     // multiplies player input moveSpeed by scalar speed
-    public float speed;
+    public float maxSpeed;
 
     // the time it takes for the player to accelerate
-    public float moveAccelTime;
+    public float accelSpeed;
 
-    // linear interpolates for deceleration based on this constant 
-    public float moveDecelConstant;
+    // deceleration based on this constant 
+    public float decelSpeed;
 
 }
 
@@ -321,16 +365,32 @@ public class movement
 public class jump
 {
 
-    // stength of initial force when player first presses space
-    public float jumpStrength;
-
-    // the force that continuely is applied as player holds space
-    public float jumpHoldConstant;
-
-    public float maxTimeHoldingJump;
+    public bool bufferJump;
 
     public bool doubleJump;
 
     public bool infiniteJump;
+
+    // the force that continuely is applied as player holds space
+    public float jumpStrength;
+
+    // the rate at which the jump force increases to counteract gravity
+    public float jumpAccel;
+
+    public float maxTimeHoldingJump;
+
+    public float jumpBufferDistance;
+
+}
+
+[System.Serializable]
+public class layers
+{
+
+    public LayerMask groundLayer;
+
+    public LayerMask roomLayer;
+
+    public LayerMask bedLayer;
 
 }
