@@ -857,13 +857,15 @@ MonoBehaviour:
     bedLayer:
       serializedVersion: 2
       m_Bits: 0
-  camera: {fileID: 2264830928768921457}
-  name: {fileID: 3101477837434078345}
-  button: {fileID: 4380016243566520554}
-  yeetStrength: 0
-  feetPos: {fileID: 840065653}
-  distanceFromGround: 0.1
-  coyoteTime: 0.15
+  Objects:
+    camera: {fileID: 2264830928768921457}
+    name: {fileID: 3101477837434078345}
+    button: {fileID: 4380016243566520554}
+    feetPos: {fileID: 840065653}
+  MiscConstants:
+    yeetStrength: 0.5
+    distanceFromGround: 0.1
+    coyoteTime: 0.15
 --- !u!224 &1188742182754871303
 RectTransform:
   m_ObjectHideFlags: 0

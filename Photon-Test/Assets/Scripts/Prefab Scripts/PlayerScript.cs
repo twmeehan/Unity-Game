@@ -11,13 +11,12 @@ using UnityEngine.UI;
 public class PlayerScript : MonoBehaviour
 {
 
-    // private variables
+    #region private variables
 
+    // info about player
     private bool frozen = false;
     private bool infected = false;
-
     private string room;
-
     private bool sleeping = false;
 
     // true if player is touching ground
@@ -26,33 +25,39 @@ public class PlayerScript : MonoBehaviour
     // is true if the player is in the middle of a jump
     private bool isJumping = false;
 
-    // if player has pressed space close to but not on ground
+    // if player has pressed space close to, but not on ground
     private bool jumpBuffered = false;
-
-    // is true while user is still holding space
-    private bool spaceDown = false;
 
     // if player is able to double jump
     private bool doubleJump = false;
 
-    // used to calculate when the player can no longer continue jumping
+    // used to calculate when the player can no longer continue jumping and when they are jumping too fast
     private float timeSinceJump = 0.0f;
 
+    // used for coyote time
     private float timeSinceGrounded;
 
+    // what button is currently displayed to the player in the right hand corner
+    private int buttonType = 0;
+
+    #endregion
+
+    #region final variables
+
+    // numerical id for each button that can be displayed
+    private int DISABLED = 0;
+    private int GET_INTO_BED = 1;
+    private int LEAVE_BED = 2;
+
+    // components of player prefab
     private Transform transform;
     private Rigidbody2D rb;
     private PhotonView view;
     private Animator anim;
 
-    private int buttonType = 0;
+    #endregion
 
-    private int DISABLED = 0;
-    private int GET_INTO_BED = 1;
-    private int LEAVE_BED = 2;
-
-    float deltaTime;
-    // Public variables
+    #region public variables
 
     public movement Movement;
 
@@ -62,25 +67,18 @@ public class PlayerScript : MonoBehaviour
 
     public layers layers;
 
-    public GameObject camera;
+    public objects Objects;
 
-    public TextMeshProUGUI name;
+    public floats MiscConstants;
 
-    public Button button;
+    #endregion
 
-    public float yeetStrength;
+    #region temp variables
 
-    public Transform feetPos;
+    float deltaTime;
 
-    // distance from center of character (or feet) to ground
-    public float distanceFromGround;
+    #endregion
 
-    // margin time for player to jump even after going over a ledge
-    public float coyoteTime;
-
-    //public Transform IsGroundedChecker;
-
-    // Start is called before the first frame update
     void Start()
     {
 
@@ -93,10 +91,10 @@ public class PlayerScript : MonoBehaviour
 
         if (view.IsMine)
         {
-            camera.SetActive(true);
+            Objects.camera.SetActive(true);
         }
 
-        name.text = view.Owner.NickName;
+        Objects.name.text = view.Owner.NickName;
 
     }
 
@@ -109,10 +107,10 @@ public class PlayerScript : MonoBehaviour
         Debug.Log(Mathf.Ceil(fps).ToString());
 
         // calculate whether player is on the ground
-        isGrounded = Physics2D.OverlapCircle(feetPos.position, distanceFromGround, layers.groundLayer);
+        isGrounded = Physics2D.OverlapCircle(Objects.feetPos.position, MiscConstants.distanceFromGround, layers.groundLayer);
         if (isGrounded)
             timeSinceGrounded = Time.time;
-        if ((isGrounded || Time.time - timeSinceGrounded < coyoteTime) && Jump.doubleJump)
+        if ((isGrounded || Time.time - timeSinceGrounded < MiscConstants.coyoteTime) && Jump.doubleJump)
             doubleJump = true;
 
         if (view.IsMine && !frozen)
@@ -125,7 +123,7 @@ public class PlayerScript : MonoBehaviour
     public void jumpBuffer()
     {
 
-        if (Input.GetKeyDown(KeyCode.Space) && Physics2D.OverlapCircle(feetPos.position, Jump.jumpBufferDistance, layers.groundLayer) && rb.velocity.y < 0)
+        if (Input.GetKeyDown(KeyCode.Space) && Physics2D.OverlapCircle(Objects.feetPos.position, Jump.jumpBufferDistance, layers.groundLayer) && rb.velocity.y < 0)
         {
             jumpBuffered = true;
         }
@@ -156,11 +154,11 @@ public class PlayerScript : MonoBehaviour
      */
     public void jump()
     {
-        if ((isGrounded || Jump.infiniteJump || doubleJump || Time.time-timeSinceGrounded<coyoteTime) && (Input.GetKeyDown(KeyCode.Space) || jumpBuffered))
+        if ((isGrounded || Jump.infiniteJump || doubleJump || Time.time-timeSinceGrounded< MiscConstants.coyoteTime) && (Input.GetKeyDown(KeyCode.Space) || jumpBuffered) && (Time.time - timeSinceJump) > 0.2f)
         {
             jumpBuffered = false;
             isJumping = true;
-            if (!(isGrounded && Time.time - timeSinceGrounded < coyoteTime))
+            if (!(isGrounded && Time.time - timeSinceGrounded < MiscConstants.coyoteTime))
                 doubleJump = false;
             rb.velocity = new Vector2(rb.velocity.x, Jump.jumpStrength);
             timeSinceJump = Time.time;
@@ -240,7 +238,7 @@ public class PlayerScript : MonoBehaviour
             if (currentBed.collider != null)
             {
 
-                button.interactable = true;
+                Objects.button.interactable = true;
                 buttonType = GET_INTO_BED;
                 //button.image.sprite=...
 
@@ -248,7 +246,7 @@ public class PlayerScript : MonoBehaviour
             else
             {
 
-                button.interactable = false;
+                Objects.button.interactable = false;
                 buttonType = DISABLED;
                 //button.image.sprite=...
 
@@ -279,7 +277,7 @@ public class PlayerScript : MonoBehaviour
 
         //anim.SetBool("Sleeping");
 
-        button.enabled = true;
+        Objects.button.enabled = true;
         //button.image.sprite=...
         buttonType = LEAVE_BED;
     }
@@ -293,7 +291,7 @@ public class PlayerScript : MonoBehaviour
     {
         // only run on controller's client
 
-        rb.velocity = new Vector2(rb.velocity.x, yeetStrength);
+        rb.velocity = new Vector2(rb.velocity.x, MiscConstants.yeetStrength);
 
         // TODO: Play animation or add particles or smth
         sleeping = false;
@@ -331,6 +329,9 @@ public class PlayerScript : MonoBehaviour
     }
 
 }
+
+// Class gravity - holds variables used to customize the players gravitational constant
+// used by playerScript 
 [System.Serializable]
 public class gravity
 {
@@ -346,14 +347,15 @@ public class gravity
 
 }
 
+// Class movement - holds variables used to customize the players horizontal movement
+// used by playerScript 
 [System.Serializable]
 public class movement
 {
 
-    // multiplies player input moveSpeed by scalar speed
     public float maxSpeed;
 
-    // the time it takes for the player to accelerate
+    // acceleration based on this constant 
     public float accelSpeed;
 
     // deceleration based on this constant 
@@ -361,12 +363,16 @@ public class movement
 
 }
 
+// Class jump - holds variables used to customize the players jump
+// used by playerScript 
 [System.Serializable]
 public class jump
 {
 
+    // whether to allow jump buffering
     public bool bufferJump;
 
+    // whether double jump is available
     public bool doubleJump;
 
     public bool infiniteJump;
@@ -374,15 +380,17 @@ public class jump
     // the force that continuely is applied as player holds space
     public float jumpStrength;
 
-    // the rate at which the jump force increases to counteract gravity
+    // the rate at which the jump force increases while player holds space
     public float jumpAccel;
 
     public float maxTimeHoldingJump;
 
+    // max distance from the ground that player can buffer their jump
     public float jumpBufferDistance;
 
 }
 
+// Class layers - holds references to each layer referenced by playerScript
 [System.Serializable]
 public class layers
 {
@@ -392,5 +400,41 @@ public class layers
     public LayerMask roomLayer;
 
     public LayerMask bedLayer;
+
+}
+
+// Class objects - holds references to all GameObjects in the player prefab that
+// are referenced by playerScript 
+[System.Serializable]
+public class objects
+{
+
+    // player specific camera
+    public GameObject camera;
+
+    // text that floats above the players head and displays his/her username
+    public TextMeshProUGUI name;
+
+    // button that is used for interacting and is in the lower left hand corner
+    public Button button;
+
+    public Transform feetPos;
+
+}
+
+// Class objects - holds random numerical constants used to customize miscellaneous parts
+// of playerScript 
+[System.Serializable]
+public class floats
+{
+
+    // the force at which the player is launched from a bed
+    public float yeetStrength;
+
+    // distance from character feet to ground
+    public float distanceFromGround;
+
+    // margin time for player to jump even after going over a ledge
+    public float coyoteTime;
 
 }
