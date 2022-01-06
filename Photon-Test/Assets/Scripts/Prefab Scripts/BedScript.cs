@@ -32,7 +32,7 @@ public class BedScript : MonoBehaviour
 
         // The new player joins the bed and BasicCharacter.JoinBed() tells the player to start sleeping animations
         player = p.GetComponent<PhotonView>().Owner.UserId;
-        p.GetComponent<BasicCharacter>().JoinBed(transform);
+        p.GetComponent<PlayerScript>().JoinBed(transform);
 
         // The covers are enabled and begin playing a breathing animation
         covers.GetComponent<SpriteRenderer>().enabled = true;

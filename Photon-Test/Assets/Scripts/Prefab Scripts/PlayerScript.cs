@@ -104,7 +104,11 @@ public class PlayerScript : MonoBehaviour
     {
         deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
         float fps = 1.0f / deltaTime;
-        Debug.Log(Mathf.Ceil(fps).ToString());
+        //Debug.Log(Mathf.Ceil(fps).ToString());
+
+        // stops glitch where when player enters bed and presses space simultaneously, the player floats -- 1/1/22
+        if (sleeping && rb.velocity.y > 0)
+            rb.velocity = new Vector2(0,0);
 
         // calculate whether player is on the ground
         isGrounded = Physics2D.OverlapCircle(Objects.feetPos.position, MiscConstants.distanceFromGround, layers.groundLayer);
@@ -136,12 +140,15 @@ public class PlayerScript : MonoBehaviour
         if (view.IsMine)
         {
 
+            bed();
+
             if (!frozen)
             {
                 move();
                 gravity();
 
             }
+
 
         }
 
@@ -232,9 +239,11 @@ public class PlayerScript : MonoBehaviour
     }
     public void bed()
     {
+        
         if (!sleeping)
         {
-            RaycastHit2D currentBed = Physics2D.Raycast(transform.position, Vector2.up, 0.1f, layers.bedLayer);
+
+            RaycastHit2D currentBed = Physics2D.Raycast(transform.position, Vector2.down, 0.1f, layers.bedLayer);
             if (currentBed.collider != null)
             {
 
@@ -267,7 +276,6 @@ public class PlayerScript : MonoBehaviour
     [PunRPC]
     public void JoinBedRPC(object[] objectArray)
     {
-
         sleeping = true;
         rb.velocity = new Vector2(0, 0);
         rb.gravityScale = 0;
