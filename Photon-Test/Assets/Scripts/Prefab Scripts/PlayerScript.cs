@@ -1,4 +1,5 @@
-﻿using Photon.Pun;
+﻿using Cinemachine;
+using Photon.Pun;
 using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
@@ -87,7 +88,7 @@ public class PlayerScript : MonoBehaviour
         rb = this.GetComponent<Rigidbody2D>();
         view = this.GetComponent<PhotonView>();
 
-        PhotonNetwork.SerializationRate = 20;
+        PhotonNetwork.SerializationRate = 30;
 
         if (view.IsMine)
         {
@@ -282,7 +283,6 @@ public class PlayerScript : MonoBehaviour
 
         // Move player to the center of bed
         this.transform.position = new Vector2((float)objectArray[0], (float)objectArray[1]);
-
         //anim.SetBool("Sleeping");
 
         Objects.button.enabled = true;

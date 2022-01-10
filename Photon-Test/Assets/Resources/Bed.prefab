@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 7567461107243709532}
   - component: {fileID: 7567461107243709528}
   - component: {fileID: 7567461107243709531}
+  - component: {fileID: 2271885866554759123}
   m_Layer: 11
   m_Name: Bed
   m_TagString: Untagged
@@ -205,6 +206,20 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &2271885866554759123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7567461107243709535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 891946bd8646c204aad83a428429bf7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parallax: 1
+  smoothingX: 1
 --- !u!1 &7567461107371715007
 GameObject:
   m_ObjectHideFlags: 0
@@ -215,6 +230,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7567461107371715004}
   - component: {fileID: 7567461107371715005}
+  - component: {fileID: 2399499360300710140}
   m_Layer: 11
   m_Name: CoversSprite
   m_TagString: Untagged
@@ -286,6 +302,20 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &2399499360300710140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7567461107371715007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 891946bd8646c204aad83a428429bf7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parallax: 0
+  smoothingX: 1
 --- !u!1 &7567461107405245917
 GameObject:
   m_ObjectHideFlags: 0
@@ -296,6 +326,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7567461107405245914}
   - component: {fileID: 7567461107405245915}
+  - component: {fileID: 7451044087970696331}
   m_Layer: 11
   m_Name: Sprite
   m_TagString: Untagged
@@ -367,3 +398,17 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &7451044087970696331
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7567461107405245917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 891946bd8646c204aad83a428429bf7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parallax: 0
+  smoothingX: 1
