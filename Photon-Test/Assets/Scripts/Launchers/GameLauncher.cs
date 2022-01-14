@@ -50,7 +50,8 @@ public class GameLauncher : MonoBehaviour
                 else if (Time.time - timeSinceSleeping > 0.5f)
                 {
                     RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
-                    PhotonNetwork.RaiseEvent(2, null, raiseEventOptions, SendOptions.SendReliable);
+                    object[] content = new object[] { 20.0f, PhotonNetwork.Time };
+                    PhotonNetwork.RaiseEvent(2, content, raiseEventOptions, SendOptions.SendReliable);
                     Debug.Log("Swtich to day");
 
                 }

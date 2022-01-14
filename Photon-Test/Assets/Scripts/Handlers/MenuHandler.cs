@@ -18,6 +18,8 @@ public class MenuHandler : MonoBehaviourPunCallbacks
     [SerializeField] private GameObject CreateRoomCanvas;
     [SerializeField] private GameObject MainMenuCanvas;
     [SerializeField] private GameObject JoinRoomCanvas;
+    [SerializeField] private GameObject OptionsCanvas;
+
 
     // Required to enable/disable based on valid/invalid username
     [SerializeField] private InputField UsernameInput;
@@ -65,6 +67,7 @@ public class MenuHandler : MonoBehaviourPunCallbacks
         CreateRoomCanvas.SetActive(false);
         MainMenuCanvas.SetActive(true);
         JoinRoomCanvas.SetActive(false);
+        OptionsCanvas.SetActive(false);
 
     }
 
@@ -116,6 +119,15 @@ public class MenuHandler : MonoBehaviourPunCallbacks
         }
 
     }
+    public void Options()
+    {
+
+        CreateRoomCanvas.SetActive(false);
+        JoinRoomCanvas.SetActive(false);
+        MainMenuCanvas.SetActive(false);
+        OptionsCanvas.SetActive(true);
+
+    }
 
     /// <summary>
     /// Method - open JoinRoomCanvas when "JoinRoomButton" is pressed; saves client's username
@@ -126,6 +138,8 @@ public class MenuHandler : MonoBehaviourPunCallbacks
         CreateRoomCanvas.SetActive(false);
         JoinRoomCanvas.SetActive(true);
         MainMenuCanvas.SetActive(false);
+        OptionsCanvas.SetActive(false);
+
 
         PhotonNetwork.NickName = UsernameInput.text;
 

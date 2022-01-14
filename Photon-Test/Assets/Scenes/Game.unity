@@ -7572,7 +7572,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: c2526faeee45c724ba014780feb3d2af, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -14084,8 +14084,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1333806830}
   - component: {fileID: 1333806831}
-  - component: {fileID: 1333806829}
   - component: {fileID: 1333806828}
+  - component: {fileID: 1333806829}
   m_Layer: 8
   m_Name: Floor
   m_TagString: Untagged
@@ -14114,8 +14114,8 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!68 &1333806829
-EdgeCollider2D:
+--- !u!61 &1333806829
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -14127,11 +14127,19 @@ EdgeCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -60.984825, y: -8.524649}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 148.97939, y: 5.586857}
   m_EdgeRadius: 0
-  m_Points:
-  - {x: -135.36737, y: -5.8119698}
-  - {x: 7.8263397, y: -5.863823}
 --- !u!4 &1333806830
 Transform:
   m_ObjectHideFlags: 0

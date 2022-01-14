@@ -22,10 +22,10 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
     private string room;
     private bool sleeping = false;
 
-    // time since timer last ticked down
-    private double timeSinceLastTick;
+    // PhotonNetwork.time when the timer started (given by master client)
+    private float timeSinceTimerStart;
 
-    // the number of seconds on countdown clock
+    // the starting number of seconds on countdown clock
     private float timerSeconds;
 
     // true if player is touching ground
@@ -102,7 +102,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
         {
             Debug.Log("Sending SetTime Event");
             RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
-            object[] content = new object[] { 150 };
+            object[] content = new object[] { 150, PhotonNetwork.Time};
             PhotonNetwork.RaiseEvent(3, content, raiseEventOptions, SendOptions.SendReliable);
         }
         if (view.IsMine)
@@ -296,19 +296,20 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
 
     public void timer()
     {
-
-        if (PhotonNetwork.Time - timeSinceLastTick >= 1 && timerSeconds > 0)
+        if (timerSeconds - Mathf.FloorToInt((float) PhotonNetwork.Time - timeSinceTimerStart) < 0)
+            Objects.time.text = "0:00";
+        else
         {
-            timerSeconds -= Mathf.FloorToInt((float) (PhotonNetwork.Time - timeSinceLastTick));
-            timeSinceLastTick = PhotonNetwork.Time;
+            Objects.time.text = Mathf.FloorToInt((timerSeconds - Mathf.FloorToInt((float)PhotonNetwork.Time - timeSinceTimerStart)) / 60) 
+                + ":" + ((timerSeconds - Mathf.FloorToInt((float)PhotonNetwork.Time - timeSinceTimerStart)) % 60).ToString("00");
         }
-        Objects.time.text = Mathf.FloorToInt(timerSeconds / 60) + ":" + (timerSeconds % 60).ToString("00");
+
 
     }
     public void StartTimer(float seconds,float startTime)
     {
         timerSeconds = seconds;
-        timeSinceLastTick = startTime;
+        timeSinceTimerStart = startTime;
     }
     [PunRPC]
     public void JoinBedRPC(object[] objectArray)
@@ -387,7 +388,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
                 break;
             case 3:
                 object[] data = (object[])photonEvent.CustomData;
-                StartTimer(Convert.ToSingle(data[0]), (float) PhotonNetwork.Time);
+                StartTimer(Convert.ToSingle(data[0]), Convert.ToSingle(data[1]));
                 break;
         }
 
