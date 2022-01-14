@@ -4,6 +4,8 @@ using UnityEngine;
 using Photon.Pun;
 using TMPro;
 using UnityEngine.UI;
+using Photon.Realtime;
+using ExitGames.Client.Photon;
 
 /// <summary>
 /// Class - attached to Launcher emtpy object; runs when Game.unity scene is opened
@@ -15,6 +17,8 @@ public class GameLauncher : MonoBehaviour
     public GameObject CharacterPrefab;
     public GameObject MainCamera;
 
+    private float timeSinceSleeping;
+    private bool allSleepingLastFrame;
     /// <summary>
     /// Method - runs on init; displays room code on screen; instantiates character prefab
     /// on Photon servers; disables scene camera(MainCamera)
@@ -34,5 +38,41 @@ public class GameLauncher : MonoBehaviour
 
         MainCamera.SetActive(false);
 
+    }
+    public void FixedUpdate()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            if (checkIfAllPlayersAreSleeping())
+            {
+                if (!allSleepingLastFrame)
+                    timeSinceSleeping = Time.time; 
+                else if (Time.time - timeSinceSleeping > 0.5f)
+                {
+                    RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
+                    PhotonNetwork.RaiseEvent(2, null, raiseEventOptions, SendOptions.SendReliable);
+                    Debug.Log("Swtich to day");
+
+                }
+
+                allSleepingLastFrame = true;
+                
+                
+            }
+            else
+            {
+                allSleepingLastFrame = false;
+            }
+        }
+    }
+
+    public bool checkIfAllPlayersAreSleeping()
+    {
+        foreach (PlayerScript player in FindObjectsOfType(typeof(PlayerScript)))
+        {
+            if (!player.getSleeping())
+                return false;
+        }
+        return true;
     }
 }

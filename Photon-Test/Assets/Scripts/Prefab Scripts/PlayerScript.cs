@@ -1,6 +1,8 @@
 ﻿using Cinemachine;
+using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -9,7 +11,7 @@ using UnityEngine.UI;
 
 // Class playerScript - controls player movement and gravity if character is
 // controled by the user running the script
-public class PlayerScript : MonoBehaviour
+public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObservable
 {
 
     #region private variables
@@ -19,6 +21,12 @@ public class PlayerScript : MonoBehaviour
     private bool infected = false;
     private string room;
     private bool sleeping = false;
+
+    // time since timer last ticked down
+    private double timeSinceLastTick;
+
+    // the number of seconds on countdown clock
+    private float timerSeconds;
 
     // true if player is touching ground
     private bool isGrounded = false;
@@ -90,6 +98,13 @@ public class PlayerScript : MonoBehaviour
 
         PhotonNetwork.SerializationRate = 30;
 
+        if (PhotonNetwork.IsMasterClient)
+        {
+            Debug.Log("Sending SetTime Event");
+            RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
+            object[] content = new object[] { 150 };
+            PhotonNetwork.RaiseEvent(3, content, raiseEventOptions, SendOptions.SendReliable);
+        }
         if (view.IsMine)
         {
             Objects.camera.SetActive(true);
@@ -118,11 +133,15 @@ public class PlayerScript : MonoBehaviour
         if ((isGrounded || Time.time - timeSinceGrounded < MiscConstants.coyoteTime) && Jump.doubleJump)
             doubleJump = true;
 
-        if (view.IsMine && !frozen)
+        if (view.IsMine)
         {
-            if (Jump.bufferJump)
-                jumpBuffer();
-            jump();
+            timer();
+            if (!frozen)
+            {
+                if (Jump.bufferJump)
+                    jumpBuffer();
+                jump();
+            }
         }
     }
     public void jumpBuffer()
@@ -274,6 +293,23 @@ public class PlayerScript : MonoBehaviour
                 KickFromBed();
         }
     }
+
+    public void timer()
+    {
+
+        if (PhotonNetwork.Time - timeSinceLastTick >= 1 && timerSeconds > 0)
+        {
+            timerSeconds -= Mathf.FloorToInt((float) (PhotonNetwork.Time - timeSinceLastTick));
+            timeSinceLastTick = PhotonNetwork.Time;
+        }
+        Objects.time.text = Mathf.FloorToInt(timerSeconds / 60) + ":" + (timerSeconds % 60).ToString("00");
+
+    }
+    public void StartTimer(float seconds,float startTime)
+    {
+        timerSeconds = seconds;
+        timeSinceLastTick = startTime;
+    }
     [PunRPC]
     public void JoinBedRPC(object[] objectArray)
     {
@@ -336,6 +372,37 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
+    public bool getSleeping()
+    {
+        return this.sleeping;
+    }
+    public void OnEvent(EventData photonEvent)
+    {
+
+        switch (photonEvent.Code)
+        {
+            case 2:
+                //Objects.transitioner.SetTrigger("Fade");
+                WakeUp();
+                break;
+            case 3:
+                object[] data = (object[])photonEvent.CustomData;
+                StartTimer(Convert.ToSingle(data[0]), (float) PhotonNetwork.Time);
+                break;
+        }
+
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(sleeping);
+        } else
+        {
+            sleeping = (bool) stream.ReceiveNext();
+        }
+    }
 }
 
 // Class gravity - holds variables used to customize the players gravitational constant
@@ -423,11 +490,15 @@ public class objects
     // text that floats above the players head and displays his/her username
     public TextMeshProUGUI name;
 
+    // text that displays countdown timer
+    public TextMeshProUGUI time;
+
     // button that is used for interacting and is in the lower left hand corner
     public Button button;
 
     public Transform feetPos;
 
+    public Animator transitioner;
 }
 
 // Class objects - holds random numerical constants used to customize miscellaneous parts

@@ -158,6 +158,8 @@ public class MenuHandler : MonoBehaviourPunCallbacks
         h.Add("n", PhotonNetwork.NickName); // name
         h.Add("p", true); // private / public
         h.Add("r", false); // running
+        h.Add("d", true); // day
+
         h.Add("t", "Standard"); // type
         roomOptions.CustomRoomProperties = h;
 
