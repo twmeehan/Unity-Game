@@ -43,7 +43,12 @@ public class PauseMenu : MonoBehaviourPunCallbacks
         Time.timeScale = 1f;
         GameIsPaused = true;
     }
+/*
+    public void Options ()
+    {
 
+    }
+*/
     //Loads the Start Menu
     public void LoadMenu()
     {
@@ -52,12 +57,6 @@ public class PauseMenu : MonoBehaviourPunCallbacks
 
     }
 
-    //Quits the Game
-    public void QuitGame()
-    {
-        Debug.Log("Quiting the game...");
-        Application.Quit();
-    }
     public override void OnLeftRoom()
     {
         base.OnLeftRoom();
