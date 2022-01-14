@@ -16,9 +16,10 @@ public class JoinRoomHandler : MonoBehaviourPunCallbacks
     #region Private Serializable Fields
 
     // Used to open and close various menus
-    [SerializeField] private GameObject CreateRoomPanel;
-    [SerializeField] private GameObject MainMenuPanel;
-    [SerializeField] private GameObject JoinRoomPanel;
+    [SerializeField] private GameObject CreateRoomCanvas;
+    [SerializeField] private GameObject MainMenuCanvas;
+    [SerializeField] private GameObject JoinRoomCanvas;
+    [SerializeField] private GameObject OptionsCanvas;
 
     // User entered code to join private rooms
     [SerializeField] private InputField Code;
@@ -125,10 +126,11 @@ public class JoinRoomHandler : MonoBehaviourPunCallbacks
         {
             room.delete();
         }
-        CreateRoomPanel.SetActive(false);
-        JoinRoomPanel.SetActive(false);
-        MainMenuPanel.SetActive(true);
-        
+        CreateRoomCanvas.SetActive(false);
+        JoinRoomCanvas.SetActive(false);
+        MainMenuCanvas.SetActive(true);
+        OptionsCanvas.SetActive(false);
+
     }
 
 }
