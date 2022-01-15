@@ -16,6 +16,7 @@ public class GameLauncher : MonoBehaviour
 
     public GameObject CharacterPrefab;
     public GameObject MainCamera;
+    public AudioSource audio;
 
     private float timeSinceSleeping;
     private bool allSleepingLastFrame;
@@ -32,7 +33,8 @@ public class GameLauncher : MonoBehaviour
         PhotonNetwork.CurrentRoom.SetPropertiesListedInLobby(array);
 
         */
-        
+        audio.volume = PlayerPrefs.GetFloat("musicVolume");
+
         Vector2 StartingPos = new Vector2(0, 15);
         PhotonNetwork.Instantiate(CharacterPrefab.name, StartingPos, Quaternion.identity);
 

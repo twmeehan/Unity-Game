@@ -53,7 +53,13 @@ public class MenuHandler : MonoBehaviourPunCallbacks
         // this makes sure we can use PhotonNetwork.LoadLevel() on the master client and all clients in the same room sync their level automatically
         PhotonNetwork.AutomaticallySyncScene = true;
 
-        
+        if (!PlayerPrefs.HasKey("name"))
+        {
+            PlayerPrefs.SetString("name", "");
+        }
+        UsernameInput.text = PlayerPrefs.GetString("name");
+
+
 
     }
 
@@ -139,6 +145,7 @@ public class MenuHandler : MonoBehaviourPunCallbacks
         JoinRoomCanvas.SetActive(true);
         MainMenuCanvas.SetActive(false);
         OptionsCanvas.SetActive(false);
+        PlayerPrefs.SetString("name", UsernameInput.text);
 
 
         PhotonNetwork.NickName = UsernameInput.text;
@@ -160,6 +167,7 @@ public class MenuHandler : MonoBehaviourPunCallbacks
     /// </summary>
     public void CreateRoom()
     {
+        PlayerPrefs.SetString("name", UsernameInput.text);
 
         PhotonNetwork.NickName = UsernameInput.text;
 

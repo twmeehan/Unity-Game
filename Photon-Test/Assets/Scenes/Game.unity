@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.3731193, g: 0.38073996, b: 0.35872698, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -7656,6 +7656,7 @@ MonoBehaviour:
   CharacterPrefab: {fileID: 5967060454207536560, guid: 730553c3be285e24ba6c69b669af6cfd,
     type: 3}
   MainCamera: {fileID: 2003648529}
+  audio: {fileID: 784508971}
 --- !u!4 &784508970
 Transform:
   m_ObjectHideFlags: 0
@@ -14942,7 +14943,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1450087955
 RectTransform:
   m_ObjectHideFlags: 0
@@ -15091,7 +15092,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 1.6000366}
+  m_AnchoredPosition: {x: 0, y: 8.1}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1467733207
@@ -15107,6 +15108,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   volumeSlider: {fileID: 1467733208}
+  audio: {fileID: 784508971}
 --- !u!114 &1467733208
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15153,7 +15155,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0.58
+  m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -15710,7 +15712,7 @@ GameObject:
   - component: {fileID: 1630111000}
   - component: {fileID: 1630111004}
   m_Layer: 5
-  m_Name: Canvas (Pause Menut)
+  m_Name: Canvas (Pause Menu)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

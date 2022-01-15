@@ -11,10 +11,15 @@ public class OptionsMenuHandler : MonoBehaviour
     [SerializeField] private GameObject JoinRoomCanvas;
     [SerializeField] private GameObject OptionsCanvas;
 
-    public Slider slider;
+    [SerializeField] Slider slider;
 
-    public void Awake()
+    public void Start()
     {
+        if (!PlayerPrefs.HasKey("musicVolume"))
+        {
+            PlayerPrefs.SetFloat("musicVolume", 0.0f);
+        }
+
         slider.value = PlayerPrefs.GetFloat("musicVolume");
     }
     public void onUpdate()
