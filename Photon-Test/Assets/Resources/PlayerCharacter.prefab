@@ -825,6 +825,9 @@ MonoBehaviour:
     bedLayer:
       serializedVersion: 2
       m_Bits: 2048
+    HealingMachine:
+      serializedVersion: 2
+      m_Bits: 4096
   Objects:
     camera: {fileID: 4830406499662581862}
     name: {fileID: 8605797305036569502}

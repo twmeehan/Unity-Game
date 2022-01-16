@@ -1,4 +1,4 @@
-﻿using Cinemachine;
+using Cinemachine;
 using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
@@ -56,6 +56,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
     // numerical id for each button that can be displayed
     private int DISABLED = 0;
     private int GET_INTO_BED = 1;
+    private int Heal_Self = 3;
     private int LEAVE_BED = 2;
 
     // components of player prefab
@@ -84,9 +85,9 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
 
     #region temp variables
 
-    float deltaTime;
-
     #endregion
+    
+    float deltaTime;
 
     void Start()
     {
@@ -159,9 +160,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
     {
         if (view.IsMine)
         {
-
-            bed();
-
+            disableButton();
             if (!frozen)
             {
                 move();
@@ -257,6 +256,27 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
         }
         return "";
     }
+	public void disableButton()
+    {
+        RaycastHit2D currentBed = Physics2D.Raycast(transform.position, Vector2.down, 0.1f, layers.bedLayer);
+        RaycastHit2D nearHealingMachine = Physics2D.Raycast(transform.position, Vector2.down, 0.1f, layers.HealingMachine);
+        if (currentBed.collider != null)
+        {
+            bed();
+        }
+
+        else if (nearHealingMachine.collider != null)
+        {
+	        healingMachine();
+        }
+
+        else 
+        {
+            Objects.button.interactable = false;
+            buttonType = DISABLED;
+            //button.image.sprite=...
+        }
+    }
     public void bed()
     {
         
@@ -272,14 +292,6 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
                 //button.image.sprite=...
 
             }
-            else
-            {
-
-                Objects.button.interactable = false;
-                buttonType = DISABLED;
-                //button.image.sprite=...
-
-            }
 
             frozen = false;
 
@@ -291,6 +303,24 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
             RaycastHit2D currentBed = Physics2D.Raycast(transform.position, Vector2.up, 0.1f, layers.bedLayer);
             if (currentBed.collider != null && !currentBed.collider.gameObject.GetComponent<BedScript>().player.Equals(this.gameObject.GetComponent<PhotonView>().Owner.UserId))
                 KickFromBed();
+        }
+    }
+
+        public void healingMachine()
+    {
+        
+        if (!sleeping)
+        {
+
+            RaycastHit2D nearHealingMachine = Physics2D.Raycast(transform.position, Vector2.down, 0.1f, layers.HealingMachine);
+            if (nearHealingMachine.collider != null)
+            {
+
+                Objects.button.interactable = true;
+                buttonType = Heal_Self;
+                //button.image.sprite=...
+
+            }
         }
     }
 
@@ -476,6 +506,8 @@ public class layers
     public LayerMask roomLayer;
 
     public LayerMask bedLayer;
+
+    public LayerMask HealingMachine;
 
 }
 
