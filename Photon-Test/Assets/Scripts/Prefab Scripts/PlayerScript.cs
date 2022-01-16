@@ -22,6 +22,8 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
     private string room;
     private bool sleeping = false;
 
+    private bool transitioningToSleep = false;
+
     // PhotonNetwork.time when the timer started (given by master client)
     private float timeSinceTimerStart;
 
@@ -122,6 +124,14 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
         float fps = 1.0f / deltaTime;
         //Debug.Log(Mathf.Ceil(fps).ToString());
 
+        if (transitioningToSleep && !Objects.transitioner.GetCurrentAnimatorStateInfo(0).IsName("Fade"))
+        {
+            Objects.transitioner.SetTrigger("Reappear");
+            WakeUp();
+            Debug.Log("Reappear");
+            transitioningToSleep = false;
+            //transitioningToSleep = false;
+        }
         // stops glitch where when player enters bed and presses space simultaneously, the player floats -- 1/1/22
         if (sleeping && rb.velocity.y > 0)
             rb.velocity = new Vector2(0,0);
@@ -260,7 +270,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
     public void bed()
     {
         
-        if (!sleeping)
+        if (!sleeping && !transitioningToSleep)
         {
 
             RaycastHit2D currentBed = Physics2D.Raycast(transform.position, Vector2.down, 0.1f, layers.bedLayer);
@@ -383,8 +393,13 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
         switch (photonEvent.Code)
         {
             case 2:
-                //Objects.transitioner.SetTrigger("Fade");
-                WakeUp();
+                if (!transitioningToSleep)
+                {
+                    sleeping = false;
+                    transitioningToSleep = true;
+                    Objects.transitioner.SetTrigger("Fade");
+                }
+                //WakeUp();
                 break;
             case 3:
                 object[] data = (object[])photonEvent.CustomData;
