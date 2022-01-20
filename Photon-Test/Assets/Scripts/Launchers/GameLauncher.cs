@@ -51,10 +51,9 @@ public class GameLauncher : MonoBehaviour
                     timeSinceSleeping = Time.time; 
                 else if (Time.time - timeSinceSleeping > 0.5f)
                 {
+                    Debug.Log("All players sleeping - Sending Event to transition to night");
                     RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
-                    object[] content = new object[] { 20.0f, PhotonNetwork.Time };
-                    PhotonNetwork.RaiseEvent(2, content, raiseEventOptions, SendOptions.SendReliable);
-                    Debug.Log("Swtich to day");
+                    PhotonNetwork.RaiseEvent(2, null, raiseEventOptions, SendOptions.SendReliable);
 
                 }
 

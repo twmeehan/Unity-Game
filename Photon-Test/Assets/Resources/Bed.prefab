@@ -157,7 +157,7 @@ MonoBehaviour:
   transform: {fileID: 7567461106051421022}
   PlayerLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 512
   player: 
 --- !u!50 &7567461107243709528
 Rigidbody2D:
@@ -219,7 +219,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parallax: 1
-  smoothingX: 1
 --- !u!1 &7567461107371715007
 GameObject:
   m_ObjectHideFlags: 0
@@ -315,7 +314,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parallax: 0
-  smoothingX: 1
 --- !u!1 &7567461107405245917
 GameObject:
   m_ObjectHideFlags: 0
@@ -411,4 +409,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parallax: 0
-  smoothingX: 1

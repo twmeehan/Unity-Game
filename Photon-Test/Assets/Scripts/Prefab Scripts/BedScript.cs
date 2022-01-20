@@ -36,7 +36,7 @@ public class BedScript : MonoBehaviour
 
         // The covers are enabled and begin playing a breathing animation
         covers.GetComponent<SpriteRenderer>().enabled = true;
-
+        covers.GetComponent<SpriteRenderer>().sortingOrder = 2;
         updateOtherClients();
 
     }
@@ -61,6 +61,8 @@ public class BedScript : MonoBehaviour
     {
         this.player = newSleeper;
         covers.GetComponent<SpriteRenderer>().enabled = isBedInUse;
+        covers.GetComponent<SpriteRenderer>().sortingOrder = 2;
+
     }
     // Used to get the object that contains the BasicCharacter script for the player that is sleeping
     public GameObject getPlayer()
@@ -68,11 +70,12 @@ public class BedScript : MonoBehaviour
 
         RaycastHit2D[] nearbyPlayers = Physics2D.CircleCastAll(transform.position, 0.5f, Vector2.up, PlayerLayer);
         foreach (RaycastHit2D nearbyPlayer in nearbyPlayers) {
-            if (nearbyPlayer.collider.gameObject.GetComponent<PhotonView>().Owner.UserId.Equals(player))
+
+            if (nearbyPlayer.collider.gameObject.GetComponent<PhotonView>().Owner != PhotonNetwork.LocalPlayer)
                 return nearbyPlayer.collider.gameObject;
 
         }
-
+        Debug.Log("No player");
         return null;
 
     }

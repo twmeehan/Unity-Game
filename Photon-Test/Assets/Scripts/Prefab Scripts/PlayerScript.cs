@@ -5,6 +5,7 @@ using Photon.Realtime;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,9 +22,10 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
     private bool infected = false;
     private string room;
     private bool sleeping = false;
-
+    private Role role;
     private bool transitioningToSleep = false;
 
+    private bool day = true;
     // PhotonNetwork.time when the timer started (given by master client)
     private float timeSinceTimerStart;
 
@@ -93,19 +95,20 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
 
     void Start()
     {
-
+        
         //anim = this.GetComponent<Animator>();
         transform = this.GetComponent<Transform>();
         rb = this.GetComponent<Rigidbody2D>();
         view = this.GetComponent<PhotonView>();
+        role = new Doctor(view.Owner.NickName);
 
         PhotonNetwork.SerializationRate = 30;
 
         if (PhotonNetwork.IsMasterClient)
         {
-            Debug.Log("Sending SetTime Event");
+            Debug.Log("Send Event to start 10 second timer");
             RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
-            object[] content = new object[] { 150, PhotonNetwork.Time};
+            object[] content = new object[] { 10, PhotonNetwork.Time};
             PhotonNetwork.RaiseEvent(3, content, raiseEventOptions, SendOptions.SendReliable);
         }
         if (view.IsMine)
@@ -125,14 +128,6 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
         float fps = 1.0f / deltaTime;
         //Debug.Log(Mathf.Ceil(fps).ToString());
 
-        if (transitioningToSleep && !Objects.transitioner.GetCurrentAnimatorStateInfo(0).IsName("Fade"))
-        {
-            Objects.transitioner.SetTrigger("Reappear");
-            WakeUp();
-            Debug.Log("Reappear");
-            transitioningToSleep = false;
-            //transitioningToSleep = false;
-        }
         // stops glitch where when player enters bed and presses space simultaneously, the player floats -- 1/1/22
         if (sleeping && rb.velocity.y > 0)
             rb.velocity = new Vector2(0,0);
@@ -147,7 +142,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
         if (view.IsMine)
         {
             timer();
-            if (!frozen)
+            if (!frozen && timerSeconds - ((float)PhotonNetwork.Time - timeSinceTimerStart) > 1.2f)
             {
                 if (Jump.bufferJump)
                     jumpBuffer();
@@ -170,12 +165,36 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
     {
         if (view.IsMine)
         {
-            disableButton();
-            if (!frozen)
+            
+            if (transitioningToSleep && Objects.transitioner.GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && Objects.transitioner.GetCurrentAnimatorStateInfo(0).IsName("Fade"))
+            {
+                Debug.Log(view.name + " has successfully transitioned to night");
+                Objects.transitioner.SetTrigger("Reappear");
+                transitioningToSleep = false;
+                frozen = false;
+                StartTimer(31, (float) PhotonNetwork.Time);
+                role.startNight(this);
+
+            }
+
+            if (!day && !frozen)
+            {
+                role.checkForInteractables(this);
+            } else if (!day)
+            {
+                Objects.button.interactable = false;
+                buttonType = DISABLED;
+            }
+            touchingInteractable();
+            if (!frozen && timerSeconds - ((float)PhotonNetwork.Time - timeSinceTimerStart) > 0.2f)
             {
                 move();
                 gravity();
 
+            }
+            else
+            {
+                rb.velocity = Vector2.zero;
             }
 
 
@@ -266,18 +285,20 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
         }
         return "";
     }
-	public void disableButton()
+	public bool touchingInteractable()
     {
         RaycastHit2D currentBed = Physics2D.Raycast(transform.position, Vector2.down, 0.1f, layers.bedLayer);
         RaycastHit2D nearHealingMachine = Physics2D.Raycast(transform.position, Vector2.down, 0.1f, layers.HealingMachine);
         if (currentBed.collider != null)
         {
             bed();
+            return true;
         }
 
         else if (nearHealingMachine.collider != null)
         {
 	        healingMachine();
+            return true;
         }
 
         else 
@@ -286,6 +307,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
             buttonType = DISABLED;
             //button.image.sprite=...
         }
+        return false;
     }
     public void bed()
     {
@@ -294,7 +316,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
         {
 
             RaycastHit2D currentBed = Physics2D.Raycast(transform.position, Vector2.down, 0.1f, layers.bedLayer);
-            if (currentBed.collider != null)
+            if (currentBed.collider != null && day)
             {
 
                 Objects.button.interactable = true;
@@ -303,12 +325,9 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
 
             }
 
-            frozen = false;
-
         }
-        else // runs if sleeping
+        else if (day) // runs if sleeping
         {
-            frozen = true;
 
             RaycastHit2D currentBed = Physics2D.Raycast(transform.position, Vector2.up, 0.1f, layers.bedLayer);
             if (currentBed.collider != null && !currentBed.collider.gameObject.GetComponent<BedScript>().player.Equals(this.gameObject.GetComponent<PhotonView>().Owner.UserId))
@@ -323,7 +342,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
         {
 
             RaycastHit2D nearHealingMachine = Physics2D.Raycast(transform.position, Vector2.down, 0.1f, layers.HealingMachine);
-            if (nearHealingMachine.collider != null)
+            if (nearHealingMachine.collider != null && day)
             {
 
                 Objects.button.interactable = true;
@@ -336,11 +355,20 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
 
     public void timer()
     {
-        if (timerSeconds - Mathf.FloorToInt((float) PhotonNetwork.Time - timeSinceTimerStart) < 0)
+        if (timerSeconds - Mathf.FloorToInt((float)PhotonNetwork.Time - timeSinceTimerStart) < 0) {
             Objects.time.text = "0:00";
+            
+            if (day && PhotonNetwork.IsMasterClient && timerSeconds != 0)
+            {
+                Debug.Log("Time is 0:00 - Sending Event to transition to night");
+                RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
+                PhotonNetwork.RaiseEvent(2, null, raiseEventOptions, SendOptions.SendReliable);
+                frozen = true;
+            }
+        }
         else
         {
-            Objects.time.text = Mathf.FloorToInt((timerSeconds - Mathf.FloorToInt((float)PhotonNetwork.Time - timeSinceTimerStart)) / 60) 
+            Objects.time.text = Mathf.FloorToInt((timerSeconds - Mathf.FloorToInt((float)PhotonNetwork.Time - timeSinceTimerStart)) / 60)
                 + ":" + ((timerSeconds - Mathf.FloorToInt((float)PhotonNetwork.Time - timeSinceTimerStart)) % 60).ToString("00");
         }
 
@@ -370,6 +398,8 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
     {
         object[] objectArray = { t.position.x, t.position.y };
         view.RPC("JoinBedRPC", RpcTarget.All, objectArray as object);
+        frozen = true;
+
 
     }
     public void KickFromBed()
@@ -380,6 +410,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
 
         // TODO: Play animation or add particles or smth
         sleeping = false;
+        frozen = false;
     }
 
     // Called when the player presses the button to leave bed
@@ -387,6 +418,8 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
     {
         RaycastHit2D currentBed = Physics2D.Raycast(transform.position, Vector2.up, 0.1f, layers.bedLayer);
         currentBed.collider.gameObject.GetComponent<BedScript>().LeaveBed();
+        frozen = false;
+
     }
 
     // Called when the player presses the button to enter bed
@@ -410,6 +443,9 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
             case 2:
                 WakeUp();
                 break;
+            case 4:
+                role.onClick(this);
+                break;
         }
     }
 
@@ -417,19 +453,94 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
     {
         return this.sleeping;
     }
+    public int getButtonType()
+    {
+        return buttonType;
+    }
+    public void setButtonType(int type)
+    {
+        buttonType = type;
+    }
+    public bool getInfected()
+    {
+        return infected;
+    }
+    public void setInfected(bool infected)
+    {
+        this.infected = infected;
+    }
+    public bool getFrozen()
+    {
+        return frozen;
+    }
+    public void setFrozen(bool frozen)
+    {
+        this.frozen = frozen;
+    }
     public void OnEvent(EventData photonEvent)
     {
 
         switch (photonEvent.Code)
         {
             case 2:
-                if (!transitioningToSleep)
+                Debug.Log(PhotonNetwork.NickName + " has recieved Event (code:2) to transition to night");
+                if (!transitioningToSleep && view.IsMine)
                 {
+                    Debug.Log(PhotonNetwork.NickName + " begining transition to night");
+                    if (!sleeping)
+                    {
+
+                        List<BedScript> beds = new List<BedScript>();
+                        foreach (BedScript bed in (BedScript[])FindObjectsOfType(typeof(BedScript)))
+                        {
+                            if (bed.player == "" || bed.player == null)
+                                beds.Add(bed);
+
+                        }
+                        beds = sortBeds(beds);
+                        Debug.Log(PhotonNetwork.NickName + " has compiled a list of empty beds: " + beds.ToStringFull());
+
+                        List<PlayerScript> players = new List<PlayerScript>();
+                        foreach (PlayerScript player in (PlayerScript[])FindObjectsOfType(typeof(PlayerScript)))
+                        {
+                            if (!player.getSleeping())
+                                players.Add(player);
+
+                        }
+                        players = sortPlayers(players);
+
+                        Debug.Log(players[players.IndexOf(this)].Objects.name.text + " is attempting to join beds[" + players.IndexOf(this) + "]");
+                        if (players.IndexOf(this) >= beds.Count)
+                        {
+                            Debug.Log("ERROR: Not enought beds");
+                            PhotonNetwork.LeaveRoom();
+
+                        }
+                        else
+                        {
+                            Debug.Log("Joining beds[" + beds[players.IndexOf(this)] + "]");
+                            beds[players.IndexOf(this)].gameObject.GetComponent<BedScript>().EnterBed(this.gameObject);
+
+                        }
+                    }
+
+                    day = false;
                     sleeping = false;
+                    Debug.Log(view.name + " is now transitioning to night");
+                    foreach (PlayerScript player in (PlayerScript[])FindObjectsOfType(typeof(PlayerScript)))
+                    {
+                        if (player == this)
+                            player.gameObject.GetComponent<PhotonView>().enabled = false;
+                        else
+                            player.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+
+                    }
                     transitioningToSleep = true;
                     Objects.transitioner.SetTrigger("Fade");
+
+                    Objects.button.interactable = false;
+                    buttonType = DISABLED;
                 }
-                //WakeUp();
                 break;
             case 3:
                 object[] data = (object[])photonEvent.CustomData;
@@ -438,16 +549,81 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
         }
 
     }
+    public override void OnLeftRoom()
+    {
+        base.OnLeftRoom();
+        Debug.Log("Joined Lobby");
+        PhotonNetwork.LoadLevel("Menu");
+    }
+    public List<PlayerScript> sortPlayers(List<PlayerScript> players)
+    {
+        Debug.Log(PhotonNetwork.NickName + " has compiled a list of remaining players: ");
+
+        List<int> list = new List<int>();
+        foreach (PlayerScript player in players)
+        {
+            list.Add(player.view.ViewID);
+        }
+        int i; int j;
+        for (i = 1; i < list.Count; i++)
+        {
+            j = i;
+
+            while (j >= 1 && list[j-1] >= list[i]) {
+
+                j--;
+            }
+            list.Insert(j, list[i]);
+            list.RemoveAt(i+1);
+            players.Insert(j, players[i]);
+            players.RemoveAt(i+1);
+        }
+        foreach (PlayerScript player in players)
+        {
+            Debug.Log(player.Objects.name.text);
+        }
+        return players;
+        
+    }
+    public List<BedScript> sortBeds(List<BedScript> beds)
+    {
+
+        List<float> list = new List<float>();
+        foreach (BedScript bed in beds)
+        {
+            list.Add(bed.gameObject.transform.position.x);
+        }
+        int i; int j;
+        for (i = 1; i < list.Count; i++)
+        {
+            j = i;
+
+            while (j >= 1 && list[j - 1] >= list[i])
+            {
+
+                j--;
+            }
+            list.Insert(j, list[i]);
+            list.RemoveAt(i + 1);
+            beds.Insert(j, beds[i]);
+            beds.RemoveAt(i + 1);
+        }
+        return beds;
+
+    }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
+        
         if (stream.IsWriting)
         {
             stream.SendNext(sleeping);
-        } else
-        {
-            sleeping = (bool) stream.ReceiveNext();
         }
+        else
+        {
+            sleeping = (bool)stream.ReceiveNext();
+        }
+
     }
 }
 
@@ -547,6 +723,8 @@ public class objects
     public Transform feetPos;
 
     public Animator transitioner;
+
+    public GameObject roleDisplay;
 }
 
 // Class objects - holds random numerical constants used to customize miscellaneous parts
