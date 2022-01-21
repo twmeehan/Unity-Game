@@ -100,7 +100,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
         transform = this.GetComponent<Transform>();
         rb = this.GetComponent<Rigidbody2D>();
         view = this.GetComponent<PhotonView>();
-        role = new Doctor();
+        role = new Alien();
 
         PhotonNetwork.SerializationRate = 30;
 
@@ -172,7 +172,12 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
                 Objects.transitioner.SetTrigger("Reappear");
                 transitioningToSleep = false;
                 frozen = false;
-                StartTimer(31, (float) PhotonNetwork.Time);
+                StartTimer(31, (float)PhotonNetwork.Time);
+                if (PhotonNetwork.IsMasterClient)
+                {
+                    object[] content = new object[] { 31, PhotonNetwork.Time };
+                    PhotonNetwork.RaiseEvent(3, content, new RaiseEventOptions { Receivers = ReceiverGroup.All }, SendOptions.SendReliable);
+                }
                 role.startNight(this);
 
             }
@@ -364,6 +369,11 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
                 RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
                 PhotonNetwork.RaiseEvent(2, null, raiseEventOptions, SendOptions.SendReliable);
                 frozen = true;
+            } if (!day && role.name == "Alien" && timerSeconds != 0 && !transitioningToSleep)
+            {
+                RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
+                object[] content = new object[] { role.gameObjects[0].GetComponent<PhotonView>().Owner.UserId };
+                PhotonNetwork.RaiseEvent(4, content, raiseEventOptions, SendOptions.SendReliable);
             }
         }
         else
@@ -546,6 +556,18 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
                 object[] data = (object[])photonEvent.CustomData;
                 StartTimer(Convert.ToSingle(data[0]), Convert.ToSingle(data[1]));
                 break;
+            case 4:
+                object[] data2 = (object[])photonEvent.CustomData;
+                PlayerScript[] allPlayers = (PlayerScript[])FindObjectsOfType(typeof(PlayerScript));
+                foreach (PlayerScript p in allPlayers)
+                {
+
+                    if (p.gameObject.GetComponent<PhotonView>().Owner.UserId.Equals(data2[0].ToString()))
+                        role.endNight(this, p);
+                }
+                if (this.gameObject.GetComponent<PhotonView>().Owner.UserId.Equals(data2[0].ToString()))
+                    infected = true;
+                break;
         }
 
     }
@@ -618,10 +640,12 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
         if (stream.IsWriting)
         {
             stream.SendNext(sleeping);
+            stream.SendNext(infected);
         }
         else
         {
             sleeping = (bool)stream.ReceiveNext();
+            infected = (bool)stream.ReceiveNext();
         }
 
     }

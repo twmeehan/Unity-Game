@@ -31,6 +31,15 @@ public class Doctor : Role
     public override void endNight(PlayerScript player, PlayerScript newInfectedPlayer)
     {
         newInfectedPlayer.setInfected(true);
+        if (gameObjects[0].GetComponent<PlayerScript>().getInfected())
+        {
+            player.Objects.results.GetComponentInChildren<TextMeshProUGUI>().text =
+                gameObjects[0].GetComponent<PlayerScript>().Objects.name.text + " is infected";
+        } else
+        {
+            player.Objects.results.GetComponentInChildren<TextMeshProUGUI>().text =
+                gameObjects[0].GetComponent<PlayerScript>().Objects.name.text + " is not infected";
+        }
 
     }
 
@@ -39,6 +48,7 @@ public class Doctor : Role
         RaycastHit2D currentBed = Physics2D.Raycast(player.transform.position, Vector2.down, 0.1f, player.layers.bedLayer);
         player.setFrozen(true);
         Debug.Log(currentBed.collider.gameObject.GetComponent<BedScript>().getPlayer().getInfected());
+        gameObjects.Add(currentBed.collider.gameObject.GetComponent<BedScript>().getPlayer().gameObject);
         Debug.Log(player.role.name);
         player.Objects.results.SetActive(true);
         player.Objects.results.GetComponentInChildren<TextMeshProUGUI>().text = "Testing " +
