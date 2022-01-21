@@ -422,6 +422,18 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
 
     }
 
+    public void Heal()
+    {
+        RaycastHit2D HealingMachine = Physics2D.Raycast(transform.position, Vector2.up, 0.1f, layers.HealingMachine);
+        HealingMachine.collider.gameObject.GetComponent<HealingMachineScript>().enterHealingMachine(this);
+    }
+
+    public void healPlayer()
+    {
+        infected = false;
+        Debug.Log("infected = " + infected);
+    }
+
     // Called when the player presses the button to enter bed
     public void Sleep()
     {
@@ -442,6 +454,9 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
                 break;
             case 2:
                 WakeUp();
+                break;
+            case 3:
+                Heal();
                 break;
             case 4:
                 role.onClick(this);
