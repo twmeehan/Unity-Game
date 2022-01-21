@@ -6,6 +6,7 @@ public abstract class Role : MonoBehaviour
 {
 
     public string name;
+    public List<GameObject> gameObjects = new List<GameObject>();
     public Role()
     {
         this.name = name;

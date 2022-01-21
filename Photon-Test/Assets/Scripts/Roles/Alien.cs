@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class Doctor : Role
+public class Alien : Role
 {
-    public Doctor() : base()
+    public Alien() : base()
     {
-        name = "Doctor";
+        name = "Alien";
     }
-
     public override void checkForInteractables(PlayerScript player)
     {
+
         RaycastHit2D currentBed = Physics2D.Raycast(player.transform.position, Vector2.down, 0.1f, player.layers.bedLayer);
         if (currentBed.collider != null && currentBed.collider.gameObject.GetComponent<BedScript>().getPlayer() != player
             && currentBed.collider.gameObject.GetComponent<BedScript>().getPlayer() != null)
@@ -21,7 +21,8 @@ public class Doctor : Role
             player.setButtonType(4);
             //button.image.sprite=...
 
-        } else
+        }
+        else
         {
             player.Objects.button.interactable = false;
             player.setButtonType(0);
@@ -30,16 +31,6 @@ public class Doctor : Role
 
     public override void endNight(PlayerScript player, PlayerScript newInfectedPlayer)
     {
-        newInfectedPlayer.setInfected(true);
-        if (gameObjects[0].GetComponent<PlayerScript>().getInfected())
-        {
-            player.Objects.results.GetComponentInChildren<TextMeshProUGUI>().text =
-                gameObjects[0].GetComponent<PlayerScript>().Objects.name.text + " is infected";
-        } else
-        {
-            player.Objects.results.GetComponentInChildren<TextMeshProUGUI>().text =
-                gameObjects[0].GetComponent<PlayerScript>().Objects.name.text + " is not infected";
-        }
 
     }
 
@@ -47,19 +38,13 @@ public class Doctor : Role
     {
         RaycastHit2D currentBed = Physics2D.Raycast(player.transform.position, Vector2.down, 0.1f, player.layers.bedLayer);
         player.setFrozen(true);
-        Debug.Log(currentBed.collider.gameObject.GetComponent<BedScript>().getPlayer().getInfected());
         gameObjects.Add(currentBed.collider.gameObject.GetComponent<BedScript>().getPlayer().gameObject);
-        Debug.Log(player.role.name);
-        player.Objects.results.SetActive(true);
-        player.Objects.results.GetComponentInChildren<TextMeshProUGUI>().text = "Testing " +
-            currentBed.collider.gameObject.GetComponent<BedScript>().getPlayer().Objects.name.text + "...";
+
     }
 
     public override void startNight(PlayerScript player)
     {
-        Debug.Log("startNight()");
         player.Objects.roleDisplay.GetComponent<Animator>().SetTrigger("Display");
-        player.Objects.roleDisplay.GetComponentInChildren<TextMeshProUGUI>().text = "Role: Doctor - Pick a player to check for infection";
-
+        player.Objects.roleDisplay.GetComponentInChildren<TextMeshProUGUI>().text = "Role: Alien - Pick a player to infect";
     }
 }
