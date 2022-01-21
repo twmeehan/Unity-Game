@@ -22,7 +22,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
     private bool infected = false;
     private string room;
     private bool sleeping = false;
-    private Role role;
+    public Role role;
     private bool transitioningToSleep = false;
 
     private bool day = true;
@@ -100,7 +100,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
         transform = this.GetComponent<Transform>();
         rb = this.GetComponent<Rigidbody2D>();
         view = this.GetComponent<PhotonView>();
-        role = new Doctor(view.Owner.NickName);
+        role = new Doctor();
 
         PhotonNetwork.SerializationRate = 30;
 
@@ -725,6 +725,8 @@ public class objects
     public Animator transitioner;
 
     public GameObject roleDisplay;
+
+    public GameObject results;
 }
 
 // Class objects - holds random numerical constants used to customize miscellaneous parts

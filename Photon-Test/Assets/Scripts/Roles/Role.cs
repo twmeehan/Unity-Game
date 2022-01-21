@@ -6,7 +6,7 @@ public abstract class Role : MonoBehaviour
 {
 
     public string name;
-    public Role(string name)
+    public Role()
     {
         this.name = name;
     }

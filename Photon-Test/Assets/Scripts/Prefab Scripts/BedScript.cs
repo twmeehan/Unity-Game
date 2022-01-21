@@ -12,7 +12,7 @@ public class BedScript : MonoBehaviour
     public Transform transform;
     public LayerMask PlayerLayer;
 
-    public string player;
+    public string player = "";
     
     // Start is called before the first frame update
     void Start()
@@ -64,15 +64,15 @@ public class BedScript : MonoBehaviour
         covers.GetComponent<SpriteRenderer>().sortingOrder = 2;
 
     }
-    // Used to get the object that contains the BasicCharacter script for the player that is sleeping
-    public GameObject getPlayer()
+    // Used to get the object that contains the PlayerScript script for the player that is sleeping
+    public PlayerScript getPlayer()
     {
 
-        RaycastHit2D[] nearbyPlayers = Physics2D.CircleCastAll(transform.position, 0.5f, Vector2.up, PlayerLayer);
-        foreach (RaycastHit2D nearbyPlayer in nearbyPlayers) {
+        PlayerScript[] players = (PlayerScript[])FindObjectsOfType(typeof(PlayerScript));
+        foreach (PlayerScript p in players) {
 
-            if (nearbyPlayer.collider.gameObject.GetComponent<PhotonView>().Owner != PhotonNetwork.LocalPlayer)
-                return nearbyPlayer.collider.gameObject;
+            if (p.gameObject.GetComponent<PhotonView>().Owner.UserId.Equals(player))
+                return p;
 
         }
         Debug.Log("No player");

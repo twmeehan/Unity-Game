@@ -184,6 +184,7 @@ public class MenuHandler : MonoBehaviourPunCallbacks
 
         h.Add("t", "Standard"); // type
         roomOptions.CustomRoomProperties = h;
+        roomOptions.PublishUserId = true;
 
         roomOptions.CustomRoomPropertiesForLobby = new string[] { "n", "p", "r", "t" };
 
