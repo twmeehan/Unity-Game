@@ -22,7 +22,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
     private bool infected = false;
     private string room;
     private bool sleeping = false;
-    public Role role;
+    private Role role;
     private bool transitioningToSleep = false;
 
     private bool day = true;
@@ -100,7 +100,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
         transform = this.GetComponent<Transform>();
         rb = this.GetComponent<Rigidbody2D>();
         view = this.GetComponent<PhotonView>();
-        role = new Alien();
+        role = new Doctor();
 
         PhotonNetwork.SerializationRate = 30;
 
@@ -108,7 +108,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
         {
             Debug.Log("Send Event to start 10 second timer");
             RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
-            object[] content = new object[] { 10, PhotonNetwork.Time};
+            object[] content = new object[] { 20, PhotonNetwork.Time};
             PhotonNetwork.RaiseEvent(3, content, raiseEventOptions, SendOptions.SendReliable);
         }
         if (view.IsMine)
@@ -300,7 +300,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
             return true;
         }
 
-        else if (nearHealingMachine.collider != null)
+        else if (nearHealingMachine.collider != null && nearHealingMachine.collider.GetComponent<HealingMachineScript>().available)
         {
 	        healingMachine();
             return true;
@@ -347,7 +347,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
         {
 
             RaycastHit2D nearHealingMachine = Physics2D.Raycast(transform.position, Vector2.down, 0.1f, layers.HealingMachine);
-            if (nearHealingMachine.collider != null && day)
+            if (nearHealingMachine.collider != null)
             {
 
                 Objects.button.interactable = true;
@@ -374,6 +374,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
                 RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
                 object[] content = new object[] { role.gameObjects[0].GetComponent<PhotonView>().Owner.UserId };
                 PhotonNetwork.RaiseEvent(4, content, raiseEventOptions, SendOptions.SendReliable);
+                StartTimer(10,(float) PhotonNetwork.Time);
             }
         }
         else
@@ -441,7 +442,6 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
     public void healPlayer()
     {
         infected = false;
-        Debug.Log("infected = " + infected);
     }
 
     // Called when the player presses the button to enter bed
@@ -572,17 +572,22 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
                 StartTimer(Convert.ToSingle(data[0]), Convert.ToSingle(data[1]));
                 break;
             case 4:
-                object[] data2 = (object[])photonEvent.CustomData;
-                PlayerScript[] allPlayers = (PlayerScript[])FindObjectsOfType(typeof(PlayerScript));
-                foreach (PlayerScript p in allPlayers)
+                if (view.IsMine)
                 {
+                    object[] data2 = (object[])photonEvent.CustomData;
+                    PlayerScript[] allPlayers = (PlayerScript[])FindObjectsOfType(typeof(PlayerScript));
+                    foreach (PlayerScript p in allPlayers)
+                    {
 
-                    if (p.gameObject.GetComponent<PhotonView>().Owner.UserId.Equals(data2[0].ToString()))
-                        role.endNight(this, p);
+                        if (p.gameObject.GetComponent<PhotonView>().Owner.UserId.Equals(data2[0].ToString()))
+                            role.endNight(this, p);
+                    }
+                    if (this.gameObject.GetComponent<PhotonView>().Owner.UserId.Equals(data2[0].ToString()))
+                        infected = true;
                 }
-                if (this.gameObject.GetComponent<PhotonView>().Owner.UserId.Equals(data2[0].ToString()))
-                    infected = true;
                 break;
+
+
         }
 
     }

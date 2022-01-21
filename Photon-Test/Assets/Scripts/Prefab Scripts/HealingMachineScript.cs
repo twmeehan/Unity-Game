@@ -7,7 +7,7 @@ public class HealingMachineScript : MonoBehaviour
 {
 
     PhotonView view;
-    private bool available = true;
+    public bool available = true;
 
     void Start()
     {
@@ -17,24 +17,25 @@ public class HealingMachineScript : MonoBehaviour
 
     public void updateOtherClients()
     {
-        view.RPC("updateOtherClientsRPC", RpcTarget.All);
+        view.RPC("updateOtherClientsRPC", RpcTarget.All, available);
     }
 
     [PunRPC]
-    public void updateOtherClientsRPC()
+    public void updateOtherClientsRPC(bool available)
     {
-        this.available = false;
+        this.available = available;
     }
 
     public void enterHealingMachine(PlayerScript player)
     {
-        if (available == true) 
+        if (available) 
         {
             player.healPlayer();
             available = false;
+            updateOtherClients();
         }
 
-        Debug.Log("Entered Machine");
+        Debug.Log("Healed");
     }
     
 }

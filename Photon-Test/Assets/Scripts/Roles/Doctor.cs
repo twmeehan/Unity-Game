@@ -49,7 +49,6 @@ public class Doctor : Role
         player.setFrozen(true);
         Debug.Log(currentBed.collider.gameObject.GetComponent<BedScript>().getPlayer().getInfected());
         gameObjects.Add(currentBed.collider.gameObject.GetComponent<BedScript>().getPlayer().gameObject);
-        Debug.Log(player.role.name);
         player.Objects.results.SetActive(true);
         player.Objects.results.GetComponentInChildren<TextMeshProUGUI>().text = "Testing " +
             currentBed.collider.gameObject.GetComponent<BedScript>().getPlayer().Objects.name.text + "...";
