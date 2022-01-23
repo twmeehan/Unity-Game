@@ -31,6 +31,7 @@ public class Alien : Role
 
     public override void endNight(PlayerScript player, PlayerScript newInfectedPlayer)
     {
+        gameObjects.Clear();
 
     }
 

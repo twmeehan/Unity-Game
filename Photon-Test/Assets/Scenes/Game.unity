@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.3731193, g: 0.38073996, b: 0.35872698, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -9078,6 +9078,11 @@ PrefabInstance:
       propertyPath: sceneViewId
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 3527484418694825515, guid: fb754fec860291f41a004dc2a682e61a,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -412.65
+      objectReference: {fileID: 0}
     - target: {fileID: 7567461106051421025, guid: fb754fec860291f41a004dc2a682e61a,
         type: 3}
       propertyPath: m_Layer
@@ -9216,6 +9221,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0e1db78623ae4249a78bbdb6685cf09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  available: 1
 --- !u!1 &1203855185
 GameObject:
   m_ObjectHideFlags: 0
@@ -16008,7 +16014,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0

@@ -14,7 +14,23 @@ using UnityEngine.UI;
 // controled by the user running the script
 public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObservable
 {
+    /*
+            List<PlayerScript> players = ((PlayerScript[])FindObjectsOfType(typeof(PlayerScript))).ToList<PlayerScript>();
+            Debug.Log(players.Count);
+            int i = rand.Next(players.Count);
+            Debug.Log(i);
+            int j;
+            players[i].assignRole(0); // 1 Alien
+            players.RemoveAt(i);
+            foreach (PlayerScript player in players)
+            {
+                j = rand.Next(roles.Count);
+                player.assignRole(roles[j]);
+                roles.RemoveAt(j);
+                players.RemoveAt(i);
+            }
 
+            */
     #region private variables
 
     // info about player
@@ -22,9 +38,14 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
     private bool infected = false;
     private string room;
     private bool sleeping = false;
-    private Role role;
-    private bool transitioningToSleep = false;
+    public Role role;
 
+    private List<int> roles = new List<int>() { 1, 1, 1 };
+    private bool transitioningToSleep = false;
+    private bool transitioningToDay = false;
+    public bool showingResults = false;
+
+    private bool init = false;
     private bool day = true;
     // PhotonNetwork.time when the timer started (given by master client)
     private float timeSinceTimerStart;
@@ -68,6 +89,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
     private Rigidbody2D rb;
     private PhotonView view;
     private Animator anim;
+    private System.Random rand = new System.Random();
 
     #endregion
 
@@ -100,12 +122,12 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
         transform = this.GetComponent<Transform>();
         rb = this.GetComponent<Rigidbody2D>();
         view = this.GetComponent<PhotonView>();
-        role = new Doctor();
 
         PhotonNetwork.SerializationRate = 30;
 
         if (PhotonNetwork.IsMasterClient)
         {
+
             Debug.Log("Send Event to start 10 second timer");
             RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
             object[] content = new object[] { 20, PhotonNetwork.Time};
@@ -124,6 +146,25 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
     // For some reason it only works in Update() not FixedUpdate()
     public void Update()
     {
+        List<PlayerScript> players = ((PlayerScript[])FindObjectsOfType(typeof(PlayerScript))).ToList<PlayerScript>();
+
+        if (players.Count == PhotonNetwork.CurrentRoom.Players.Count && !init && PhotonNetwork.IsMasterClient)
+        {
+            init = true;
+            Debug.Log(players.Count);
+            int i = rand.Next(players.Count);
+            Debug.Log(i);
+            int j;
+            players[i].assignRole(0); // 1 Alien
+            players.RemoveAt(i);
+            foreach (PlayerScript player in players)
+            {
+                j = rand.Next(roles.Count);
+                player.assignRole(roles[j]);
+                roles.RemoveAt(j);
+            }
+        }
+
         deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
         float fps = 1.0f / deltaTime;
         //Debug.Log(Mathf.Ceil(fps).ToString());
@@ -180,6 +221,30 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
                 }
                 role.startNight(this);
 
+            }
+            if (transitioningToDay && Objects.transitioner.GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && Objects.transitioner.GetCurrentAnimatorStateInfo(0).IsName("Fade"))
+            {
+                Debug.Log(view.name + " has successfully transitioned to day");
+                Objects.transitioner.SetTrigger("Reappear");
+                transitioningToDay = false;
+                this.gameObject.GetComponent<PhotonView>().enabled = true;
+
+                frozen = false;
+                WakeUp();
+                foreach (BedScript bed in (BedScript[])FindObjectsOfType(typeof(BedScript)))
+                {
+                    if (bed.player == this.gameObject.GetComponent<PhotonView>().Owner.UserId)
+                    {
+                        transform.position = bed.transform.position;
+                    }
+                }
+                StartTimer(31, (float)PhotonNetwork.Time);
+                if (PhotonNetwork.IsMasterClient)
+                {
+                    object[] content = new object[] { 31, PhotonNetwork.Time };
+                    PhotonNetwork.RaiseEvent(3, content, new RaiseEventOptions { Receivers = ReceiverGroup.All }, SendOptions.SendReliable);
+                }
+                Objects.results.SetActive(false);
             }
 
             if (!day && !frozen)
@@ -347,7 +412,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
         {
 
             RaycastHit2D nearHealingMachine = Physics2D.Raycast(transform.position, Vector2.down, 0.1f, layers.HealingMachine);
-            if (nearHealingMachine.collider != null)
+            if (nearHealingMachine.collider != null && day)
             {
 
                 Objects.button.interactable = true;
@@ -369,12 +434,24 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
                 RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
                 PhotonNetwork.RaiseEvent(2, null, raiseEventOptions, SendOptions.SendReliable);
                 frozen = true;
-            } if (!day && role.name == "Alien" && timerSeconds != 0 && !transitioningToSleep)
+            } if (!day && role.name == "Alien" && timerSeconds != 0 && !transitioningToSleep && !showingResults)
             {
                 RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
                 object[] content = new object[] { role.gameObjects[0].GetComponent<PhotonView>().Owner.UserId };
                 PhotonNetwork.RaiseEvent(4, content, raiseEventOptions, SendOptions.SendReliable);
-                StartTimer(10,(float) PhotonNetwork.Time);
+                StartTimer(5,(float) PhotonNetwork.Time);
+                showingResults = true;
+                object[] content2 = new object[] { 5, PhotonNetwork.Time };
+                PhotonNetwork.RaiseEvent(3, content2, new RaiseEventOptions { Receivers = ReceiverGroup.All }, SendOptions.SendReliable);
+            } if (!day && PhotonNetwork.IsMasterClient && showingResults && timerSeconds - Mathf.FloorToInt((float)PhotonNetwork.Time - timeSinceTimerStart) < 0)
+            {
+                Debug.Log(timerSeconds - Mathf.FloorToInt((float)PhotonNetwork.Time - timeSinceTimerStart) + " out of " + timerSeconds);
+                showingResults = false;
+                StartTimer(31, (float)PhotonNetwork.Time);
+                object[] content = new object[] { 31, PhotonNetwork.Time };
+                PhotonNetwork.RaiseEvent(3, content, new RaiseEventOptions { Receivers = ReceiverGroup.All }, SendOptions.SendReliable);
+                PhotonNetwork.RaiseEvent(5, null, new RaiseEventOptions { Receivers = ReceiverGroup.All }, SendOptions.SendReliable);
+
             }
         }
         else
@@ -576,6 +653,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
                 {
                     object[] data2 = (object[])photonEvent.CustomData;
                     PlayerScript[] allPlayers = (PlayerScript[])FindObjectsOfType(typeof(PlayerScript));
+                    showingResults = true;
                     foreach (PlayerScript p in allPlayers)
                     {
 
@@ -584,6 +662,26 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
                     }
                     if (this.gameObject.GetComponent<PhotonView>().Owner.UserId.Equals(data2[0].ToString()))
                         infected = true;
+                }
+                break;
+            case 5:
+                Debug.Log(PhotonNetwork.NickName + " has recieved Event (code:5) to transition to day");
+                if (!transitioningToSleep && view.IsMine)
+                {
+                    Debug.Log(PhotonNetwork.NickName + " begining transition to day");
+                    sleeping = false;
+                    
+                    day = true;
+                    
+                    Debug.Log(view.name + " is now transitioning to day");
+                    transitioningToDay = true;
+                    Objects.transitioner.SetTrigger("Fade");
+                    showingResults = false;
+                    if (PhotonNetwork.IsMasterClient)
+                    {
+                        ((HealingMachineScript[])FindObjectsOfType(typeof(HealingMachineScript)))[0].available = true;
+                        ((HealingMachineScript[])FindObjectsOfType(typeof(HealingMachineScript)))[0].updateOtherClients();
+                    }
                 }
                 break;
 
@@ -653,7 +751,36 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
         return beds;
 
     }
+    public void assignRole(int role)
+    {
+        view.RPC("updateRoleRPC", RpcTarget.All, role);
 
+    }
+    [PunRPC]
+    public void updateRoleRPC(int role)
+    {
+
+        switch (role)
+        {
+
+            case 0:
+                this.role = new Alien();
+                if (view.IsMine)
+                {
+                    foreach (PlayerScript player in (PlayerScript[]) FindObjectsOfType(typeof(PlayerScript)))
+                    {
+                        player.Objects.indicator.enabled = true;
+
+                    }
+                }
+
+                break;
+            case 1:
+                this.role = new Doctor();
+                break;
+        }
+
+    }
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         
@@ -771,6 +898,8 @@ public class objects
     public GameObject roleDisplay;
 
     public GameObject results;
+
+    public SpriteRenderer indicator;
 }
 
 // Class objects - holds random numerical constants used to customize miscellaneous parts

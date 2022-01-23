@@ -30,6 +30,7 @@ public class Doctor : Role
 
     public override void endNight(PlayerScript player, PlayerScript newInfectedPlayer)
     {
+        player.showingResults = true;
         newInfectedPlayer.setInfected(true);
         if (gameObjects[0].GetComponent<PlayerScript>().getInfected())
         {
@@ -40,6 +41,7 @@ public class Doctor : Role
             player.Objects.results.GetComponentInChildren<TextMeshProUGUI>().text =
                 gameObjects[0].GetComponent<PlayerScript>().Objects.name.text + " is not infected";
         }
+        gameObjects.Clear();
 
     }
 
