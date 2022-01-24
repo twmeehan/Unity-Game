@@ -14,29 +14,13 @@ using UnityEngine.UI;
 // controled by the user running the script
 public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObservable
 {
-    /*
-            List<PlayerScript> players = ((PlayerScript[])FindObjectsOfType(typeof(PlayerScript))).ToList<PlayerScript>();
-            Debug.Log(players.Count);
-            int i = rand.Next(players.Count);
-            Debug.Log(i);
-            int j;
-            players[i].assignRole(0); // 1 Alien
-            players.RemoveAt(i);
-            foreach (PlayerScript player in players)
-            {
-                j = rand.Next(roles.Count);
-                player.assignRole(roles[j]);
-                roles.RemoveAt(j);
-                players.RemoveAt(i);
-            }
 
-            */
     #region private variables
 
     // info about player
     private bool frozen = false;
     private bool infected = false;
-    private string room;
+    private RoomScript room;
     private bool sleeping = false;
     public Role role;
 
@@ -146,6 +130,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
     // For some reason it only works in Update() not FixedUpdate()
     public void Update()
     {
+        //Debug.Log(this.checkCurrentRoom().getBeds().ToStringFull());
         List<PlayerScript> players = ((PlayerScript[])FindObjectsOfType(typeof(PlayerScript))).ToList<PlayerScript>();
 
         if (players.Count == PhotonNetwork.CurrentRoom.Players.Count && !init && PhotonNetwork.IsMasterClient)
@@ -343,17 +328,17 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
         }
 
     }
-    public string checkCurrentRoom()
+    public RoomScript checkCurrentRoom()
     {
         RaycastHit2D currentRoom = Physics2D.Raycast(transform.position, Vector2.up, 0.1f, layers.roomLayer);
         if (currentRoom.collider != null)
         {
 
-            this.room = currentRoom.collider.gameObject.name;
+            this.room = currentRoom.collider.gameObject.GetComponent<RoomScript>();
             return room;
 
         }
-        return "";
+        return null;
     }
 	public bool touchingInteractable()
     {
@@ -770,6 +755,13 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
                     foreach (PlayerScript player in (PlayerScript[]) FindObjectsOfType(typeof(PlayerScript)))
                     {
                         player.Objects.indicator.enabled = true;
+
+                    }
+                } else
+                {
+                    foreach (PlayerScript player in (PlayerScript[])FindObjectsOfType(typeof(PlayerScript)))
+                    {
+                        player.Objects.indicator.enabled = false;
 
                     }
                 }

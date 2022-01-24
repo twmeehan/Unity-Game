@@ -8,13 +8,10 @@ public class InfectionIndicator : MonoBehaviour
 {
 
     public PlayerScript p;
-    private bool init = false;
 
     // Start is called before the first frame update
     void Start()
     {
-
-        this.gameObject.GetComponent<SpriteRenderer>().enabled = false;
 
     }
 
