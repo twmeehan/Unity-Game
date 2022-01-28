@@ -149,7 +149,6 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
                 roles.RemoveAt(j);
             }
         }
-
         deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
         float fps = 1.0f / deltaTime;
         //Debug.Log(Mathf.Ceil(fps).ToString());
