@@ -4,16 +4,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-/* 
- * Class Interact() - attached to a gameObject that has a Button to control
- * what the button does based on what the player is near 
- */
-public class Interact : MonoBehaviour
-{
+// /* 
+//  * Class Interact() - attached to a gameObject that has a Button to control
+//  * what the button does based on what the player is near 
+//  */
+// public class Interact : MonoBehaviour
+// {
 
-    private int buttonState = 0;
+//     private int buttonState = 0;
 
-    private Button button;
+//     private Button button;
 
     // transform of the player's character
     public Transform t;
@@ -46,34 +46,34 @@ public class Interact : MonoBehaviour
             if (!bed.collider.gameObject.GetComponent<BedScript>().player.Equals(controller.view.Owner.UserId))
                 KickFromBed();
 
-            TouchingBed();
-            return true;
+//             TouchingBed();
+//             return true;
 
-        }
+//         }
 
-        // if touching the healing pod run TouchingHealingMachine()
-        else if (heal.collider != null && heal.collider.GetComponent<HealingMachineScript>().available)
-        {
+//         // if touching the healing pod run TouchingHealingMachine()
+//         else if (heal.collider != null && heal.collider.GetComponent<HealingMachineScript>().available)
+//         {
 
-            TouchingHealingMachine();
-            return true;
+//             TouchingHealingMachine();
+//             return true;
 
-        }
+//         }
 
-        // if touching nothing then disable button
-        else
-        {
+//         // if touching nothing then disable button
+//         else
+//         {
 
-            button.interactable = false;
-            buttonState = (int) Buttons.disabled;
+//             button.interactable = false;
+//             buttonState = (int) Buttons.disabled;
 
-        }
+//         }
 
-        return false;
+//         return false;
 
-    }
-    public void TouchingBed()
-    {
+//     }
+//     public void TouchingBed()
+//     {
 
         // if player is touching a bed but is awake
         if (!controller.GetSleeping())
@@ -97,8 +97,8 @@ public class Interact : MonoBehaviour
 
     }
 
-    public void TouchingHealingMachine()
-    {
+//     public void TouchingHealingMachine()
+//     {
 
         if (!controller.GetSleeping())
         {
