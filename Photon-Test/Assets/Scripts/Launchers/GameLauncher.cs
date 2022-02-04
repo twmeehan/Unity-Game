@@ -38,7 +38,7 @@ public class GameLauncher : MonoBehaviour
         Vector2 StartingPos = new Vector2(0, 15);
         PhotonNetwork.Instantiate(CharacterPrefab.name, StartingPos, Quaternion.identity);
 
-        MainCamera.SetActive(false);
+        //MainCamera.SetActive(false);
 
     }
     public void FixedUpdate()

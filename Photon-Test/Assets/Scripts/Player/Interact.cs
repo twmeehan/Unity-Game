@@ -39,11 +39,10 @@ public class Interact : MonoBehaviour
     {
         RaycastHit2D bed = Physics2D.Raycast(t.position, Vector2.down, 0.1f, (int) Layers.bed);
         RaycastHit2D heal = Physics2D.Raycast(t.position, Vector2.down, 0.1f, (int) Layers.healing);
-        Debug.Log(Physics2D.Raycast(t.position, Vector2.down, 0.1f, (int)Layers.bed).collider);
+
         // if touching a bed run TouchingBed()
         if (bed.collider != null)
         {
-            Debug.Log(controller.view);
             if (!bed.collider.gameObject.GetComponent<BedScript>().player.Equals(controller.view.Owner.UserId))
                 KickFromBed();
 
@@ -145,7 +144,7 @@ public class Interact : MonoBehaviour
     }
     public void JoinBed(Transform t)
     {
-
+        Debug.Log("Sending RPC");
         object[] objectArray = { t.position.x, t.position.y };
         controller.view.RPC("JoinBedRPC", RpcTarget.All, objectArray as object);
 
@@ -162,7 +161,7 @@ public class Interact : MonoBehaviour
     public void WakeUp()
     {
 
-        RaycastHit2D currentBed = Physics2D.Raycast(transform.position, Vector2.up, 0.1f, (int) Layers.bed);
+        RaycastHit2D currentBed = Physics2D.Raycast(t.position, Vector2.up, 0.1f, (int) Layers.bed);
         currentBed.collider.gameObject.GetComponent<BedScript>().LeaveBed();
 
         controller.movement.frozen = true;
@@ -171,7 +170,7 @@ public class Interact : MonoBehaviour
 
     public void Heal()
     {
-        RaycastHit2D heal = Physics2D.Raycast(transform.position, Vector2.up, 0.1f, (int) Layers.healing);
+        RaycastHit2D heal = Physics2D.Raycast(t.position, Vector2.up, 0.1f, (int) Layers.healing);
         heal.collider.gameObject.GetComponent<HealingMachineScript>().enterHealingMachine(controller);
     }
 
@@ -179,7 +178,7 @@ public class Interact : MonoBehaviour
     public void Sleep()
     {
 
-        RaycastHit2D currentBed = Physics2D.Raycast(transform.position, Vector2.up, 0.1f, (int) Layers.bed);
+        RaycastHit2D currentBed = Physics2D.Raycast(t.position, Vector2.down, 0.1f, (int) Layers.bed);
         currentBed.collider.gameObject.GetComponent<BedScript>().EnterBed(controller);
 
     }

@@ -7892,7 +7892,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d491642ceee5c24eaf892e350dc466a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CharacterPrefab: {fileID: 5967060454207536560, guid: 730553c3be285e24ba6c69b669af6cfd,
+  CharacterPrefab: {fileID: 8597190699543366352, guid: 4ffa3ac6f31b699498c65ba315bb78ce,
     type: 3}
   MainCamera: {fileID: 2003648529}
   audio: {fileID: 784508971}
