@@ -9255,6 +9255,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7567461107243709530, guid: fb754fec860291f41a004dc2a682e61a,
         type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7567461107243709530, guid: fb754fec860291f41a004dc2a682e61a,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7567461107243709530, guid: fb754fec860291f41a004dc2a682e61a,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: -5.54
       objectReference: {fileID: 0}
@@ -9337,12 +9347,12 @@ PrefabInstance:
     - target: {fileID: 7567461107405245914, guid: fb754fec860291f41a004dc2a682e61a,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.07
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 7567461107405245914, guid: fb754fec860291f41a004dc2a682e61a,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.1
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 7567461107405245914, guid: fb754fec860291f41a004dc2a682e61a,
         type: 3}
@@ -9353,8 +9363,23 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: bf456115afe374848b83495098148f17,
+      objectReference: {fileID: 21300000, guid: aa6ae3cbbb5a2c04cb82426120668cf1,
         type: 3}
+    - target: {fileID: 7567461107405245915, guid: fb754fec860291f41a004dc2a682e61a,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7567461107405245915, guid: fb754fec860291f41a004dc2a682e61a,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7567461107405245915, guid: fb754fec860291f41a004dc2a682e61a,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7567461107405245917, guid: fb754fec860291f41a004dc2a682e61a,
         type: 3}
       propertyPath: m_Layer

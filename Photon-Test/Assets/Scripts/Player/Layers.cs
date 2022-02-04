@@ -1,12 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
+﻿/*
+ * Class Layers - used to get references to each layer. Each value is
+ * 2^n where n is the layer number. This is beacuse layers use binary
+ */
 public enum Layers
 {
-    ground = 8,
-    player = 9,
-    room = 10,
-    bed = 11,
-    healing = 12
+    ground = 256,
+    player = 512,
+    room = 1024,
+    bed = 2048,
+    healing = 4096
 }

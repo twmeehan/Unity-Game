@@ -190,7 +190,6 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
     {
         if (view.IsMine)
         {
-            
             if (transitioningToSleep && Objects.transitioner.GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && Objects.transitioner.GetCurrentAnimatorStateInfo(0).IsName("Fade"))
             {
                 Debug.Log(view.name + " has successfully transitioned to night");
