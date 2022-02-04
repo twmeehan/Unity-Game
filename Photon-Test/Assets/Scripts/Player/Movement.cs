@@ -7,8 +7,6 @@ public class Movement : MonoBehaviour
     #region private variables
 
     private Rigidbody2D rb;
-    // prevents player from moving (including gravity)
-    private bool frozen = false;
     // true if player is touching ground
     private bool isGrounded = false;
     // is true if the player is in the middle of a jump
@@ -25,6 +23,9 @@ public class Movement : MonoBehaviour
     #endregion
 
     #region public variables
+
+    // prevents player from moving (including gravity)
+    public bool frozen = false;
 
     [Space(10)]
     [Header("Movement")]

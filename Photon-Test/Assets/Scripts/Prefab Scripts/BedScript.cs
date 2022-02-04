@@ -27,12 +27,12 @@ public class BedScript : MonoBehaviour
     }
 
     // Called by the player when they want to join this bed
-    public void EnterBed(GameObject p)
+    public void EnterBed(Controller p)
     {
 
         // The new player joins the bed and BasicCharacter.JoinBed() tells the player to start sleeping animations
         player = p.GetComponent<PhotonView>().Owner.UserId;
-        p.GetComponent<PlayerScript>().JoinBed(transform);
+        p.interact.JoinBed(transform);
 
         // The covers are enabled and begin playing a breathing animation
         covers.GetComponent<SpriteRenderer>().enabled = true;
@@ -65,13 +65,13 @@ public class BedScript : MonoBehaviour
 
     }
     // Used to get the object that contains the PlayerScript script for the player that is sleeping
-    public PlayerScript getPlayer()
+    public Controller getPlayer()
     {
 
-        PlayerScript[] players = (PlayerScript[])FindObjectsOfType(typeof(PlayerScript));
-        foreach (PlayerScript p in players) {
+        Controller[] players = (Controller[])FindObjectsOfType(typeof(Controller));
+        foreach (Controller p in players) {
 
-            if (p.gameObject.GetComponent<PhotonView>().Owner.UserId.Equals(player))
+            if (p.view.Owner.UserId.Equals(player))
                 return p;
 
         }

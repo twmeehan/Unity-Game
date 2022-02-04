@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿/*using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -49,3 +49,4 @@ public class Alien : Role
         player.Objects.roleDisplay.GetComponentInChildren<TextMeshProUGUI>().text = "Role: Alien - Pick a player to infect";
     }
 }
+*/

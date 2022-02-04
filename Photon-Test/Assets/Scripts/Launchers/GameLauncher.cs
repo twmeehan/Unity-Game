@@ -70,9 +70,9 @@ public class GameLauncher : MonoBehaviour
 
     public bool checkIfAllPlayersAreSleeping()
     {
-        foreach (PlayerScript player in FindObjectsOfType(typeof(PlayerScript)))
+        foreach (Controller player in FindObjectsOfType(typeof(Controller)))
         {
-            if (!player.getSleeping())
+            if (!player.GetSleeping())
                 return false;
         }
         return true;

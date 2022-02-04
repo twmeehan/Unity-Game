@@ -34,14 +34,14 @@ public class RoomScript : MonoBehaviour
     {
         return beds;
     }
-    public List<PlayerScript> getPlayers()
+    public List<Controller> getPlayers()
     {
-        List<PlayerScript> players = new List<PlayerScript>();
+        List<Controller> players = new List<Controller>();
         foreach (BedScript bed in beds)
         {
             if (bed.player != null)
             {
-                players.Add(bed.getPlayer().GetComponent<PlayerScript>());
+                players.Add(bed.getPlayer().GetComponent<Controller>());
             }
         }
         return players;

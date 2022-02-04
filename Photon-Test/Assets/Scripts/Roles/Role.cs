@@ -11,9 +11,9 @@ public abstract class Role : MonoBehaviour
     {
         this.name = name;
     }
-    public abstract void checkForInteractables(PlayerScript player);
-    public abstract void startNight(PlayerScript player);
-    public abstract void onClick(PlayerScript player);
-    public abstract void endNight(PlayerScript player, PlayerScript newInfectedPlayer);
+    public abstract void checkForInteractables(Controller player);
+    public abstract void startNight(Controller player);
+    public abstract void onClick(Controller player);
+    public abstract void endNight(Controller player, Controller newInfectedPlayer);
 
 }

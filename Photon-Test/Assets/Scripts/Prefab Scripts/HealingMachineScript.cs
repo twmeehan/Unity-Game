@@ -26,11 +26,11 @@ public class HealingMachineScript : MonoBehaviour
         this.available = available;
     }
 
-    public void enterHealingMachine(PlayerScript player)
+    public void enterHealingMachine(Controller player)
     {
         if (available) 
         {
-            player.healPlayer();
+            player.SetInfected(false);
             available = false;
             updateOtherClients();
         }

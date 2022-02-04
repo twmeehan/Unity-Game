@@ -7,7 +7,7 @@ using UnityEngine;
 public class InfectionIndicator : MonoBehaviour
 {
 
-    public PlayerScript p;
+    public Controller p;
 
     // Start is called before the first frame update
     void Start()
@@ -19,7 +19,7 @@ public class InfectionIndicator : MonoBehaviour
     void Update()
     {
         
-        if (p.getInfected())
+        if (p.GetInfected())
             this.gameObject.GetComponent<SpriteRenderer>().color = Color.red;
         else
             this.gameObject.GetComponent<SpriteRenderer>().color = Color.green;

@@ -1,4 +1,4 @@
-using Cinemachine;
+/*using Cinemachine;
 using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
@@ -256,10 +256,10 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
 
     }
 
-    /* 
+    *//* 
      * Jump() Method - called by FixedUpdate() every frame, calculates jump strength based
      * on input determained in Update()
-     */
+     *//*
     public void jump()
     {
         if ((isGrounded || Jump.infiniteJump || doubleJump || Time.time-timeSinceGrounded< MiscConstants.coyoteTime) && (Input.GetKeyDown(KeyCode.Space) || jumpBuffered) && (Time.time - timeSinceJump) > 0.2f)
@@ -283,9 +283,9 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
         
     }
 
-    /* 
+    *//* 
      * gravity() Method - called by FixedUpdate() every frame, calculates the speed of gravity
-     */
+     *//*
     public void gravity()
     {
         if (rb.velocity.y >= 0)
@@ -303,10 +303,10 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
         }
     }
 
-    /* 
+    *//* 
      * move() Method - called by FixedUpdate() every frame, calculates moveSpeed based
      * on input parameter
-     */
+     *//*
     public void move()
     {
 
@@ -496,7 +496,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObs
     public void Heal()
     {
         RaycastHit2D HealingMachine = Physics2D.Raycast(transform.position, Vector2.up, 0.1f, layers.HealingMachine);
-        HealingMachine.collider.gameObject.GetComponent<HealingMachineScript>().enterHealingMachine(this);
+        //HealingMachine.collider.gameObject.GetComponent<HealingMachineScript>().enterHealingMachine(this);
     }
 
     public void healPlayer()
@@ -907,4 +907,4 @@ public class floats
     // margin time for player to jump even after going over a ledge
     public float coyoteTime;
 
-}
+}*/

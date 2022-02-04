@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿/*using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -10,7 +10,8 @@ public class Doctor : Role
         name = "Doctor";
     }
 
-    public override void checkForInteractables(PlayerScript player)
+    
+    public override void checkForInteractables(Controller player)
     {
         RaycastHit2D currentBed = Physics2D.Raycast(player.transform.position, Vector2.down, 0.1f, player.layers.bedLayer);
         if (currentBed.collider != null && currentBed.collider.gameObject.GetComponent<BedScript>().getPlayer() != player
@@ -28,7 +29,7 @@ public class Doctor : Role
         }
     }
 
-    public override void endNight(PlayerScript player, PlayerScript newInfectedPlayer)
+    public override void endNight(Controller player, Controller newInfectedPlayer)
     {
         player.showingResults = true;
         newInfectedPlayer.setInfected(true);
@@ -45,7 +46,7 @@ public class Doctor : Role
 
     }
 
-    public override void onClick(PlayerScript player)
+    public override void onClick(Controller player)
     {
         RaycastHit2D currentBed = Physics2D.Raycast(player.transform.position, Vector2.down, 0.1f, player.layers.bedLayer);
         player.setFrozen(true);
@@ -56,7 +57,7 @@ public class Doctor : Role
             currentBed.collider.gameObject.GetComponent<BedScript>().getPlayer().Objects.name.text + "...";
     }
 
-    public override void startNight(PlayerScript player)
+    public override void startNight(Controller player)
     {
         Debug.Log("startNight()");
         player.Objects.roleDisplay.GetComponent<Animator>().SetTrigger("Display");
@@ -64,3 +65,4 @@ public class Doctor : Role
 
     }
 }
+*/
