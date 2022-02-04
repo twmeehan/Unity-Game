@@ -246,5 +246,4 @@ public class MovementRequirements
 
     // max distance from the ground that player can buffer their jump
     public float jumpBufferDistance;
-
 }
