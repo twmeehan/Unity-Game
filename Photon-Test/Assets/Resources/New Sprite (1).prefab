@@ -343,6 +343,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ce1b27eb85ad774a93202ba54778058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  timer: {fileID: 0}
   movement: {fileID: 8597190699543366355}
   interact: {fileID: 8597190698807802135}
   view: {fileID: 8597190699543366361}
@@ -374,6 +375,7 @@ MonoBehaviour:
   fallingGravity: 0.46
   maxDownwardVelocity: 19.28
   required:
+    controller: {fileID: 8597190699543366358}
     feetPosition: {fileID: 8597190698906971657}
     distanceFromGround: 0.05
     jumpBufferDistance: 1

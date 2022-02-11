@@ -9,7 +9,7 @@ public class BedScript : MonoBehaviour
     PhotonView view;
 
     public GameObject covers;
-    public Transform transform;
+    public new Transform transform;
     public LayerMask PlayerLayer;
 
     public string player = "";
@@ -32,7 +32,8 @@ public class BedScript : MonoBehaviour
 
         // The new player joins the bed and BasicCharacter.JoinBed() tells the player to start sleeping animations
         player = p.view.Owner.UserId;
-        p.interact.JoinBed(transform);
+        object[] objectArray = { transform.position.x, transform.position.y };
+        p.view.RPC("JoinBedRPC", RpcTarget.All, objectArray as object);
 
         // The covers are enabled and begin playing a breathing animation
         covers.GetComponent<SpriteRenderer>().enabled = true;

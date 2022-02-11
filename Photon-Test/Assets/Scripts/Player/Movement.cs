@@ -93,6 +93,10 @@ public class Movement : MonoBehaviour
         if ((isGrounded || Time.time - timeSinceGrounded < coyoteTime) && doubleJump)
             doubleJumpAvailable = true;
 
+        // stops glitch where when player enters bed and presses space simultaneously, the player floats -- 1/1/22
+        if (required.controller.GetSleeping() && rb.velocity.y > 0)
+            rb.velocity = new Vector2(0, 0);
+
         // enable movement and gravity if player is not frozen
         if (!frozen)
         {
@@ -238,6 +242,8 @@ public class Movement : MonoBehaviour
 [System.Serializable]
 public class MovementRequirements
 {
+
+    public Controller controller;
 
     // position of players feet (to check if player is grounded)
     public Transform feetPosition;
