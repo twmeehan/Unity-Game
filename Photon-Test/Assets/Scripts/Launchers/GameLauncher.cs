@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine.UI;
 using Photon.Realtime;
 using ExitGames.Client.Photon;
+using System.Linq;
 
 /// <summary>
 /// Class - attached to Launcher emtpy object; runs when Game.unity scene is opened
@@ -20,61 +21,43 @@ public class GameLauncher : MonoBehaviour
 
     private float timeSinceSleeping;
     private bool allSleepingLastFrame;
+    private Master master;
+
     /// <summary>
     /// Method - runs on init; displays room code on screen; instantiates character prefab
     /// on Photon servers; disables scene camera(MainCamera)
     /// </summary>
     public void Start()
     {
-        /*
 
-        string[] array = new string[1];
-        array[0] = "TIM";
-        PhotonNetwork.CurrentRoom.SetPropertiesListedInLobby(array);
-
-        */
         audio.volume = PlayerPrefs.GetFloat("musicVolume");
 
         Vector2 StartingPos = new Vector2(0, 15);
-        PhotonNetwork.Instantiate(CharacterPrefab.name, StartingPos, Quaternion.identity);
-
-        //MainCamera.SetActive(false);
-
-    }
-    public void FixedUpdate()
-    {
+        GameObject player = PhotonNetwork.Instantiate(CharacterPrefab.name, StartingPos, Quaternion.identity);
+        player.GetComponent<Controller>().camera.SetActive(true);
+        player.GetComponent<Controller>().transitionState = (int)States.startingGame;
         if (PhotonNetwork.IsMasterClient)
         {
-            if (checkIfAllPlayersAreSleeping())
-            {
-                if (!allSleepingLastFrame)
-                    timeSinceSleeping = Time.time; 
-                else if (Time.time - timeSinceSleeping > 0.5f)
-                {
-                    Debug.Log("All players sleeping - Sending Event to transition to night");
-                    RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
-                    PhotonNetwork.RaiseEvent(2, null, raiseEventOptions, SendOptions.SendReliable);
-
-                }
-
-                allSleepingLastFrame = true;
-                
-                
-            }
-            else
-            {
-                allSleepingLastFrame = false;
-            }
+            player.GetComponent<Master>().enabled = true;
+            master = player.GetComponent<Master>();
         }
+
+        MainCamera.SetActive(false);
+
     }
-
-    public bool checkIfAllPlayersAreSleeping()
+    public void Update()
     {
-        foreach (Controller player in FindObjectsOfType(typeof(Controller)))
+        List<Controller> players = ((Controller[])FindObjectsOfType(typeof(Controller))).ToList<Controller>();
+        
+        if (players.Count == PhotonNetwork.CurrentRoom.Players.Count && PhotonNetwork.IsMasterClient)
         {
-            if (!player.GetSleeping())
-                return false;
+            foreach (Controller player in players)
+            {
+                player.FindBed();
+            }
+            master.AssignRoles(players);
+            master.gameObject.GetComponent<Controller>().timer.stopwatch.Reset();
+            Destroy(this.gameObject);
         }
-        return true;
     }
 }

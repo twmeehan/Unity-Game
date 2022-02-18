@@ -11,7 +11,7 @@ public class Interact : MonoBehaviour
     [Space(10)]
     [Header("Required")]
     // transform of the player's character
-    public Transform t;
+    public Transform playerTransform;
     public Controller controller;
 
     [Space(10)]
@@ -40,8 +40,8 @@ public class Interact : MonoBehaviour
     // is near which changes the buttonState
     public bool CalculateButtonType()
     {
-        RaycastHit2D bed = Physics2D.Raycast(t.position, Vector2.down, 0.1f, (int) Layers.bed);
-        RaycastHit2D heal = Physics2D.Raycast(t.position, Vector2.down, 0.1f, (int) Layers.healing);
+        RaycastHit2D bed = Physics2D.Raycast(playerTransform.position, Vector2.down, 0.1f, (int) Layers.bed);
+        RaycastHit2D heal = Physics2D.Raycast(playerTransform.position, Vector2.down, 0.1f, (int) Layers.healing);
 
         // if touching a bed run TouchingBed()
         if (bed.collider != null)
@@ -156,6 +156,9 @@ public class Interact : MonoBehaviour
             case 4:
                 controller.role.OnClick(controller);
                 break;
+            case 5:
+                controller.role.OnClick(controller);
+                break;
         }
     }
 
@@ -163,7 +166,7 @@ public class Interact : MonoBehaviour
     public void WakeUp()
     {
 
-        RaycastHit2D currentBed = Physics2D.Raycast(t.position, Vector2.up, 0.1f, (int) Layers.bed);
+        RaycastHit2D currentBed = Physics2D.Raycast(playerTransform.position, Vector2.up, 0.1f, (int) Layers.bed);
         currentBed.collider.gameObject.GetComponent<BedScript>().LeaveBed();
 
         controller.movement.frozen = true;
@@ -173,7 +176,7 @@ public class Interact : MonoBehaviour
     // Method Heal() - called when the player clicks the button while near the healing pod
     public void Heal()
     {
-        RaycastHit2D heal = Physics2D.Raycast(t.position, Vector2.up, 0.1f, (int) Layers.healing);
+        RaycastHit2D heal = Physics2D.Raycast(playerTransform.position, Vector2.up, 0.1f, (int) Layers.healing);
         heal.collider.gameObject.GetComponent<HealingMachineScript>().enterHealingMachine(controller);
     }
 
@@ -181,7 +184,7 @@ public class Interact : MonoBehaviour
     public void Sleep()
     {
 
-        RaycastHit2D currentBed = Physics2D.Raycast(t.position, Vector2.down, 0.1f, (int) Layers.bed);
+        RaycastHit2D currentBed = Physics2D.Raycast(playerTransform.position, Vector2.down, 0.1f, (int) Layers.bed);
         currentBed.collider.gameObject.GetComponent<BedScript>().EnterBed(controller);
 
     }

@@ -83,7 +83,7 @@ public class Movement : MonoBehaviour
     // Method Update() - called once per frame
     void Update()
     {
-        
+
         // check if play is grounded and set isGrounded and timeSinceGrounded
         isGrounded = Physics2D.OverlapCircle(required.feetPosition.position, required.distanceFromGround, (int) Layers.ground);
         if (isGrounded)
@@ -226,6 +226,9 @@ public class Movement : MonoBehaviour
         else if (isJumping)
         {
 
+            // stops a glitch where coyote time allows double jump
+            timeSinceGrounded = 0;
+
             // rapidly reduce the vertical velocity
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y / 1.5f);
 
@@ -234,6 +237,12 @@ public class Movement : MonoBehaviour
 
         }
 
+    }
+
+    // Method GetRigidbody() - returns the rb attached to this script
+    public Rigidbody2D GetRigidbody()
+    {
+        return rb;
     }
 
 }

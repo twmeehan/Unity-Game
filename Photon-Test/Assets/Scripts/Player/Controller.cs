@@ -2,16 +2,18 @@
 using Photon.Pun;
 using Photon.Realtime;
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
-public class Controller : MonoBehaviour
+// Class Controller() - class attached to the character that controls all other aspects
+// of the character. 
+public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback
 {
     #region private variables
 
     private bool sleeping = false;
-    private bool day = true;
+    private bool day = false;
     private bool infected = false;
 
     private System.Random rand = new System.Random();
@@ -22,6 +24,7 @@ public class Controller : MonoBehaviour
     [Header("To Be Replaced")]
     public GameObject resultsScreen;
     public GameObject roleText;
+    public SpriteRenderer indicator;
 
     [Space(10)]
     [Header("Required")]
@@ -29,6 +32,8 @@ public class Controller : MonoBehaviour
     public Movement movement;
     public Interact interact;
     public Animator transition;
+    public GameObject camera;
+    public TextMeshProUGUI name;
 
     [Space(10)]
     [Header("Not Required")]
@@ -43,16 +48,44 @@ public class Controller : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
         view = this.gameObject.GetComponent<PhotonView>();
+
+        // set username above players head
+        name.text = view.Owner.NickName;
+
+        // remove unnecessary scripts for players this client doesn't control
+        if (!view.IsMine)
+        {
+
+            movement.enabled = false;
+            interact.enabled = false;
+            timer.enabled = false;
+            this.enabled = false;
+
+        }
+
     }
 
     // Update is called once per frame
     void Update()
     {
+
         if (transitionState == (int) States.transitioningToNight && view.IsMine)
         {
             TransitionToNight();
+        } else if (transitionState == (int)States.transitioningToDay && view.IsMine)
+        {
+            TransitionToDay();
+        } if (transitionState == (int)States.none && !day && view.IsMine)
+        {
+            role.CalculateButtonType(this);
         }
+
+        // freeze other players if they are not sending movement through PhotonView
+        if (!view.enabled && !view.IsMine)
+            this.movement.GetRigidbody().velocity = Vector2.zero;
+
     }
 
     // Method SwitchToNight() - called by OnEvent when master client sends the code to switch
@@ -100,7 +133,6 @@ public class Controller : MonoBehaviour
     {
         if (view.IsMine)
         {
-
             transition.SetTrigger("Reappear");
             transitionState = (int)States.none;
             movement.frozen = false;
@@ -130,7 +162,7 @@ public class Controller : MonoBehaviour
 
     // Method FindBed() - if this player is not sleeping find a open bed for them based off of which beds
     // are open and what other players are still awake
-    private void FindBed()
+    public void FindBed()
     {
 
         // if players are not sleeping put them in the remaining beds
@@ -173,7 +205,108 @@ public class Controller : MonoBehaviour
 
         }
 
-    } 
+    }
+
+    // Method DisplayRoleResults() - tells the current player to display the results of his/her role actions
+    private void DisplayRoleResults(object[] data)
+    {
+
+        // OnEvent() goes to all instances but this should only run on the instance that is controlled by the player 
+        if (view.IsMine)
+        {
+
+            Controller[] players = (Controller[])FindObjectsOfType(typeof(Controller));
+
+            transitionState = (int) States.displayingRoles;
+
+            if (PhotonNetwork.IsMasterClient)
+            {
+                // start stopwatch for 5 seconds
+                timer.stopwatch.Reset();
+            }
+
+            foreach (Controller player in players)
+            {
+
+                // check each player, if the player matches the UserId given by the alien then tell
+                // role.EndNight that that player is the one who was infected by the alien this night
+                if (player.gameObject.GetComponent<PhotonView>().Owner.UserId.Equals(data[0].ToString()))
+                    role.EndNight(this, player);
+            }
+
+            // if I am the one infected by the alien infected = true
+            if (this.gameObject.GetComponent<PhotonView>().Owner.UserId.Equals(data[0].ToString()))
+                infected = true;
+
+        }
+
+    }
+
+    // Method StartTransitionToDay() - called by OnEvent() 5 seconds after DisplayRoleResults() is called by 
+    // the master client. Starts fading to black.
+    private void StartTransitionToDay()
+    {
+
+        if (transitionState != (int)States.transitioningToDay && view.IsMine)
+        {
+
+            SetSleeping(false);
+            day = true;
+
+            transitionState = (int) States.transitioningToDay;
+
+            transition.SetTrigger("Fade");
+
+        }
+
+    }
+
+    // Method TransitionToDay() - runs every frame while transitioning to day in order to check if the screen
+    // is completely black yet, if so then run EndTransitionToDay()
+    private void TransitionToDay()
+    {
+
+        if (transition.GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && transition.GetCurrentAnimatorStateInfo(0).IsName("Fade"))
+            EndTransitionToDay();
+
+    }
+
+    // Method EndTransitionToDay() - called by TransitionToDay() after screen is black to make the client 
+    // transition back to day
+    private void EndTransitionToDay()
+    {
+
+        transition.SetTrigger("Reappear");
+
+        transitionState = (int)States.none;
+
+        this.gameObject.GetComponent<PhotonView>().enabled = true;
+
+        movement.frozen = false;
+
+        interact.WakeUp();
+
+        // teleport this player to his bed
+        foreach (BedScript bed in (BedScript[])FindObjectsOfType(typeof(BedScript)))
+        {
+            if (bed.player == this.gameObject.GetComponent<PhotonView>().Owner.UserId)
+            {
+                transform.position = bed.transform.position;
+            }
+        }
+
+        timer.SetTimer(31, (float)PhotonNetwork.Time);
+        
+        // tell master client to start the day timer
+        if (PhotonNetwork.IsMasterClient)
+        {
+            Master.EndTransitionToDay();
+        }
+
+        // remove the results from nightly role tests
+        resultsScreen.SetActive(false);
+
+    }
 
     // Method SortPlayers() - insertion sorts a list of Controllers (Players) in order of ViewID
     private List<Controller> SortPlayers(List<Controller> players)
@@ -254,6 +387,8 @@ public class Controller : MonoBehaviour
     public void SetSleeping(bool sleeping)
     {
         this.sleeping = sleeping;
+        object[] objectArray = { sleeping };
+        view.RPC("UpdateSleepingRPC", RpcTarget.All, objectArray as object);
     }
 
     public bool GetDay()
@@ -277,6 +412,13 @@ public class Controller : MonoBehaviour
         view.RPC("UpdateInfectedRPC", RpcTarget.All, objectArray as object);
 
     }
+    
+    // Method SetRole() - sets a role that is synced across all clients for this player
+    public void SetRole(int role)
+    {
+        object[] objectArray = { role };
+        view.RPC("UpdateRoleRPC", RpcTarget.All, role); // 1 Alien
+    }
 
     // Method GetCurrentRoom() - returns the RoomScript of the room the player is standing in
     public RoomScript GetCurrentRoom()
@@ -293,6 +435,15 @@ public class Controller : MonoBehaviour
     {
 
         infected = (bool) objectArray[0];
+
+    }
+
+    // Method UpdateSleepingRPC() - syncs a character's sleeping status across all clients
+    [PunRPC]
+    public void UpdateSleepingRPC(object[] objectArray)
+    {
+
+        sleeping = (bool)objectArray[0];
 
     }
 
@@ -329,17 +480,19 @@ public class Controller : MonoBehaviour
                 // enable the infected inicator for all players if this character is the alien
                 if (view.IsMine)
                 {
-                    foreach (PlayerScript player in (PlayerScript[])FindObjectsOfType(typeof(PlayerScript)))
+                    foreach (Controller player in (Controller[])FindObjectsOfType(typeof(Controller)))
                     {
-                        player.Objects.indicator.enabled = true;
+
+                        player.indicator.enabled = true;
 
                     }
                 }
                 else
                 {
-                    foreach (PlayerScript player in (PlayerScript[])FindObjectsOfType(typeof(PlayerScript)))
+                    foreach (Controller player in (Controller[])FindObjectsOfType(typeof(Controller)))
                     {
-                        player.Objects.indicator.enabled = false;
+
+                        player.indicator.enabled = false;
 
                     }
                 }
@@ -353,6 +506,7 @@ public class Controller : MonoBehaviour
         }
 
     }
+
     // Method OnEvent() - called on all clients
     public void OnEvent(EventData photonEvent)
     {
@@ -367,40 +521,10 @@ public class Controller : MonoBehaviour
                 timer.SetTimer(Convert.ToSingle(data[0]), Convert.ToSingle(data[1]));
                 break;
             case 4:
-                if (view.IsMine)
-                {
-                    object[] data2 = (object[])photonEvent.CustomData;
-                    PlayerScript[] allPlayers = (PlayerScript[])FindObjectsOfType(typeof(PlayerScript));
-                    showingResults = true;
-                    foreach (PlayerScript p in allPlayers)
-                    {
-
-                        if (p.gameObject.GetComponent<PhotonView>().Owner.UserId.Equals(data2[0].ToString()))
-                            role.endNight(this, p);
-                    }
-                    if (this.gameObject.GetComponent<PhotonView>().Owner.UserId.Equals(data2[0].ToString()))
-                        infected = true;
-                }
+                DisplayRoleResults((object[])photonEvent.CustomData);
                 break;
             case 5:
-                Debug.Log(PhotonNetwork.NickName + " has recieved Event (code:5) to transition to day");
-                if (!transitioningToSleep && view.IsMine)
-                {
-                    Debug.Log(PhotonNetwork.NickName + " begining transition to day");
-                    sleeping = false;
-
-                    day = true;
-
-                    Debug.Log(view.name + " is now transitioning to day");
-                    transitioningToDay = true;
-                    Objects.transitioner.SetTrigger("Fade");
-                    showingResults = false;
-                    if (PhotonNetwork.IsMasterClient)
-                    {
-                        ((HealingMachineScript[])FindObjectsOfType(typeof(HealingMachineScript)))[0].available = true;
-                        ((HealingMachineScript[])FindObjectsOfType(typeof(HealingMachineScript)))[0].updateOtherClients();
-                    }
-                }
+                StartTransitionToDay();
                 break;
             case 6:
                 EndTransitionToNight();
@@ -408,6 +532,13 @@ public class Controller : MonoBehaviour
 
         }
 
+    }
+
+    public override void OnLeftRoom()
+    {
+        base.OnLeftRoom();
+        Debug.Log("Joined Lobby");
+        PhotonNetwork.LoadLevel("Menu");
     }
 
 }

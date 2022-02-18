@@ -8,7 +8,7 @@ using UnityEngine;
  * Role object that can be set to any of the roles. Controller then uses the abstract methods to
  * preform night time actions.
  */
-public abstract class Role : MonoBehaviour
+public abstract class Role
 {
 
     // name of role

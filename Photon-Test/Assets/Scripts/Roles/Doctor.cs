@@ -15,7 +15,7 @@ public class Doctor : Role
     {
         RaycastHit2D currentBed = Physics2D.Raycast(player.transform.position, Vector2.down, 0.1f, (int) Layers.bed);
         if (currentBed.collider != null && currentBed.collider.gameObject.GetComponent<BedScript>().getPlayer() != player
-            && currentBed.collider.gameObject.GetComponent<BedScript>().getPlayer() != null)
+            && currentBed.collider.gameObject.GetComponent<BedScript>().getPlayer() != null && gameObjects.Count == 0)
         {
 
             player.interact.button.interactable = true;
@@ -31,17 +31,25 @@ public class Doctor : Role
     public override void EndNight(Controller player, Controller newInfectedPlayer)
     {
 
-        newInfectedPlayer.SetInfected(true);
-        if (gameObjects[0].GetComponent<Controller>().GetInfected())
+        // sometimes method is called twice???
+        try
         {
-            player.resultsScreen.GetComponentInChildren<TextMeshProUGUI>().text =
-                gameObjects[0].GetComponent<Controller>().view.Owner.NickName + " is infected";
-        } else
+            newInfectedPlayer.SetInfected(true);
+            if (gameObjects[0].GetComponent<Controller>().GetInfected())
+            {
+                player.resultsScreen.GetComponentInChildren<TextMeshProUGUI>().text =
+                    gameObjects[0].GetComponent<Controller>().view.Owner.NickName + " is infected";
+            }
+            else
+            {
+                player.resultsScreen.GetComponentInChildren<TextMeshProUGUI>().text =
+                    gameObjects[0].GetComponent<Controller>().view.Owner.NickName + " is not infected";
+            }
+            gameObjects.Clear();
+        } catch
         {
-            player.resultsScreen.GetComponentInChildren<TextMeshProUGUI>().text =
-                gameObjects[0].GetComponent<Controller>().view.Owner.NickName + " is not infected";
+
         }
-        gameObjects.Clear();
 
     }
 
