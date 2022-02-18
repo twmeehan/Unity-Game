@@ -34,6 +34,7 @@ public class Doctor : Role
         // sometimes method is called twice???
         try
         {
+
             newInfectedPlayer.SetInfected(true);
             if (gameObjects[0].GetComponent<Controller>().GetInfected())
             {
