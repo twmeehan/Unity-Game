@@ -39,7 +39,7 @@ public class Master : MonoBehaviour
             PhotonNetwork.RaiseEvent(3, content, new RaiseEventOptions { Receivers = ReceiverGroup.All }, SendOptions.SendReliable);
 
             // call EndTransitionToNight() on all Controllers
-            PhotonNetwork.RaiseEvent(6, null, new RaiseEventOptions { Receivers = ReceiverGroup.All }, SendOptions.SendReliable);
+            PhotonNetwork.RaiseEvent(6, new object[] { }, new RaiseEventOptions { Receivers = ReceiverGroup.All }, SendOptions.SendReliable);
 
         } else if (controller.transitionState == (int) States.transitioningToNight)
         {
@@ -122,16 +122,45 @@ public class Master : MonoBehaviour
         if (controller.transition.GetCurrentAnimatorStateInfo(0).normalizedTime > 1
             && controller.transition.GetCurrentAnimatorStateInfo(0).IsName("Fade") && CheckIfAllPlayersAreSleeping())
         {
+
             // set timer
             object[] content = new object[] { 31, PhotonNetwork.Time };
             PhotonNetwork.RaiseEvent(3, content, new RaiseEventOptions { Receivers = ReceiverGroup.All }, SendOptions.SendReliable);
 
+            content = SpreadVirus();
             // call EndTransitionToNight() on all Controllers
-            PhotonNetwork.RaiseEvent(6, null, new RaiseEventOptions { Receivers = ReceiverGroup.All }, SendOptions.SendReliable);
+            PhotonNetwork.RaiseEvent(6, content, new RaiseEventOptions { Receivers = ReceiverGroup.All }, SendOptions.SendReliable);
 
         }
     }
 
+    // Method
+    public object[] SpreadVirus()
+    {
+
+        List<string> newlyInfectedPlayers = new List<string>();
+
+        foreach (RoomScript room in FindObjectsOfType(typeof(RoomScript)))
+        {
+
+            List<Controller> uninfectedPlayers = new List<Controller>();
+
+            foreach (Controller player in room.GetPlayers())
+            {
+                if (!player.GetInfected())
+                    uninfectedPlayers.Add(player);
+            }
+
+            if (uninfectedPlayers.Count != room.GetPlayers().Count && uninfectedPlayers.Count != 0)
+            {
+                newlyInfectedPlayers.Add(uninfectedPlayers[rand.Next(uninfectedPlayers.Count)].view.Owner.UserId);
+            }
+
+        }
+
+        return newlyInfectedPlayers.ToArray();
+
+    }
     // Method CheckIfAllPlayersAreSleeping() - returns true if all players are in beds
     private bool CheckIfAllPlayersAreSleeping()
     {

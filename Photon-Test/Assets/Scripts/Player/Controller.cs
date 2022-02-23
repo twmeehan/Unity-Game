@@ -129,8 +129,15 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback
 
     // Method SwitchToNight() - called by OnEvent when master client detects that all players
     // have been assigned to beds (only after screen has faded to black)
-    private void EndTransitionToNight()
+    private void EndTransitionToNight(object[] newlyInfectedPlayers)
     {
+
+        foreach (object player in newlyInfectedPlayers)
+        {
+            if (player.ToString() == view.Owner.UserId)
+                infected = true;
+        }
+
         if (view.IsMine)
         {
             transition.SetTrigger("Reappear");
@@ -527,7 +534,7 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback
                 StartTransitionToDay();
                 break;
             case 6:
-                EndTransitionToNight();
+                EndTransitionToNight((object[])photonEvent.CustomData);
                 break;
 
         }

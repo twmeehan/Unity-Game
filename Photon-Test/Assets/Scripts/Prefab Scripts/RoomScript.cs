@@ -30,11 +30,11 @@ public class RoomScript : MonoBehaviour
         }
     }
 
-    public List<BedScript> getBeds()
+    public List<BedScript> GetBeds()
     {
         return beds;
     }
-    public List<Controller> getPlayers()
+    public List<Controller> GetPlayers()
     {
         List<Controller> players = new List<Controller>();
         foreach (BedScript bed in beds)
