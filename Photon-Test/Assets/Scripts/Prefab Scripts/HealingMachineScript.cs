@@ -30,7 +30,8 @@ public class HealingMachineScript : MonoBehaviour
     {
         if (available) 
         {
-            player.SetInfected(false);
+            object[] objectArray = { false };
+            player.view.RPC("UpdateInfectedRPC", RpcTarget.All, objectArray as object);
             available = false;
             updateOtherClients();
         }

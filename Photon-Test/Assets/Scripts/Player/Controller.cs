@@ -65,6 +65,8 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback
 
         }
 
+        PhotonNetwork.AddCallbackTarget(this);
+
     }
 
     // Update is called once per frame
@@ -134,6 +136,7 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback
 
         foreach (object player in newlyInfectedPlayers)
         {
+            Debug.Log(player.ToString());
             if (player.ToString() == view.Owner.UserId)
                 infected = true;
         }
@@ -253,11 +256,12 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback
     // the master client. Starts fading to black.
     private void StartTransitionToDay()
     {
+        Debug.Log("Sleeping = false");
+        SetSleeping(false);
 
         if (transitionState != (int)States.transitioningToDay && view.IsMine)
         {
 
-            SetSleeping(false);
             day = true;
 
             transitionState = (int) States.transitioningToDay;
@@ -394,8 +398,6 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback
     public void SetSleeping(bool sleeping)
     {
         this.sleeping = sleeping;
-        object[] objectArray = { sleeping };
-        view.RPC("UpdateSleepingRPC", RpcTarget.All, objectArray as object);
     }
 
     public bool GetDay()
@@ -415,8 +417,6 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback
     {
 
         this.infected = infected;
-        object[] objectArray = { infected };
-        view.RPC("UpdateInfectedRPC", RpcTarget.All, objectArray as object);
 
     }
     
@@ -531,6 +531,7 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback
                 DisplayRoleResults((object[])photonEvent.CustomData);
                 break;
             case 5:
+                Debug.Log(view.Owner.NickName);
                 StartTransitionToDay();
                 break;
             case 6:

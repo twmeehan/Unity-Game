@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Photon.Pun;
+using UnityEngine;
 using UnityEngine.UI;
 
 /* 
@@ -90,6 +91,8 @@ public class Interact : MonoBehaviour
         // only run on controller's client
 
         controller.SetSleeping(false);
+        object[] objectArray = { false};
+        controller.view.RPC("UpdateSleepingRPC", RpcTarget.All, objectArray as object);
         controller.movement.frozen = false;
 
     }

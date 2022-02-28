@@ -39,9 +39,13 @@ public class RoomScript : MonoBehaviour
         List<Controller> players = new List<Controller>();
         foreach (BedScript bed in beds)
         {
-            if (bed.player != null)
+            // doesn't get a player if bed is empty
+            try
             {
                 players.Add(bed.getPlayer().GetComponent<Controller>());
+            } catch
+            {
+
             }
         }
         return players;

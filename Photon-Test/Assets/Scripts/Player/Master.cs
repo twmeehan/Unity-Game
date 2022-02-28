@@ -97,11 +97,11 @@ public class Master : MonoBehaviour
             // call StartTransitionToDay() on all Controllers
             PhotonNetwork.RaiseEvent(5, null, new RaiseEventOptions { Receivers = ReceiverGroup.All }, SendOptions.SendReliable);
 
-            List<Controller> players = ((Controller[])FindObjectsOfType(typeof(Controller))).ToList<Controller>();
+/*            List<Controller> players = ((Controller[])FindObjectsOfType(typeof(Controller))).ToList<Controller>();
             foreach (Controller player in players)
             {
                 player.SetSleeping(false);
-            }
+            }*/
         }
     }
 
@@ -123,6 +123,7 @@ public class Master : MonoBehaviour
             && controller.transition.GetCurrentAnimatorStateInfo(0).IsName("Fade") && CheckIfAllPlayersAreSleeping())
         {
 
+            controller.SetSleeping(true);
             // set timer
             object[] content = new object[] { 31, PhotonNetwork.Time };
             PhotonNetwork.RaiseEvent(3, content, new RaiseEventOptions { Receivers = ReceiverGroup.All }, SendOptions.SendReliable);

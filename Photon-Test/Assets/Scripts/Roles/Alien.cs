@@ -48,6 +48,7 @@ public class Alien : Role
 
     public override void EndNight(Controller player, Controller newInfectedPlayer)
     {
+        newInfectedPlayer.SetInfected(true);
         gameObjects.Clear();
 
     }
