@@ -25,26 +25,21 @@ public class Parallax : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        try
+      
+        if (cam == null)
+            cam = Camera.main.transform;
+            
+        if (parallax)
         {
-            if (cam == null)
-                cam = Camera.current.transform;
+            float parallaxX = (cam.position.x - previousCamPos.x) * Mathf.Clamp(this.gameObject.transform.position.z, -1000, 12) / 12;
+            Vector3 backgroundTargetPosX = new Vector3(transform.position.x + parallaxX,
+               transform.position.y,
+               transform.position.z);
 
-            if (parallax)
-            {
-                float parallaxX = (cam.position.x - previousCamPos.x) * Mathf.Clamp(this.gameObject.transform.position.z, -1000, 12) / 12;
-                Vector3 backgroundTargetPosX = new Vector3(transform.position.x + parallaxX,
-                   transform.position.y,
-                   transform.position.z);
+            this.gameObject.transform.position = Vector3.Lerp(transform.position, backgroundTargetPosX, 1.0f);
 
-                this.gameObject.transform.position = Vector3.Lerp(transform.position, backgroundTargetPosX, 1.0f);
-
-                previousCamPos = cam.position;
-                previousLocalCamPos = cam.localPosition;
-            }
-        } catch
-        {
-
+            previousCamPos = cam.position;
+            previousLocalCamPos = cam.localPosition;
         }
     }
 }
