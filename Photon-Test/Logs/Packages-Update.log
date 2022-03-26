@@ -43,3 +43,12 @@ The following packages were added:
   com.unity.textmeshpro@2.1.1
   com.unity.timeline@1.2.18
   com.unity.ugui@1.0.0
+
+=== Sat Mar 26 12:05:21 2022
+
+Packages were changed.
+Update Mode: mergeDefaultDependencies
+
+The following packages were added:
+  com.unity.2d.spriteshape@3.0.12
+  com.unity.render-pipelines.universal@7.1.8

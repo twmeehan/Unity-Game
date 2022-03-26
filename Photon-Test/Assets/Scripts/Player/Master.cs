@@ -109,7 +109,7 @@ public class Master : MonoBehaviour
     public static void EndTransitionToDay()
     {
 
-        object[] content = new object[] { 31, PhotonNetwork.Time };
+        object[] content = new object[] { 91, PhotonNetwork.Time };
         PhotonNetwork.RaiseEvent(3, content, new RaiseEventOptions { Receivers = ReceiverGroup.All }, SendOptions.SendReliable);
        
     }
