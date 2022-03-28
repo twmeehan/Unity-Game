@@ -2,8 +2,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-#if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
+#if ENABLE_INPUT_SYSTEM
 #endif
 
 namespace Michsky.UI.Dark

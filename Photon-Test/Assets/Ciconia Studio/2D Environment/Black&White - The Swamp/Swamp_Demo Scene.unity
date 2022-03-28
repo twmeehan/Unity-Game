@@ -44301,7 +44301,6 @@ MonoBehaviour:
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
   m_CameraType: 0
-  m_CameraOutput: 0
   m_Cameras: []
   m_RendererIndex: -1
   m_VolumeLayerMask:
@@ -44313,6 +44312,7 @@ MonoBehaviour:
   m_AntialiasingQuality: 2
   m_StopNaN: 0
   m_Dithering: 0
+  m_ClearDepth: 1
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
@@ -48045,11 +48045,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4098808438594814074, guid: 9fefd2e0d204602409931c0f80f8b7c7,
         type: 3}
-      propertyPath: m_VertexStreams.Array.size
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4098808438594814074, guid: 9fefd2e0d204602409931c0f80f8b7c7,
-        type: 3}
       propertyPath: m_UseCustomVertexStreams
       value: 1
       objectReference: {fileID: 0}
@@ -48058,6 +48053,11 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 79cf8365b21921a44abbb3c8a46a36f4, type: 2}
+    - target: {fileID: 4098808438594814074, guid: 9fefd2e0d204602409931c0f80f8b7c7,
+        type: 3}
+      propertyPath: m_VertexStreams.Array.size
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 4098808438594814074, guid: 9fefd2e0d204602409931c0f80f8b7c7,
         type: 3}
       propertyPath: m_VertexStreams.Array.data[1]
@@ -48283,11 +48283,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4764082267113886017, guid: 7a05a3201218513479c3da4a20b8e48e,
         type: 3}
-      propertyPath: m_VertexStreams.Array.size
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4764082267113886017, guid: 7a05a3201218513479c3da4a20b8e48e,
-        type: 3}
       propertyPath: m_UseCustomVertexStreams
       value: 1
       objectReference: {fileID: 0}
@@ -48296,6 +48291,11 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 79cf8365b21921a44abbb3c8a46a36f4, type: 2}
+    - target: {fileID: 4764082267113886017, guid: 7a05a3201218513479c3da4a20b8e48e,
+        type: 3}
+      propertyPath: m_VertexStreams.Array.size
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 4764082267113886017, guid: 7a05a3201218513479c3da4a20b8e48e,
         type: 3}
       propertyPath: m_VertexStreams.Array.data[1]
