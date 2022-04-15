@@ -16,7 +16,6 @@ public class GameLauncher : MonoBehaviour
 {
 
     public GameObject CharacterPrefab;
-    public GameObject MainCamera;
     public AudioSource audio;
 
     private float timeSinceSleeping;
@@ -41,8 +40,6 @@ public class GameLauncher : MonoBehaviour
             player.GetComponent<Master>().enabled = true;
             master = player.GetComponent<Master>();
         }
-
-        MainCamera.SetActive(false);
 
     }
     public void Update()

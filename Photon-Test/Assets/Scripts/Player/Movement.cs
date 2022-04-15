@@ -124,7 +124,7 @@ public class Movement : MonoBehaviour
     public void JumpBuffer()
     {
 
-        if (Input.GetKeyDown(KeyCode.Space) && Physics2D.OverlapCircle(required.feetPosition.position, required.jumpBufferDistance, (int) Layers.ground) && rb.velocity.y < 0)
+        if (UnityEngine.InputSystem.Keyboard.current.spaceKey.isPressed && Physics2D.OverlapCircle(required.feetPosition.position, required.jumpBufferDistance, (int) Layers.ground) && rb.velocity.y < 0)
         {
             jumpBuffered = true;
         }
@@ -137,7 +137,11 @@ public class Movement : MonoBehaviour
     {
 
         // input is -1, 1, or 0 based off whether user is pressing 'a', 'd', '<-', or '->'
-        float input = Input.GetAxisRaw("Horizontal");
+        float input = 0;
+        if (UnityEngine.InputSystem.Keyboard.current.aKey.isPressed)
+            input += -1;
+        if (UnityEngine.InputSystem.Keyboard.current.dKey.isPressed)
+            input += 1;
 
         // if player is moving significantly fast and user is not pressing anything, use decelerationSpeed to slow down
         if (input == 0 && Mathf.Abs(rb.velocity.x) > decelerationSpeed * Time.deltaTime)
@@ -200,7 +204,7 @@ public class Movement : MonoBehaviour
          * - has recently been in contact with the ground (coyoteTime)
          * If any return true then the player will jump
          */
-        if ((isGrounded || infiniteJump || doubleJumpAvailable || Time.time - timeSinceGrounded < coyoteTime) && (Input.GetKeyDown(KeyCode.Space) || jumpBuffered) && (Time.time - timeSinceJump) > 0.2f)
+        if ((isGrounded || infiniteJump || doubleJumpAvailable || Time.time - timeSinceGrounded < coyoteTime) && (UnityEngine.InputSystem.Keyboard.current.spaceKey.isPressed || jumpBuffered) && (Time.time - timeSinceJump) > 0.2f)
         {
 
             jumpBuffered = false;
@@ -219,7 +223,7 @@ public class Movement : MonoBehaviour
 
         // if player continues to press space after the initial jump and they have been jumping for less than
         // maxTimeHoldingJump, continues to move upwards
-        if (Input.GetKey(KeyCode.Space) && isJumping == true && Time.time - timeSinceJump < maxTimeHoldingJump)
+        if (UnityEngine.InputSystem.Keyboard.current.spaceKey.isPressed && isJumping == true && Time.time - timeSinceJump < maxTimeHoldingJump)
             rb.velocity = new Vector2(rb.velocity.x, jumpVelocity + (Time.time - timeSinceJump) * jumpAcceleration);
 
         // if player has just released space or reached maxTimeHoldingJump
