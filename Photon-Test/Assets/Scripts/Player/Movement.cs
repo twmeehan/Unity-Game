@@ -204,7 +204,7 @@ public class Movement : MonoBehaviour
          * - has recently been in contact with the ground (coyoteTime)
          * If any return true then the player will jump
          */
-        if ((isGrounded || infiniteJump || doubleJumpAvailable || Time.time - timeSinceGrounded < coyoteTime) && (UnityEngine.InputSystem.Keyboard.current.spaceKey.isPressed || jumpBuffered) && (Time.time - timeSinceJump) > 0.2f)
+        if ((isGrounded || infiniteJump || doubleJumpAvailable || Time.time - timeSinceGrounded < coyoteTime) && (UnityEngine.InputSystem.Keyboard.current.spaceKey.wasPressedThisFrame || jumpBuffered) && (Time.time - timeSinceJump) > 0.2f)
         {
 
             jumpBuffered = false;

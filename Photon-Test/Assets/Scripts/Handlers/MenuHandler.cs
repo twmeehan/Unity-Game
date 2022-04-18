@@ -15,7 +15,6 @@ public class MenuHandler : MonoBehaviourPunCallbacks
     #region Private Serializable Fields
 
     // Used to open and close various menus
-    [SerializeField] private GameObject CreateRoomCanvas;
     [SerializeField] private GameObject MainMenuCanvas;
     [SerializeField] private GameObject JoinRoomCanvas;
     [SerializeField] private GameObject OptionsCanvas;
@@ -70,7 +69,6 @@ public class MenuHandler : MonoBehaviourPunCallbacks
     void Start()
     {
 
-        CreateRoomCanvas.SetActive(false);
         MainMenuCanvas.SetActive(true);
         JoinRoomCanvas.SetActive(false);
         OptionsCanvas.SetActive(false);
@@ -128,7 +126,6 @@ public class MenuHandler : MonoBehaviourPunCallbacks
     public void Options()
     {
 
-        CreateRoomCanvas.SetActive(false);
         JoinRoomCanvas.SetActive(false);
         MainMenuCanvas.SetActive(false);
         OptionsCanvas.SetActive(true);
@@ -141,7 +138,6 @@ public class MenuHandler : MonoBehaviourPunCallbacks
     public void JoinRoom()
     {
 
-        CreateRoomCanvas.SetActive(false);
         JoinRoomCanvas.SetActive(true);
         MainMenuCanvas.SetActive(false);
         OptionsCanvas.SetActive(false);
