@@ -6,7 +6,6 @@ using UnityEngine.UI;
 public class OptionsMenuHandler : MonoBehaviour
 {
     // Used to open and close various menus
-    [SerializeField] private GameObject CreateRoomCanvas;
     [SerializeField] private GameObject MainMenuCanvas;
     [SerializeField] private GameObject JoinRoomCanvas;
     [SerializeField] private GameObject OptionsCanvas;
@@ -29,7 +28,6 @@ public class OptionsMenuHandler : MonoBehaviour
     public void back()
     {
 
-        CreateRoomCanvas.SetActive(false);
         JoinRoomCanvas.SetActive(false);
         MainMenuCanvas.SetActive(true);
         OptionsCanvas.SetActive(false);

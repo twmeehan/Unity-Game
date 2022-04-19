@@ -6310,7 +6310,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5041880532373027137}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.21, y: -1.52, z: 0}
+  m_LocalPosition: {x: 0.078, y: -1.424, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5426939648343267733}
@@ -6671,6 +6671,8 @@ MonoBehaviour:
   movement: {fileID: 8423942542518196970}
   interact: {fileID: 8104712442562335359}
   transition: {fileID: 6451415540657468064}
+  animations: {fileID: 6515062701222245733}
+  character: {fileID: 4289046650536693913}
   camera: {fileID: 6527422419404698692}
   name: {fileID: 7994718407077273532}
   view: {fileID: 6944378854370746459}
@@ -6700,7 +6702,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   frozen: 0
-  maxSpeed: 7
+  maxSpeed: 5
   accelerationSpeed: 60
   decelerationSpeed: 50
   bufferJump: 1
@@ -6731,8 +6733,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.1, y: -0.5}
-  m_Size: {x: 1.0023398, y: 2.049065}
+  m_Offset: {x: 0.036566198, y: -0.40792274}
+  m_Size: {x: 1.0633191, y: 1.8649106}
   m_Direction: 0
 --- !u!1 &5503537072142534423
 GameObject:
@@ -6828,7 +6830,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6527422419404698692}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.00000011920929, z: -100}
+  m_LocalPosition: {x: 0, y: -0.00000047683716, z: -100}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3231528391095042655}
@@ -7145,7 +7147,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8269562726369550986}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.1, y: -0.89, z: 0}
+  m_LocalPosition: {x: 0.1, y: -0.61, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 1}
   m_Children:
   - {fileID: 5789252701462050379}

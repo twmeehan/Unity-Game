@@ -7,6 +7,9 @@ public class Movement : MonoBehaviour
     #region private variables
 
     private Rigidbody2D rb;
+
+    private Controller controller;
+
     // true if player is touching ground
     private bool isGrounded = false;
     // is true if the player is in the middle of a jump
@@ -77,6 +80,7 @@ public class Movement : MonoBehaviour
     // Method Start() - runs at the start of the game to obtain reference to Rigidbody2D rb
     private void Start()
     {
+        controller = this.gameObject.GetComponent<Controller>();
         rb = this.gameObject.GetComponent<Rigidbody2D>();
     }
 
@@ -88,6 +92,7 @@ public class Movement : MonoBehaviour
         isGrounded = Physics2D.OverlapCircle(required.feetPosition.position, required.distanceFromGround, (int) Layers.ground);
         if (isGrounded)
             timeSinceGrounded = Time.time;
+        controller.animations.SetBool("Grounded",isGrounded);
 
         // if player is touching ground and doubleJump is enabled, set doubleJumpAvailable = true
         if ((isGrounded || Time.time - timeSinceGrounded < coyoteTime) && doubleJump)
@@ -139,9 +144,15 @@ public class Movement : MonoBehaviour
         // input is -1, 1, or 0 based off whether user is pressing 'a', 'd', '<-', or '->'
         float input = 0;
         if (UnityEngine.InputSystem.Keyboard.current.aKey.isPressed)
+        {
+            controller.character.transform.localScale = new Vector3(-1,1,1);
             input += -1;
+        }
         if (UnityEngine.InputSystem.Keyboard.current.dKey.isPressed)
+        {
+            controller.character.transform.localScale = new Vector3(1, 1, 1);
             input += 1;
+        }
 
         // if player is moving significantly fast and user is not pressing anything, use decelerationSpeed to slow down
         if (input == 0 && Mathf.Abs(rb.velocity.x) > decelerationSpeed * Time.deltaTime)
@@ -164,8 +175,14 @@ public class Movement : MonoBehaviour
             // cap speed at maxSpeed
             if (Mathf.Abs(rb.velocity.x) > maxSpeed)
                 rb.velocity = new Vector2(input * maxSpeed, rb.velocity.y);
-
+                
         }
+
+        // if player is moving play running animation
+        if (Mathf.Abs(rb.velocity.x) > 0.2f && isGrounded)
+            controller.animations.SetBool("Running", true);
+        else
+            controller.animations.SetBool("Running", false);
 
     }
 
@@ -206,6 +223,8 @@ public class Movement : MonoBehaviour
          */
         if ((isGrounded || infiniteJump || doubleJumpAvailable || Time.time - timeSinceGrounded < coyoteTime) && (UnityEngine.InputSystem.Keyboard.current.spaceKey.wasPressedThisFrame || jumpBuffered) && (Time.time - timeSinceJump) > 0.2f)
         {
+
+            controller.animations.SetTrigger("Jump");
 
             jumpBuffered = false;
 

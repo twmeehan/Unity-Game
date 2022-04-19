@@ -32,6 +32,8 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback
     public Movement movement;
     public Interact interact;
     public Animator transition;
+    public Animator animations;
+    public GameObject character;
     public GameObject camera;
     public TextMeshProUGUI name;
 
