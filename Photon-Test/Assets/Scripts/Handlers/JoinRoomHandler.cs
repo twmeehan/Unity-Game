@@ -16,7 +16,6 @@ public class JoinRoomHandler : MonoBehaviourPunCallbacks
     #region Private Serializable Fields
 
     // Used to open and close various menus
-    [SerializeField] private GameObject CreateRoomCanvas;
     [SerializeField] private GameObject MainMenuCanvas;
     [SerializeField] private GameObject JoinRoomCanvas;
     [SerializeField] private GameObject OptionsCanvas;
@@ -126,7 +125,6 @@ public class JoinRoomHandler : MonoBehaviourPunCallbacks
         {
             room.delete();
         }
-        CreateRoomCanvas.SetActive(false);
         JoinRoomCanvas.SetActive(false);
         MainMenuCanvas.SetActive(true);
         OptionsCanvas.SetActive(false);

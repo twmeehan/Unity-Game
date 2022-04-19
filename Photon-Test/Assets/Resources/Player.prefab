@@ -5860,6 +5860,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6774577357070412692}
   - component: {fileID: 6515062701222245733}
+  - component: {fileID: 8117028294445310425}
   m_Layer: 9
   m_Name: Character
   m_TagString: Untagged
@@ -5901,6 +5902,33 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &8117028294445310425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4289046650536693913}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowLayerWeightsInspector: 1
+  ShowParameterInspector: 1
+  m_SynchronizeParameters:
+  - Type: 4
+    SynchronizeType: 0
+    Name: Running
+  - Type: 9
+    SynchronizeType: 0
+    Name: Jump
+  - Type: 4
+    SynchronizeType: 0
+    Name: Grounded
+  m_SynchronizeLayers:
+  - SynchronizeType: 0
+    LayerIndex: 0
 --- !u!1 &4335450430856653897
 GameObject:
   m_ObjectHideFlags: 0
@@ -6617,6 +6645,7 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 1762595681582499823}
   - {fileID: 2011768034319793030}
+  - {fileID: 8117028294445310425}
   sceneViewId: 1
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -6830,7 +6859,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6527422419404698692}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.00000047683716, z: -100}
+  m_LocalPosition: {x: 0, y: -0.00000011920929, z: -100}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3231528391095042655}

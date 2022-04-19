@@ -63,6 +63,7 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback
             movement.enabled = false;
             interact.enabled = false;
             timer.enabled = false;
+            camera.SetActive(false);
             this.enabled = false;
 
         }
