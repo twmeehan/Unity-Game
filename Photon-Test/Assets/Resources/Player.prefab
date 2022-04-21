@@ -11259,7 +11259,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5041880532373027137}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.07, y: -1.59, z: 0}
+  m_LocalPosition: {x: 0.07, y: -1.564, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5426939648343267733}
@@ -11657,7 +11657,7 @@ MonoBehaviour:
   decelerationSpeed: 50
   bufferJump: 1
   doubleJump: 0
-  infiniteJump: 1
+  infiniteJump: 0
   jumpVelocity: 7
   jumpAcceleration: 5
   maxTimeHoldingJump: 0.3
@@ -11683,8 +11683,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.036566198, y: -0.5182724}
-  m_Size: {x: 1.0633191, y: 2.08561}
+  m_Offset: {x: 0.036566198, y: -0.50239897}
+  m_Size: {x: 1.0633191, y: 2.053863}
   m_Direction: 0
 --- !u!1 &5503537072142534423
 GameObject:
@@ -11780,7 +11780,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6527422419404698692}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.00000011920929, z: -100}
+  m_LocalPosition: {x: 0, y: -0.00000047683716, z: -100}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3231528391095042655}
@@ -12097,7 +12097,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8269562726369550986}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.1, y: -0.89, z: 0}
+  m_LocalPosition: {x: 0.1, y: -0.89, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 1}
   m_Children:
   - {fileID: 5789252701462050379}
