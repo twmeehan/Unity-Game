@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-// Class Controller() - class attached to the character that controls all other aspects
+// Class Controller - class attached to the character that controls all other aspects
 // of the character. 
 public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback
 {
