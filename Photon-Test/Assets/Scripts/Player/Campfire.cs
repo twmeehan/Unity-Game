@@ -7,7 +7,7 @@ using UnityEngine;
 public class Campfire : MonoBehaviour
 {
 
-    PhotonView view;
+    private PhotonView view;
 
     // number of players that can sleep at this campfire
     public int size;
@@ -18,16 +18,10 @@ public class Campfire : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        view = this.gameObject.GetComponent<PhotonView>();
         playerIDs = new string[size];
         UpdatePlayerList();
 
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     // Method UpdatePlayerList() - takes the list of PlayerIDs and finds the corresponding
@@ -59,14 +53,54 @@ public class Campfire : MonoBehaviour
 
     }
 
+    // Method AttemptToJoinBed() - called by a player when they try to sleep
+    // near this fire. Returns true if the player successfully joins the bed
     public bool AttemptToJoinBed(Controller controller)
     {
         if (playerIDs.Length < size)
         {
             playerIDs[playerIDs.Length] = controller.view.Owner.UserId;
+            view.RPC("UpdatePlayerListAcrossClientsRPC", RpcTarget.All, playerIDs);
             return true;
         }
         return false;
+    }
+
+    // Method LeaveBed() - called by a player when they try to wake up
+    // near this fire
+    public void LeaveBed(Controller controller)
+    {
+
+        // create a duplicate of playerIDs
+        string[] IDs = playerIDs;
+        playerIDs = new string[size];
+
+        // foreach ID in playerIDs...
+        for (int i = 0; i < IDs.Length;  i++)
+        {
+
+            // if the ID/player is not the one being removed add it back to playerIDs
+            if (!controller.view.Owner.UserId.Equals(playerIDs[i]))
+                playerIDs[playerIDs.Length] = IDs[i];
+
+        }
+
+        // sync new list of players across all clients
+        view.RPC("UpdatePlayerListAcrossClientsRPC", RpcTarget.All, playerIDs);
+
+    }
+
+    // Method UpdatePlayerListAcrossClientsRPC() - takes an array of players and syncs
+    // it across all clients
+    [PunRPC]
+    public void UpdatePlayerListAcrossClientsRPC(string[] playerIDs)
+    {
+
+        this.playerIDs = playerIDs;
+
+        // make sure 'players' is synced as well
+        UpdatePlayerList();
+
     }
     public Controller[] GetPlayers()
     {
