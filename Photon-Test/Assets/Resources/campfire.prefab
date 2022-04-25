@@ -4881,6 +4881,7 @@ GameObject:
   - component: {fileID: 4781974532309025000}
   - component: {fileID: 2929114995297295982}
   - component: {fileID: 4217863861407719852}
+  - component: {fileID: 2188975541897338046}
   m_Layer: 10
   m_Name: campfire
   m_TagString: Untagged
@@ -4945,6 +4946,28 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 45.50206, y: 22.8666}
   m_EdgeRadius: 0
+--- !u!114 &2188975541897338046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4781974532309025002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &4781974532458190213
 GameObject:
   m_ObjectHideFlags: 0
@@ -14579,7 +14602,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3805750698382273258}
   - component: {fileID: 4298683201325219229}
-  - component: {fileID: 1296183360140807497}
   m_Layer: 0
   m_Name: campfire
   m_TagString: Untagged
@@ -14651,18 +14673,3 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &1296183360140807497
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8552257361008574071}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9cb2ecbba772b1b48ae2c0f4b45008de, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isLit: 0
-  size: 1
-  fire: {fileID: 0}
