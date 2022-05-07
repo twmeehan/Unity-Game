@@ -21,7 +21,7 @@ public class Sleep : MonoBehaviour
             RaycastHit2D campfire = Physics2D.Raycast(controller.transform.position, Vector2.down, 0.1f, (int)Layers.room);
             if (campfire.collider != null)
             {
-                if (campfire.collider.gameObject.GetComponent<Campfire>().AttemptToJoinCampfire(this.controller))
+                if (campfire.collider.gameObject.GetComponent<Shelter>().AttemptToJoinCampfire(this.controller))
                 {
                     Debug.Log("sleep");
                     this.controller.animations.SetTrigger("Sleep");
