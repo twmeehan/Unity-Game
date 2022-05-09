@@ -91,10 +91,21 @@ public class Movement : MonoBehaviour
     void Update()
     {
 
+        ParticleSystem.VelocityOverLifetimeModule vel = required.landParticles.velocityOverLifetime;
+
         // check if play is grounded and set isGrounded and timeSinceGrounded
         isGrounded = Physics2D.OverlapCircle(required.feetPosition.position, required.distanceFromGround, (int) Layers.ground);
+        if (isGrounded && rb.velocity.y < -10.0f)
+        {
+            required.landParticles.emission.SetBurst(0, new ParticleSystem.Burst(0, -Mathf.Ceil(rb.velocity.y) - 10));
+            vel.yMultiplier = -Mathf.Ceil(rb.velocity.y) / 14;
+            required.landParticles.Play();
+        }
+
         if (isGrounded)
             timeSinceGrounded = Time.time;
+
+     
         controller.animations.SetBool("Grounded",isGrounded);
 
         // if player is touching ground and doubleJump is enabled, set doubleJumpAvailable = true
@@ -161,6 +172,12 @@ public class Movement : MonoBehaviour
             controller.character.transform.localScale = new Vector3(1, 1, 1);
             input += 1;
         }
+
+        ParticleSystem.EmissionModule emission = required.landParticles.emission;
+        if (isGrounded && input != 0)
+            emission.rate = 3;
+        else
+            emission.rate = 0;
 
         // if player is moving significantly fast and user is not pressing anything, use decelerationSpeed to slow down
         if (input == 0 && Mathf.Abs(rb.velocity.x) > decelerationSpeed * Time.deltaTime)
@@ -314,4 +331,6 @@ public class MovementRequirements
     public ParticleSystem burst;
 
     public TrailRenderer cape;
+
+    public ParticleSystem landParticles;
 }
