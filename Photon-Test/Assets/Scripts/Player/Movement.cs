@@ -167,8 +167,9 @@ public class Movement : MonoBehaviour
         {
 
             // if player has been moving for 0.5+ seconds
-            if (timeSinceMove > 0.5f && isGrounded)
-            {
+            if (timeSinceMove > 0.5f && isGrounded) {
+
+                timeSinceMove = 0;
                 required.cape.time = 0;
                 required.burst.Play();
             }
