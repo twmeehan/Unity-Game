@@ -13,7 +13,7 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback
     #region private variables
 
     private bool sleeping = false;
-    private bool day = false;
+    private bool day = true;
     private bool infected = false;
 
     private System.Random rand = new System.Random();
@@ -65,6 +65,7 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback
             timer.enabled = false;
             camera.SetActive(false);
             this.enabled = false;
+            this.gameObject.GetComponent<Sleep>().enabled = false;
 
         }
 
@@ -486,7 +487,7 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback
             // ALIEN
             case 0:
                 this.role = new Alien();
-
+/*
                 // enable the infected inicator for all players if this character is the alien
                 if (view.IsMine)
                 {
@@ -506,7 +507,7 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback
 
                     }
                 }
-
+*/
                 break;
 
             // DOCTOR
@@ -527,6 +528,7 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback
                 StartTransitionToNight();
                 break;
             case 3:
+                Debug.Log("time set");
                 object[] data = (object[])photonEvent.CustomData;
                 timer.SetTimer(Convert.ToSingle(data[0]), Convert.ToSingle(data[1]));
                 break;

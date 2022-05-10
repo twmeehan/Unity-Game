@@ -49,7 +49,6 @@ public class Shelter : MonoBehaviour
             if (player.position.y - this.transform.position.y > 5)
                 color.a = 1;
             shelterOuterWall.color = color;
-            Debug.Log(shelterOuterWall.color.a + " should be " + color.a);
 
         }
     }

@@ -27,19 +27,12 @@ public class Master : MonoBehaviour
     void Update()
     {
 
-        if (controller.transitionState == (int) States.startingGame && controller.timer.stopwatch.time > 1.0f)
+        if (controller.transitionState == (int) States.startingGame && controller.timer.stopwatch.time > 5.0f)
         {
 
             controller.transitionState = (int)States.none;
-            
-            // start night
 
-            // set timer
-            object[] content = new object[] { 31, PhotonNetwork.Time };
-            PhotonNetwork.RaiseEvent(3, content, new RaiseEventOptions { Receivers = ReceiverGroup.All }, SendOptions.SendReliable);
-
-            // call EndTransitionToNight() on all Controllers
-            PhotonNetwork.RaiseEvent(6, new object[] { }, new RaiseEventOptions { Receivers = ReceiverGroup.All }, SendOptions.SendReliable);
+            // TODO: remove display role screen
 
         } else if (controller.transitionState == (int) States.transitioningToNight)
         {
@@ -63,6 +56,20 @@ public class Master : MonoBehaviour
 
     }
 
+    public void StartGame(List<Controller> players)
+    {
+
+        // start a stopwatch and display roles for 5 seconds
+        controller.timer.stopwatch.Reset();
+
+        // set timer
+        object[] content = new object[] { 127, PhotonNetwork.Time };
+        PhotonNetwork.RaiseEvent(3, content, new RaiseEventOptions { Receivers = ReceiverGroup.All }, SendOptions.SendReliable);
+
+        // TODO: display roles on screen
+        AssignRoles(players);
+
+    }
     public void AssignRoles(List<Controller> players)
     {
 
@@ -76,7 +83,7 @@ public class Master : MonoBehaviour
             player.SetRole(roles[j]);
             roles.RemoveAt(j);
         }
-        
+
     }
     // Method CheckToTransitionToDay() - if the screen has finished fading to black and are players
     // have been assigned to beds then begin waking the player up again

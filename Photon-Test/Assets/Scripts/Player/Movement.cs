@@ -22,8 +22,6 @@ public class Movement : MonoBehaviour
     private float timeSinceJump = 0.0f;
     // used for coyote time
     private float timeSinceGrounded = 0.0f;
-    // used for the particle burst to mask cape, checks if player has been moving for at least 0.5 seconds
-    private float timeSinceMove = 0.0f;
 
 
     #endregion
@@ -91,17 +89,9 @@ public class Movement : MonoBehaviour
     void Update()
     {
 
-        ParticleSystem.VelocityOverLifetimeModule vel = required.landParticles.velocityOverLifetime;
-
         // check if play is grounded and set isGrounded and timeSinceGrounded
         isGrounded = Physics2D.OverlapCircle(required.feetPosition.position, required.distanceFromGround, (int) Layers.ground);
-        if (isGrounded && rb.velocity.y < -10.0f)
-        {
-            required.landParticles.emission.SetBurst(0, new ParticleSystem.Burst(0, -Mathf.Ceil(rb.velocity.y) - 10));
-            vel.yMultiplier = -Mathf.Ceil(rb.velocity.y) / 14;
-            required.landParticles.Play();
-        }
-
+        
         if (isGrounded)
             timeSinceGrounded = Time.time;
 
@@ -155,41 +145,23 @@ public class Movement : MonoBehaviour
     // on input parameters (handles horizontal movement)
     public void CalculateHorizontalMovement()
     {
-        // enable cape
-        required.cape.time = 1;
 
         // input is -1, 1, or 0 based off whether user is pressing 'a', 'd', '<-', or '->'
         float input = 0;
         if (UnityEngine.InputSystem.Keyboard.current.aKey.isPressed)
         {
-            timeSinceMove += Time.deltaTime;
             controller.character.transform.localScale = new Vector3(-1,1,1);
             input += -1;
         }
         if (UnityEngine.InputSystem.Keyboard.current.dKey.isPressed)
         {
-            timeSinceMove += Time.deltaTime;
             controller.character.transform.localScale = new Vector3(1, 1, 1);
             input += 1;
         }
 
-        ParticleSystem.EmissionModule emission = required.landParticles.emission;
-        if (isGrounded && input != 0)
-            emission.rate = 3;
-        else
-            emission.rate = 0;
-
         // if player is moving significantly fast and user is not pressing anything, use decelerationSpeed to slow down
         if (input == 0 && Mathf.Abs(rb.velocity.x) > decelerationSpeed * Time.deltaTime)
         {
-
-            // if player has been moving for 0.5+ seconds
-            if (timeSinceMove > 0.5f && isGrounded) {
-
-                timeSinceMove = 0;
-                required.cape.time = 0;
-                required.burst.Play();
-            }
 
             rb.velocity = new Vector2(rb.velocity.x - Mathf.Sign(rb.velocity.x) * decelerationSpeed * Time.deltaTime, rb.velocity.y);
         }
@@ -197,8 +169,6 @@ public class Movement : MonoBehaviour
         // if player is not moving or drifting slowly while input == 0 then freeze the player's horizontal movement
         else if (input == 0)
         {
-            // if player is not moving then reset timeSinceMove
-            timeSinceMove = 0;
 
             rb.velocity = new Vector2(0, rb.velocity.y);
         }
@@ -281,9 +251,11 @@ public class Movement : MonoBehaviour
 
         }
 
+        RaycastHit2D headHit = Physics2D.CircleCast(required.headPosition.position, 0.3f, Vector2.up, 0.3f, (int)Layers.ground);
+
         // if player continues to press space after the initial jump and they have been jumping for less than
         // maxTimeHoldingJump, continues to move upwards
-        if (UnityEngine.InputSystem.Keyboard.current.spaceKey.isPressed && isJumping == true && Time.time - timeSinceJump < maxTimeHoldingJump)
+        if (headHit.collider == null && UnityEngine.InputSystem.Keyboard.current.spaceKey.isPressed && isJumping == true && Time.time - timeSinceJump < maxTimeHoldingJump)
             rb.velocity = new Vector2(rb.velocity.x, jumpVelocity + (Time.time - timeSinceJump) * jumpAcceleration);
 
         // if player has just released space or reached maxTimeHoldingJump
@@ -321,16 +293,13 @@ public class MovementRequirements
     // position of players feet (to check if player is grounded)
     public Transform feetPosition;
 
+    // position of players head (to check if player is hitting their head)
+    public Transform headPosition;
+
     // minimum distance from character feet to ground
     public float distanceFromGround;
 
     // max distance from the ground that player can buffer their jump
     public float jumpBufferDistance;
 
-    // trigger burst when player stops moving
-    public ParticleSystem burst;
-
-    public TrailRenderer cape;
-
-    public ParticleSystem landParticles;
 }

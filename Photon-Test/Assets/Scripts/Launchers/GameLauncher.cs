@@ -18,8 +18,6 @@ public class GameLauncher : MonoBehaviour
     public GameObject CharacterPrefab;
     public AudioSource audio;
 
-    private float timeSinceSleeping;
-    private bool allSleepingLastFrame;
     private Master master;
 
     /// <summary>
@@ -31,10 +29,15 @@ public class GameLauncher : MonoBehaviour
 
         audio.volume = PlayerPrefs.GetFloat("musicVolume");
 
+        // Create players
         Vector2 StartingPos = new Vector2(0, 15);
         GameObject player = PhotonNetwork.Instantiate(CharacterPrefab.name, StartingPos, Quaternion.identity);
         player.GetComponent<Controller>().camera.SetActive(true);
         player.GetComponent<Controller>().transitionState = (int)States.startingGame;
+
+        // TODO: Screen should be black
+
+        // Designate master client
         if (PhotonNetwork.IsMasterClient)
         {
             player.GetComponent<Master>().enabled = true;
@@ -44,17 +47,19 @@ public class GameLauncher : MonoBehaviour
     }
     public void Update()
     {
+
+        // Once all players have loaded in
         List<Controller> players = ((Controller[])FindObjectsOfType(typeof(Controller))).ToList<Controller>();
         
         if (players.Count == PhotonNetwork.CurrentRoom.Players.Count && PhotonNetwork.IsMasterClient)
         {
-            foreach (Controller player in players)
-            {
-                player.FindBed();
-            }
-            master.AssignRoles(players);
-            master.gameObject.GetComponent<Controller>().timer.stopwatch.Reset();
+            
+            // tell master client to start the game
+            master.StartGame(players);
+
+            // delete this object, master client will handle everything from here on
             Destroy(this.gameObject);
+
         }
     }
 }
