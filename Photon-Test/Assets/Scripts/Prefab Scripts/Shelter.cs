@@ -13,18 +13,45 @@ public class Shelter : MonoBehaviour
 
     // number of players that can sleep at this campfire
     public int size;
-    
+
+    public SpriteRenderer shelterOuterWall;
+
+    private Transform player;
     private List<string> playerIDs;
     private List<Controller> players;
 
     // Start is called before the first frame update
     void Start()
     {
+
         view = this.gameObject.GetComponent<PhotonView>();
         playerIDs = new List<string>();
         players = new List<Controller>();
         UpdatePlayerList();
 
+    }
+
+    private void Update()
+    {
+        if (player == null)
+        {
+            List<Controller> players = ((Controller[])FindObjectsOfType(typeof(Controller))).ToList<Controller>();
+            foreach (Controller p in players)
+            {
+                if (p.view.Owner.IsLocal)
+                {
+                    player = p.transform;
+                }
+            }
+        } else {
+            Color color = shelterOuterWall.color;
+            color.a = Mathf.Clamp(Mathf.Abs(player.position.x - this.transform.position.x) * 0.25f,0.5f,1);
+            if (player.position.y - this.transform.position.y > 5)
+                color.a = 1;
+            shelterOuterWall.color = color;
+            Debug.Log(shelterOuterWall.color.a + " should be " + color.a);
+
+        }
     }
 
     // Method UpdatePlayerList() - takes the list of PlayerIDs and finds the corresponding
