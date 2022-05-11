@@ -6,24 +6,27 @@ public class Sleep : MonoBehaviour
 {
 
     private Controller controller;
-
+    private Timer timer;
     private void Start()
     {
+        timer = new Timer();
         controller = this.gameObject.GetComponent<Controller>();
+        timer.stopwatch.Start();
+
     }
     // Update is called once per frame
     void Update()
     {
-        if (UnityEngine.InputSystem.Keyboard.current.qKey.isPressed)
+        timer.stopwatch.Update();
+        if (UnityEngine.InputSystem.Keyboard.current.qKey.wasPressedThisFrame && timer.stopwatch.time > 1.0f && !controller.sleeping)
         {
-            Debug.Log("q");
-
-            RaycastHit2D campfire = Physics2D.Raycast(controller.transform.position, Vector2.down, 0.1f, (int)Layers.room);
-            if (campfire.collider != null)
+            timer.stopwatch.Reset();
+            RaycastHit2D shelter = Physics2D.Raycast(controller.transform.position, Vector2.down, 0.1f, (int)Layers.room);
+            if (shelter.collider != null)
             {
-                if (campfire.collider.gameObject.GetComponent<Shelter>().AttemptToJoinCampfire(this.controller))
+                if (shelter.collider.gameObject.GetComponent<Shelter>().AttemptToJoinShelter(this.controller))
                 {
-                    Debug.Log("sleep");
+                    this.controller.SleepInShelter(shelter.collider.gameObject.GetComponent<Shelter>());
                     this.controller.animations.SetTrigger("Sleep");
                     // set player to sleeping
                 }

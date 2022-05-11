@@ -8,14 +8,14 @@ using UnityEngine;
 
 // Class Controller - class attached to the character that controls all other aspects
 // of the character. 
-public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback
+public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObservable
 {
     #region private variables
 
-    private bool sleeping = false;
     private bool day = true;
     private bool infected = false;
 
+    private Shelter shelter;
     private System.Random rand = new System.Random();
     #endregion
 
@@ -43,6 +43,9 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback
     public Role role;
     public int transitionState = 0;
 
+    [SerializeField]
+    public bool sleeping = false;
+
 
     #endregion
 
@@ -61,7 +64,6 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback
         {
 
             movement.enabled = false;
-            interact.enabled = false;
             timer.enabled = false;
             camera.SetActive(false);
             this.enabled = false;
@@ -94,6 +96,17 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback
 
     }
 
+    public void SleepInShelter(Shelter shelter)
+    {
+        movement.frozen = true;
+        sleeping = true;
+        this.shelter = shelter;
+    }
+    public void WakeUp()
+    {
+        sleeping = false;
+        shelter.LeaveShelter(this);
+    }
     // Method SwitchToNight() - called by OnEvent when master client sends the code to switch
     // all players to night. Puts remaining players into remaining beds and starts night animations
     public void StartTransitionToNight()
@@ -554,4 +567,14 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback
         PhotonNetwork.LoadLevel("Menu");
     }
 
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(sleeping);
+        } else
+        {
+            sleeping = (bool) stream.ReceiveNext();
+        }
+    }
 }

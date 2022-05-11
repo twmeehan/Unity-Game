@@ -34,7 +34,8 @@ public class Master : MonoBehaviour
 
             // TODO: remove display role screen
 
-        } else if (controller.transitionState == (int) States.transitioningToNight)
+        } 
+        /*else if (controller.transitionState == (int) States.transitioningToNight)
         {
             CheckToEndTransitionNight();
         } else if (controller.transitionState == (int)States.displayingRoles)
@@ -52,7 +53,7 @@ public class Master : MonoBehaviour
                 PhotonNetwork.RaiseEvent(2, null, new RaiseEventOptions { Receivers = ReceiverGroup.All }, SendOptions.SendReliable);
 
             }
-        }
+        }*/
 
     }
 

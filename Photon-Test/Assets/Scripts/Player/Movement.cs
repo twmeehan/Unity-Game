@@ -109,22 +109,13 @@ public class Movement : MonoBehaviour
         // enable movement and gravity if player is not frozen
         if (!frozen)
         {
-
-            if (bufferJump)
-                JumpBuffer();
-
             CalculateHorizontalMovement();
-            CalculateGravity();
-            CalculateJumpMovement();
+        } 
 
-        } else
-        {
-
-            // freeze player
-            rb.gravityScale = 0;
-            rb.velocity = Vector2.zero;
-
-        }
+        if (bufferJump)
+            JumpBuffer();
+        CalculateGravity();
+        CalculateJumpMovement();
 
 
     }
@@ -234,6 +225,12 @@ public class Movement : MonoBehaviour
          */
         if ((isGrounded || infiniteJump || doubleJumpAvailable || Time.time - timeSinceGrounded < coyoteTime) && (UnityEngine.InputSystem.Keyboard.current.spaceKey.wasPressedThisFrame || jumpBuffered) && (Time.time - timeSinceJump) > 0.2f)
         {
+
+            if (controller.sleeping)
+            {
+                controller.WakeUp();
+                frozen = false;
+            }
 
             controller.animations.SetTrigger("Jump");
 

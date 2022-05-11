@@ -2,17 +2,20 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
+using Photon.Realtime;
 
 // Class Campfire - attached to all campfire prefabs, allows a # of players
 // to sleep nearby and toggles fire on/off. Some night actions may use 
 // campfire.cs to get information on all players sleeping at that campfire
-public class Shelter : MonoBehaviour
+public class Shelter : MonoBehaviourPunCallbacks
 {
 
     private PhotonView view;
 
     // number of players that can sleep at this campfire
     public int size;
+    public TextMeshProUGUI playersInRoom;
 
     public SpriteRenderer shelterOuterWall;
 
@@ -75,6 +78,8 @@ public class Shelter : MonoBehaviour
 
         }
 
+        playersInRoom.text = playerIDs.Count + "/" + size;
+
         // return the newly updated list of players(controllers) based off playerIDs
         return players;
 
@@ -82,7 +87,7 @@ public class Shelter : MonoBehaviour
 
     // Method OnPlayerLeave() - if the player that left was sleeping by this fire, then find
     // and remove that player from playerIDs and update 'players' list for all clients
-    public void OnPlayerLeave()
+    public override void OnPlayerLeftRoom(Player otherPlayer)
     {
 
         if (PhotonNetwork.IsMasterClient)
@@ -90,30 +95,22 @@ public class Shelter : MonoBehaviour
             // get a list of all players in the scene
             Controller[] allControllersInScene = (Controller[])FindObjectsOfType(typeof(Controller));
 
-            // check each ID in playerIDs
-            foreach (string ID in playerIDs)
+            // check each controller in scene
+            foreach (Controller controller in allControllersInScene)
             {
-                foreach (Controller controller in allControllersInScene)
+                if (controller.view.Owner.Equals(otherPlayer))
                 {
-
-                    // if it matchs any controller (player) in the scene check the next ID
-                    if (controller.view.Owner.UserId == ID)
-                    {
-                        break;
-                    }
-
-                    // if not remove this ID from playerIDs and sync this change across all clients
-                    playerIDs.Remove(ID);
-                    view.RPC("UpdatePlayerListAcrossClientsRPC", RpcTarget.All, playerIDs);
-                    break;
-
+                    playerIDs.Remove(controller.view.Owner.UserId);
+                    view.RPC("UpdatePlayerListAcrossClientsRPC", RpcTarget.All, playerIDs.ToArray());
+                    return;
                 }
+                
             }
         }
     }
-    // Method AttemptToJoinCampfire() - called by a player when they try to sleep
+    // Method AttemptToJoinShelter() - called by a player when they try to sleep
     // near this shalder. Returns true if the player successfully joins the bed
-    public bool AttemptToJoinCampfire(Controller controller)
+    public bool AttemptToJoinShelter(Controller controller)
     {
         if (playerIDs.Count < size)
         {
@@ -125,9 +122,9 @@ public class Shelter : MonoBehaviour
         return false;
     }
 
-    // Method LeaveBed() - called by a player when they try to wake up
+    // Method LeaveShelter() - called by a player when they try to wake up
     // near this fire
-    public void LeaveCampfire(Controller controller)
+    public void LeaveShelter(Controller controller)
     {
 
         playerIDs.Remove(controller.view.Owner.UserId);
@@ -150,7 +147,7 @@ public class Shelter : MonoBehaviour
     [PunRPC]
     public void UpdatePlayerListAcrossClientsRPC(string[] playerIDs)
     {
-        
+
         this.playerIDs = playerIDs.ToList();
 
         // make sure 'players' is synced as well

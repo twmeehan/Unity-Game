@@ -30,7 +30,7 @@ public class GameLauncher : MonoBehaviour
         audio.volume = PlayerPrefs.GetFloat("musicVolume");
 
         // Create players
-        Vector2 StartingPos = new Vector2(0, 15);
+        Vector2 StartingPos = new Vector2(0, 0);
         GameObject player = PhotonNetwork.Instantiate(CharacterPrefab.name, StartingPos, Quaternion.identity);
         player.GetComponent<Controller>().camera.SetActive(true);
         player.GetComponent<Controller>().transitionState = (int)States.startingGame;
@@ -58,6 +58,10 @@ public class GameLauncher : MonoBehaviour
             master.StartGame(players);
 
             // delete this object, master client will handle everything from here on
+            Destroy(this.gameObject);
+
+        } else if (!PhotonNetwork.IsMasterClient)
+        {
             Destroy(this.gameObject);
 
         }

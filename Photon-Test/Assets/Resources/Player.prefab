@@ -411,17 +411,17 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1068170460503881594}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 472.15485}
+  m_LocalPosition: {x: 0, y: 0, z: 472.15482}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 667215252157337854}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 1}
-  m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -36}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: -24}
   m_SizeDelta: {x: 200, y: 50}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &5053448822307897462
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11629,6 +11629,7 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 1762595681582499823}
   - {fileID: 2011768034319793030}
+  - {fileID: 6263605030880893241}
   - {fileID: 8117028294445310425}
   - {fileID: 2695119863652486500}
   sceneViewId: 1
@@ -11691,6 +11692,7 @@ MonoBehaviour:
   name: {fileID: 7994718407077273532}
   view: {fileID: 6944378854370746459}
   transitionState: 0
+  sleeping: 0
 --- !u!114 &8640787046094847099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11831,7 +11833,7 @@ MonoBehaviour:
   m_LookAt: {fileID: 5426939648343267733}
   m_Follow: {fileID: 5426939648343267733}
   m_Lens:
-    FieldOfView: 24
+    FieldOfView: 7
     OrthographicSize: 5
     NearClipPlane: 0.3
     FarClipPlane: 1000
@@ -21516,7 +21518,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &7496304575446882053
 Transform:
   m_ObjectHideFlags: 0
@@ -21525,7 +21527,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6527422419404698692}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.00000011920929, z: -100}
+  m_LocalPosition: {x: 0, y: -0.00000023841858, z: -100}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3231528391095042655}
@@ -21557,8 +21559,8 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 24
-  orthographic: 1
+  field of view: 7
+  orthographic: 0
   orthographic size: 5
   m_Depth: 0
   m_CullingMask:
