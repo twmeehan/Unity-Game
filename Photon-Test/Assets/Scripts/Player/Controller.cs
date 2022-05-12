@@ -33,9 +33,11 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
     public Interact interact;
     public Animator transition;
     public Animator animations;
+    public Combat combat;
     public GameObject character;
     public GameObject camera;
     public TextMeshProUGUI name;
+    public Rigidbody2D rb;
 
     [Space(10)]
     [Header("Not Required")]
@@ -45,6 +47,8 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
 
     [SerializeField]
     public bool sleeping = false;
+    [SerializeField]
+    public bool ragdoll = false;
 
 
     #endregion
@@ -96,6 +100,11 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
 
     }
 
+    public void PickUp()
+    {
+        view.RPC("PickUpRPC", RpcTarget.All);
+
+    }
     public void SleepInShelter(Shelter shelter)
     {
         movement.frozen = true;
@@ -453,6 +462,14 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
         return null;
     }
 
+    // Method PickUpRPC() - tells the owner's client that their player has been picked up
+    [PunRPC]
+    public void PickUpRPC()
+    {
+        ragdoll = true;
+        
+    }
+
     // Method UpdateInfectedRPC() - syncs a character's infected status across all clients
     [PunRPC]
     public void UpdateInfectedRPC(object[] objectArray)
@@ -572,9 +589,12 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
         if (stream.IsWriting)
         {
             stream.SendNext(sleeping);
+            stream.SendNext(ragdoll);
         } else
         {
             sleeping = (bool) stream.ReceiveNext();
+            ragdoll = (bool)stream.ReceiveNext();
+
         }
     }
 }

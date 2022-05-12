@@ -7,6 +7,6 @@ public enum Layers
     ground = 256,
     player = 512,
     room = 1024,
-    bed = 2048,
+    collider = 2048,
     healing = 4096
 }

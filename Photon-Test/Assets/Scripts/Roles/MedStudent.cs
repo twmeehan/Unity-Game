@@ -14,7 +14,7 @@ public class MedStudent : Role
 
     public override void CalculateButtonType(Controller player)
     {
-        RaycastHit2D currentBed = Physics2D.Raycast(player.transform.position, Vector2.down, 0.1f, (int)Layers.bed);
+        RaycastHit2D currentBed = Physics2D.Raycast(player.transform.position, Vector2.down, 0.1f, (int)Layers.collider);
         if (currentBed.collider != null && currentBed.collider.gameObject.GetComponent<BedScript>().getPlayer() != player
             && currentBed.collider.gameObject.GetComponent<BedScript>().getPlayer() != null && gameObjects.Count == 0)
         {
@@ -76,7 +76,7 @@ public class MedStudent : Role
 
     public override void OnClick(Controller player)
     {
-        RaycastHit2D currentBed = Physics2D.Raycast(player.transform.position, Vector2.down, 0.1f, (int)Layers.bed);
+        RaycastHit2D currentBed = Physics2D.Raycast(player.transform.position, Vector2.down, 0.1f, (int)Layers.collider);
         player.movement.frozen = true;
         Debug.Log(currentBed.collider.gameObject.GetComponent<BedScript>().getPlayer().GetInfected());
         gameObjects.Add(currentBed.collider.gameObject.GetComponent<BedScript>().getPlayer().gameObject);

@@ -107,14 +107,19 @@ public class Movement : MonoBehaviour
             rb.velocity = new Vector2(0, 0);
 
         // enable movement and gravity if player is not frozen
-        if (!frozen)
+        if (!frozen && !controller.ragdoll)
         {
             CalculateHorizontalMovement();
         } 
 
         if (bufferJump)
             JumpBuffer();
-        CalculateGravity();
+
+        if (!controller.ragdoll)
+            CalculateGravity();
+        else
+            rb.gravityScale = 0;
+
         CalculateJumpMovement();
 
 
@@ -225,7 +230,10 @@ public class Movement : MonoBehaviour
          */
         if ((isGrounded || infiniteJump || doubleJumpAvailable || Time.time - timeSinceGrounded < coyoteTime) && (UnityEngine.InputSystem.Keyboard.current.spaceKey.wasPressedThisFrame || jumpBuffered) && (Time.time - timeSinceJump) > 0.2f)
         {
-
+            if (controller.ragdoll && isGrounded)
+            {
+                controller.ragdoll = false;
+            }
             if (controller.sleeping)
             {
                 controller.WakeUp();

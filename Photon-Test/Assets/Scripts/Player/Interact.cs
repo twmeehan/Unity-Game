@@ -41,7 +41,7 @@ public class Interact : MonoBehaviour
     // is near which changes the buttonState
     public bool CalculateButtonType()
     {
-        RaycastHit2D bed = Physics2D.Raycast(playerTransform.position, Vector2.down, 0.1f, (int) Layers.bed);
+        RaycastHit2D bed = Physics2D.Raycast(playerTransform.position, Vector2.down, 0.1f, (int) Layers.collider);
         RaycastHit2D heal = Physics2D.Raycast(playerTransform.position, Vector2.down, 0.1f, (int) Layers.healing);
 
         // if touching a bed run TouchingBed()
@@ -169,7 +169,7 @@ public class Interact : MonoBehaviour
     public void WakeUp()
     {
 
-        RaycastHit2D currentBed = Physics2D.Raycast(playerTransform.position, Vector2.up, 0.1f, (int) Layers.bed);
+        RaycastHit2D currentBed = Physics2D.Raycast(playerTransform.position, Vector2.up, 0.1f, (int) Layers.collider);
         currentBed.collider.gameObject.GetComponent<BedScript>().LeaveBed();
 
         controller.movement.frozen = true;
@@ -187,7 +187,7 @@ public class Interact : MonoBehaviour
     public void Sleep()
     {
 
-        RaycastHit2D currentBed = Physics2D.Raycast(playerTransform.position, Vector2.down, 0.1f, (int) Layers.bed);
+        RaycastHit2D currentBed = Physics2D.Raycast(playerTransform.position, Vector2.down, 0.1f, (int) Layers.collider);
         currentBed.collider.gameObject.GetComponent<BedScript>().EnterBed(controller);
 
     }

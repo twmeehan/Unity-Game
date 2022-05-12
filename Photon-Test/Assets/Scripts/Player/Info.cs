@@ -42,12 +42,12 @@ public class Info : MonoBehaviour
                 Vector2.down, 0.1f, (int)Layers.player).collider.gameObject.
                 GetComponent<Controller>().transitionState.ToString();
         }
-        else if (Physics2D.Raycast(cam.ScreenToWorldPoint(Input.mousePosition), Vector2.down, 0.1f, (int)Layers.bed))
+        else if (Physics2D.Raycast(cam.ScreenToWorldPoint(Input.mousePosition), Vector2.down, 0.1f, (int)Layers.collider))
         {
             try
             {
                 text.text = "Bed \nPlayer: " + Physics2D.Raycast(cam.ScreenToWorldPoint(Input.mousePosition),
-                    Vector2.down, 0.1f, (int)Layers.bed).collider.gameObject.
+                    Vector2.down, 0.1f, (int)Layers.collider).collider.gameObject.
                     GetComponent<BedScript>().getPlayer().view.Owner.NickName.ToString();
             } catch
             {
