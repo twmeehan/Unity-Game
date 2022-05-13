@@ -11,7 +11,8 @@ public class Movement : MonoBehaviour
     private Controller controller;
 
     // true if player is touching ground
-    private bool isGrounded = false;
+    [SerializeField]
+    public bool isGrounded = false;
     // is true if the player is in the middle of a jump
     private bool isJumping = false;
     // if player has pressed space close to, but not on ground
@@ -107,7 +108,7 @@ public class Movement : MonoBehaviour
             rb.velocity = new Vector2(0, 0);
 
         // enable movement and gravity if player is not frozen
-        if (!frozen && !controller.ragdoll)
+        if (!frozen && !controller.ragdoll && !controller.kicking)
         {
             CalculateHorizontalMovement();
         } 
@@ -120,7 +121,8 @@ public class Movement : MonoBehaviour
         else
             rb.gravityScale = 0;
 
-        CalculateJumpMovement();
+        if (!controller.kicking)
+            CalculateJumpMovement();
 
 
     }

@@ -49,7 +49,8 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
     public bool sleeping = false;
     [SerializeField]
     public bool ragdoll = false;
-
+    [SerializeField]
+    public bool kicking = false;
 
     #endregion
 
@@ -83,6 +84,8 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
     void Update()
     {
 
+        if (kicking)
+            IsNoLongerKicking();
         if (transitionState == (int) States.transitioningToNight && view.IsMine)
         {
             TransitionToNight();
@@ -100,9 +103,20 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
 
     }
 
-    public void PickUp()
+    private bool IsNoLongerKicking()
     {
-        view.RPC("PickUpRPC", RpcTarget.All);
+        if (!animations.GetCurrentAnimatorStateInfo(0).IsName("Kick"))
+        {
+            kicking = false;
+            return true;
+        }
+        return false;
+    }
+    public void Hit(float direction)
+    {
+        if (sleeping)
+            shelter.LeaveShelter(this);
+        view.RPC("PickUpRPC", RpcTarget.All, direction);
 
     }
     public void SleepInShelter(Shelter shelter)
@@ -464,8 +478,9 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
 
     // Method PickUpRPC() - tells the owner's client that their player has been picked up
     [PunRPC]
-    public void PickUpRPC()
+    public void PickUpRPC(float direction)
     {
+        combat.EnableRagdoll(direction);
         ragdoll = true;
         
     }

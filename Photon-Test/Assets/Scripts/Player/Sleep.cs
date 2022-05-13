@@ -18,7 +18,7 @@ public class Sleep : MonoBehaviour
     void Update()
     {
         timer.stopwatch.Update();
-        if (UnityEngine.InputSystem.Keyboard.current.qKey.wasPressedThisFrame && timer.stopwatch.time > 1.0f && !controller.sleeping)
+        if (UnityEngine.InputSystem.Keyboard.current.qKey.wasPressedThisFrame && timer.stopwatch.time > 1.0f && !controller.sleeping && !controller.ragdoll && !controller.kicking)
         {
             timer.stopwatch.Reset();
             RaycastHit2D shelter = Physics2D.Raycast(controller.transform.position, Vector2.down, 0.1f, (int)Layers.room);
