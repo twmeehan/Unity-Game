@@ -10,7 +10,7 @@ Material:
   m_Name: TrailShader_tut
   m_Shader: {fileID: -6465566751694194690, guid: ad6713485a97b954aa68ff9673511362,
     type: 3}
-  m_ShaderKeywords: 
+  m_ShaderKeywords: ETC1_EXTERNAL_ALPHA
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
