@@ -114,8 +114,7 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
     }
     public void Hit(float direction)
     {
-        if (sleeping)
-            shelter.LeaveShelter(this);
+        
         view.RPC("PickUpRPC", RpcTarget.All, direction);
 
     }
@@ -480,6 +479,8 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
     [PunRPC]
     public void PickUpRPC(float direction)
     {
+        if (sleeping && view.IsMine)
+            shelter.LeaveShelter(this);
         combat.EnableRagdoll(direction);
         ragdoll = true;
         

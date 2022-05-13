@@ -121,8 +121,7 @@ public class Movement : MonoBehaviour
         else
             rb.gravityScale = 0;
 
-        if (!controller.kicking)
-            CalculateJumpMovement();
+        CalculateJumpMovement();
 
 
     }
