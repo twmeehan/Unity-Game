@@ -87,6 +87,7 @@ GameObject:
   - component: {fileID: 4937474503410696908}
   - component: {fileID: 2665620913199877650}
   - component: {fileID: 6451415540657468064}
+  - component: {fileID: 5433054680920941898}
   m_Layer: 5
   m_Name: Fade
   m_TagString: Untagged
@@ -169,6 +170,26 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &5433054680920941898
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 366805106496632446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f9a4349581d64dcabe67c494ee1d531, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Location: 0.57
+  m_Width: 0.77
+  m_Softness: 0.38
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_ColorMode: 2
+  m_EffectMaterial: {fileID: 2100000, guid: 1f72c67b0e2431042b100baf259dee7a, type: 2}
+  animationSpeed: 2.94
+  mainPanelMode: 0
 --- !u!1 &367592024781607337
 GameObject:
   m_ObjectHideFlags: 0
@@ -11827,7 +11848,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7539232089861095378
 Transform:
   m_ObjectHideFlags: 0

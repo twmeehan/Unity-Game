@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afa94e8a44a035847ad6329aa0ce2721, type: 3}
   m_Name: Dark UI Manager
   m_EditorClassIdentifier: 
-  enableDynamicUpdate: 1
+  enableDynamicUpdate: 0
   enableExtendedColorPicker: 0
   editorHints: 1
   changeRootFolder: 0
