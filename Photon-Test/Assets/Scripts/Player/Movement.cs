@@ -10,6 +10,8 @@ public class Movement : MonoBehaviour
 
     private Controller controller;
 
+    [SerializeField]
+    public bool showingRole = true;
     // true if player is touching ground
     [SerializeField]
     public bool isGrounded = false;
@@ -108,7 +110,7 @@ public class Movement : MonoBehaviour
             rb.velocity = new Vector2(0, 0);
 
         // enable movement and gravity if player is not frozen
-        if (!frozen && !controller.ragdoll && !controller.kicking)
+        if (!frozen && !controller.ragdoll && !controller.kicking && !showingRole)
         {
             CalculateHorizontalMovement();
         } 
@@ -121,7 +123,8 @@ public class Movement : MonoBehaviour
         else
             rb.gravityScale = 0;
 
-        CalculateJumpMovement();
+        if (!showingRole)
+            CalculateJumpMovement();
 
 
     }

@@ -528,35 +528,20 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
     public void UpdateRoleRPC(int role)
     {
 
+        if (view.IsMine)
+        {
+            ((RolePopUp)FindObjectsOfType(typeof(RolePopUp))[0]).role = role;
+            Debug.Log(role);
+        }
+
         switch (role)
         {
-            // ALIEN
+            // WITCH
             case 0:
                 this.role = new Alien();
-/*
-                // enable the infected inicator for all players if this character is the alien
-                if (view.IsMine)
-                {
-                    foreach (Controller player in (Controller[])FindObjectsOfType(typeof(Controller)))
-                    {
-
-                        player.indicator.enabled = true;
-
-                    }
-                }
-                else
-                {
-                    foreach (Controller player in (Controller[])FindObjectsOfType(typeof(Controller)))
-                    {
-
-                        player.indicator.enabled = false;
-
-                    }
-                }
-*/
                 break;
 
-            // DOCTOR
+            // GLOOMLING
             case 1:
                 this.role = new Doctor();
                 break;

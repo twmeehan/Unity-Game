@@ -67,7 +67,6 @@ public class Master : MonoBehaviour
         object[] content = new object[] { 127, PhotonNetwork.Time };
         PhotonNetwork.RaiseEvent(3, content, new RaiseEventOptions { Receivers = ReceiverGroup.All }, SendOptions.SendReliable);
 
-        // TODO: display roles on screen
         AssignRoles(players);
 
     }
