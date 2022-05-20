@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_UseShadowmask: 0
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -636,10 +636,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: LOADING...
+  m_text: Loading...
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 972d32d2deedf934288d715c2e7b6f86, type: 2}
-  m_sharedMaterial: {fileID: -9108706290527480403, guid: 972d32d2deedf934288d715c2e7b6f86,
+  m_fontAsset: {fileID: 11400000, guid: 39c53fe0ce9c14a46a34e31582dee8a6, type: 2}
+  m_sharedMaterial: {fileID: 6115997193701997761, guid: 39c53fe0ce9c14a46a34e31582dee8a6,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
