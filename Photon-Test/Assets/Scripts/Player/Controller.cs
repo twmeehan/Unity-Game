@@ -55,6 +55,7 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
     #endregion
 
 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -63,7 +64,6 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
 
         // set username above players head
         name.text = view.Owner.NickName;
-
         // remove unnecessary scripts for players this client doesn't control
         if (!view.IsMine)
         {
