@@ -29,12 +29,14 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
     [Space(10)]
     [Header("Required")]
     public Timer timer;
+    public SpriteRenderer backLog;
     public Movement movement;
-    public Interact interact;
     public Animator transition;
     public Animator animations;
     public Combat combat;
+    public Grab grab;
     public GameObject character;
+    public GameObject log;
     public GameObject camera;
     public TextMeshProUGUI name;
     public Rigidbody2D rb;
@@ -42,15 +44,18 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
     [Space(10)]
     [Header("Not Required")]
     public PhotonView view;
-    public Role role;
+    public string role;
     public int transitionState = 0;
-
+    
     [SerializeField]
     public bool sleeping = false;
     [SerializeField]
     public bool ragdoll = false;
     [SerializeField]
     public bool kicking = false;
+    [SerializeField]
+    public bool holdingLog = false;
+
 
     #endregion
 
@@ -72,6 +77,7 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
             timer.enabled = false;
             camera.SetActive(false);
             this.enabled = false;
+            grab.enabled = false;
             this.gameObject.GetComponent<Sleep>().enabled = false;
 
         }
@@ -83,7 +89,6 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
     // Update is called once per frame
     void Update()
     {
-
         if (kicking)
             IsNoLongerKicking();
         if (transitionState == (int) States.transitioningToNight && view.IsMine)
@@ -94,7 +99,7 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
             TransitionToDay();
         } if (transitionState == (int)States.none && !day && view.IsMine)
         {
-            role.CalculateButtonType(this);
+            //role.CalculateButtonType(this);
         }
 
         // freeze other players if they are not sending movement through PhotonView
@@ -114,7 +119,14 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
     }
     public void Hit(float direction)
     {
-        
+        if (holdingLog)
+        {
+            GameObject newLog = PhotonNetwork.Instantiate(log.name, transform.position, Quaternion.identity);
+            newLog.GetComponent<Rigidbody2D>().velocity = new Vector2(10 * direction, 10);
+            newLog.GetComponent<Rigidbody2D>().angularVelocity = 150;
+        }
+
+
         view.RPC("PickUpRPC", RpcTarget.All, direction);
 
     }
@@ -128,30 +140,6 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
     {
         sleeping = false;
         shelter.LeaveShelter(this);
-    }
-    // Method SwitchToNight() - called by OnEvent when master client sends the code to switch
-    // all players to night. Puts remaining players into remaining beds and starts night animations
-    public void StartTransitionToNight()
-    {
-        // only runs on the client that owns this Controller
-
-        // transitionState used to ensure this method is only called once (aka. this method has cooldown)
-        if (transitionState != (int) States.transitioningToNight && view.IsMine)
-        {
-
-            transitionState = (int)States.transitioningToNight;
-
-            day = false;
-
-            movement.frozen = true;
-
-            transition.SetTrigger("Fade");
-
-            // player can't leave bed while transitioning to night
-            interact.DisableButton();
-
-        }
-
     }
 
     // Method SwitchToNight() - called every frame whiletransitionState == (int) States.transitioningToNight
@@ -185,7 +173,7 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
             transition.SetTrigger("Reappear");
             transitionState = (int)States.none;
             movement.frozen = false;
-            role.StartNight(this);
+            //role.StartNight(this);
 
             // only player that owns this client will not be sleeping, for everyone else sleeping = true
             sleeping = false;
@@ -279,8 +267,8 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
 
                 // check each player, if the player matches the UserId given by the alien then tell
                 // role.EndNight that that player is the one who was infected by the alien this night
-                if (player.gameObject.GetComponent<PhotonView>().Owner.UserId.Equals(data[0].ToString()))
-                    role.EndNight(this, player);
+                //if (player.gameObject.GetComponent<PhotonView>().Owner.UserId.Equals(data[0].ToString()))
+                  //  role.EndNight(this, player);
             }
 
             // if I am the one infected by the alien infected = true
@@ -334,7 +322,7 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
 
         movement.frozen = false;
 
-        interact.WakeUp();
+        //interact.WakeUp();
 
         // teleport this player to his bed
         foreach (BedScript bed in (BedScript[])FindObjectsOfType(typeof(BedScript)))
@@ -465,7 +453,22 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
         object[] objectArray = { role };
         view.RPC("UpdateRoleRPC", RpcTarget.All, role); // 1 Alien
     }
+    public void AddLog()
+    {
 
+        // tell all clients to equip a log on the character's back
+
+        view.RPC("AddLogRPC", RpcTarget.All); 
+
+    }
+    public void RemoveLog()
+    {
+
+        // tell all clients to equip a log on the character's back
+
+        view.RPC("RemoveLogRPC", RpcTarget.All);
+
+    }
     // Method GetCurrentRoom() - returns the RoomScript of the room the player is standing in
     public RoomScript GetCurrentRoom()
     {
@@ -479,6 +482,8 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
     [PunRPC]
     public void PickUpRPC(float direction)
     {
+        backLog.enabled = false;
+        holdingLog = false;
         if (sleeping && view.IsMine)
             shelter.LeaveShelter(this);
         combat.EnableRagdoll(direction);
@@ -504,6 +509,28 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
 
     }
 
+    // Method UpdateLogRPC() - updates all clients so that they all hold the log
+    [PunRPC]
+    public void AddLogRPC()
+    {
+
+        // runs on all instances of this player across all clients
+
+        holdingLog = true;
+        backLog.enabled = true;
+
+    }
+    // Method UpdateLogRPC() - updates all clients so that they all hold the log
+    [PunRPC]
+    public void RemoveLogRPC()
+    {
+
+        // runs on all instances of this player across all clients
+
+        holdingLog = false;
+        backLog.enabled = false;
+
+    }
     // Method JoinBedRPC() - called by BedScript when player is successfully registered 
     // as that bed's sleeper. Prevents the this player from moving.
     [PunRPC]
@@ -538,12 +565,12 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
         {
             // WITCH
             case 0:
-                this.role = new Alien();
+                this.role = null;
                 break;
 
             // GLOOMLING
             case 1:
-                this.role = new Doctor();
+                this.role = null;
                 break;
         }
 
@@ -556,7 +583,7 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
         switch (photonEvent.Code)
         {
             case 2:
-                StartTransitionToNight();
+                //StartTransitionToNight();
                 break;
             case 3:
                 Debug.Log("time set");

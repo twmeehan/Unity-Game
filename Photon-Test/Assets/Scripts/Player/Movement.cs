@@ -26,6 +26,7 @@ public class Movement : MonoBehaviour
     // used for coyote time
     private float timeSinceGrounded = 0.0f;
 
+    
 
     #endregion
 
@@ -86,6 +87,7 @@ public class Movement : MonoBehaviour
     {
         controller = this.gameObject.GetComponent<Controller>();
         rb = this.gameObject.GetComponent<Rigidbody2D>();
+        
     }
 
     // Method Update() - called once per frame

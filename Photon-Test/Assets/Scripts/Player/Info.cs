@@ -18,13 +18,7 @@ public class Info : MonoBehaviour
     void Update()
     {
 
-        if (Physics2D.Raycast(cam.ScreenToWorldPoint(Input.mousePosition), Vector2.down, 0.1f, (int)Layers.healing))
-        {
-            text.text = "Healing Machine \nAvailable: " + Physics2D.Raycast(cam.ScreenToWorldPoint(Input.mousePosition), 
-                Vector2.down, 0.1f, (int)Layers.healing).collider.gameObject.
-                GetComponent<HealingMachineScript>().available.ToString();
-        }
-        else if (Physics2D.Raycast(cam.ScreenToWorldPoint(Input.mousePosition), Vector2.down, 0.1f, (int)Layers.player))
+        if (Physics2D.Raycast(cam.ScreenToWorldPoint(Input.mousePosition), Vector2.down, 0.1f, (int)Layers.player))
         {
             text.text = "Player \nName: " + Physics2D.Raycast(cam.ScreenToWorldPoint(Input.mousePosition),
                 Vector2.down, 0.1f, (int)Layers.player).collider.gameObject.
