@@ -33,11 +33,17 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
     public Movement movement;
     public Animator transition;
     public Animator animations;
+    public Animator usernameAnim;
     public Combat combat;
     public Grab grab;
+    public Kill kill;
+    public Darkness darkness;
     public GameObject character;
     public GameObject log;
     public GameObject camera;
+    public GameObject openEyes;
+    public GameObject deadEyes;
+    public GameObject darknessSprite;
     public TextMeshProUGUI name;
     public Rigidbody2D rb;
 
@@ -55,6 +61,8 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
     public bool kicking = false;
     [SerializeField]
     public bool holdingLog = false;
+    [SerializeField]
+    public bool dead = false;
 
 
     #endregion
@@ -78,7 +86,14 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
             camera.SetActive(false);
             this.enabled = false;
             grab.enabled = false;
+            darkness.enabled = false;
+            kill.enabled = false;
+            darknessSprite.SetActive(false);
             this.gameObject.GetComponent<Sleep>().enabled = false;
+
+        } else
+        {
+            darknessSprite.SetActive(true);
 
         }
 
@@ -127,7 +142,20 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
         }
 
 
-        view.RPC("PickUpRPC", RpcTarget.All, direction);
+        view.RPC("HitRPC", RpcTarget.All, direction);
+
+    }
+    public void Kill(float direction)
+    {
+        if (holdingLog)
+        {
+            GameObject newLog = PhotonNetwork.Instantiate(log.name, transform.position, Quaternion.identity);
+            newLog.GetComponent<Rigidbody2D>().velocity = new Vector2(10 * direction, 10);
+            newLog.GetComponent<Rigidbody2D>().angularVelocity = 150;
+        }
+
+
+        view.RPC("KillRPC", RpcTarget.All, direction);
 
     }
     public void SleepInShelter(Shelter shelter)
@@ -478,9 +506,25 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
         return null;
     }
 
-    // Method PickUpRPC() - tells the owner's client that their player has been picked up
+    // Method KillRPC() - tells the owner's client that their player has been picked up
     [PunRPC]
-    public void PickUpRPC(float direction)
+    public void KillRPC(float direction)
+    {
+        backLog.enabled = false;
+        holdingLog = false;
+        if (sleeping && view.IsMine)
+            shelter.LeaveShelter(this);
+        combat.EnableRagdoll(direction);
+        dead = true;
+        ragdoll = true;
+        deadEyes.SetActive(true);
+        openEyes.SetActive(false);
+
+
+    }
+    // Method HitRPC() - tells the owner's client that their player has been picked up
+    [PunRPC]
+    public void HitRPC(float direction)
     {
         backLog.enabled = false;
         holdingLog = false;
@@ -565,12 +609,12 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
         {
             // WITCH
             case 0:
-                this.role = null;
+                this.role = "killer";
                 break;
 
             // GLOOMLING
             case 1:
-                this.role = null;
+                this.role = "gloomling";
                 break;
         }
 

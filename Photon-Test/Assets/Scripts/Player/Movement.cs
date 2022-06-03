@@ -125,7 +125,7 @@ public class Movement : MonoBehaviour
         else
             rb.gravityScale = 0;
 
-        if (!showingRole)
+        if (!showingRole && !controller.dead)
             CalculateJumpMovement();
 
 
