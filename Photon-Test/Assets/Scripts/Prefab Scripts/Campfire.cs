@@ -1,18 +1,16 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Campfire : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+
+    public Timer timer;
+
+    public void startCampfireTimer()
     {
-        
+        timer.SetTimer(60, (float) PhotonNetwork.Time);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
