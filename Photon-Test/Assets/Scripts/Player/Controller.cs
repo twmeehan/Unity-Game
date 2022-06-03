@@ -603,6 +603,7 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
         {
             ((RolePopUp)FindObjectsOfType(typeof(RolePopUp))[0]).role = role;
             Debug.Log(role);
+            ((Campfire)FindObjectsOfType(typeof(Campfire))[0]).startCampfireTimer();
         }
 
         switch (role)
