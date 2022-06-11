@@ -30,6 +30,7 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
     [Header("Required")]
     public Timer timer;
     public SpriteRenderer backLog;
+    public GameObject handStaff;
     public Movement movement;
     public Animator transition;
     public Animator animations;
@@ -37,9 +38,11 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
     public Combat combat;
     public Grab grab;
     public Kill kill;
+    public Use use;
     public Darkness darkness;
     public GameObject character;
     public GameObject log;
+    public GameObject staff;
     public GameObject camera;
     public GameObject openEyes;
     public GameObject deadEyes;
@@ -61,6 +64,8 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
     public bool kicking = false;
     [SerializeField]
     public bool holdingLog = false;
+    [SerializeField]
+    public bool holdingStaff = false;
     [SerializeField]
     public bool dead = false;
 
@@ -88,6 +93,7 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
             grab.enabled = false;
             darkness.enabled = false;
             kill.enabled = false;
+            use.enabled = false;
             darknessSprite.SetActive(false);
             this.gameObject.GetComponent<Sleep>().enabled = false;
 
@@ -132,6 +138,10 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
         }
         return false;
     }
+    public void Revive()
+    {
+        view.RPC("ReviveRPC", RpcTarget.All);
+    }
     public void Hit(float direction)
     {
         if (holdingLog)
@@ -139,6 +149,11 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
             GameObject newLog = PhotonNetwork.Instantiate(log.name, transform.position, Quaternion.identity);
             newLog.GetComponent<Rigidbody2D>().velocity = new Vector2(10 * direction, 10);
             newLog.GetComponent<Rigidbody2D>().angularVelocity = 150;
+        } else if (holdingStaff)
+        {
+            GameObject newStaff = PhotonNetwork.Instantiate(staff.name, transform.position, Quaternion.identity);
+            newStaff.GetComponent<Rigidbody2D>().velocity = new Vector2(5 * direction, 10);
+            newStaff.GetComponent<Rigidbody2D>().angularVelocity = 250;
         }
 
 
@@ -152,6 +167,12 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
             GameObject newLog = PhotonNetwork.Instantiate(log.name, transform.position, Quaternion.identity);
             newLog.GetComponent<Rigidbody2D>().velocity = new Vector2(10 * direction, 10);
             newLog.GetComponent<Rigidbody2D>().angularVelocity = 150;
+        }
+        else if (holdingStaff)
+        {
+            GameObject newStaff = PhotonNetwork.Instantiate(staff.name, transform.position, Quaternion.identity);
+            newStaff.GetComponent<Rigidbody2D>().velocity = new Vector2(5 * direction, 10);
+            newStaff.GetComponent<Rigidbody2D>().angularVelocity = 250;
         }
 
 
@@ -492,9 +513,23 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
     public void RemoveLog()
     {
 
-        // tell all clients to equip a log on the character's back
+        // tell all clients to unequip the log
 
         view.RPC("RemoveLogRPC", RpcTarget.All);
+
+    }
+    public void AddStaff()
+    {
+
+
+        view.RPC("AddStaffRPC", RpcTarget.All);
+
+    }
+    public void RemoveStaff()
+    {
+
+
+        view.RPC("RemoveStaffRPC", RpcTarget.All);
 
     }
     // Method GetCurrentRoom() - returns the RoomScript of the room the player is standing in
@@ -511,7 +546,9 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
     public void KillRPC(float direction)
     {
         backLog.enabled = false;
+        handStaff.SetActive(false);
         holdingLog = false;
+        holdingStaff = false;
         if (sleeping && view.IsMine)
             shelter.LeaveShelter(this);
         combat.EnableRagdoll(direction);
@@ -527,14 +564,23 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
     public void HitRPC(float direction)
     {
         backLog.enabled = false;
+        handStaff.SetActive(false);
         holdingLog = false;
+        holdingStaff = false;
         if (sleeping && view.IsMine)
             shelter.LeaveShelter(this);
         combat.EnableRagdoll(direction);
         ragdoll = true;
         
     }
-
+    // Method ReviveRPC - tells player to set dead = false
+    [PunRPC]
+    public void ReviveRPC()
+    {
+        dead = false;
+        deadEyes.SetActive(false);
+        openEyes.SetActive(true);
+    }
     // Method UpdateInfectedRPC() - syncs a character's infected status across all clients
     [PunRPC]
     public void UpdateInfectedRPC(object[] objectArray)
@@ -564,7 +610,7 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
         backLog.enabled = true;
 
     }
-    // Method UpdateLogRPC() - updates all clients so that they all hold the log
+    // Method UpdateLogRPC() - updates all clients so that they all don't hold the log
     [PunRPC]
     public void RemoveLogRPC()
     {
@@ -574,6 +620,27 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
         holdingLog = false;
         backLog.enabled = false;
 
+    }
+    // Method AddStaffRPC() - updates all clients so that they all hold the staff
+    [PunRPC]
+    public void AddStaffRPC()
+    {
+
+        // runs on all instances of this player across all clients
+
+        holdingStaff = true;
+        handStaff.SetActive(true);
+
+    }
+    // Method RemoveStaffRPC() - updates all clients so that they all don't hold the staff
+    [PunRPC]
+    public void RemoveStaffRPC()
+    {
+
+        // runs on all instances of this player across all clients
+
+        holdingStaff = false;
+        handStaff.SetActive(false);
     }
     // Method JoinBedRPC() - called by BedScript when player is successfully registered 
     // as that bed's sleeper. Prevents the this player from moving.

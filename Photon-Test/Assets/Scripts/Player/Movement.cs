@@ -245,6 +245,11 @@ public class Movement : MonoBehaviour
                 controller.WakeUp();
                 frozen = false;
             }
+            if (controller.use.currentlyHealing)
+            {
+                controller.use.currentlyHealing = false;
+                frozen = false;
+            }
 
             controller.animations.SetTrigger("Jump");
 

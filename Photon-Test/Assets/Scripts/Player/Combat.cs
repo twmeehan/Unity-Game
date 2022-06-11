@@ -30,19 +30,6 @@ public class Combat : MonoBehaviour
             DisableRagdoll();
         }
 
-        if (UnityEngine.InputSystem.Keyboard.current.eKey.wasPressedThisFrame && controller.view.IsMine && !controller.kicking && !controller.ragdoll && !controller.sleeping)
-        {
-
-            RaycastHit2D player = Physics2D.Raycast(controller.transform.position + new Vector3(controller.character.transform.localScale.x, 0,0), new Vector2(controller.character.transform.localScale.x,0), 0.2f, (int)Layers.collider);
-            controller.kicking = true;
-            controller.animations.SetTrigger("Kick");
-            if (player.collider != null)
-            {
-                player.collider.gameObject.GetComponent<Controller>().Hit(controller.character.transform.localScale.x);
-            }
-            
-
-        }
     }
     public void EnableRagdoll()
     {
@@ -58,6 +45,7 @@ public class Combat : MonoBehaviour
         animator.enabled = false;
         joint.enabled = true;
         collider.enabled = false;
+        controller.use.currentlyHealing = false;
         body_rb.velocity = new Vector2(30 * direction, 30);
         controller.name.enabled = false;
 

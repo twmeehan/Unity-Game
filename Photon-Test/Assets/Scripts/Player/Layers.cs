@@ -8,5 +8,6 @@ public enum Layers
     player = 512,
     room = 1024,
     collider = 2048,
-    log = 4096
+    log = 4096,
+    staff = 8192
 }
