@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+  m_IndirectSpecularColor: {r: 0.3731193, g: 0.38073996, b: 0.35872698, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_UseShadowmask: 0
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -15408,7 +15408,7 @@ GameObject:
   - component: {fileID: 269595106}
   - component: {fileID: 269595105}
   m_Layer: 9
-  m_Name: broom
+  m_Name: 'dagger '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15430,7 +15430,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -26.452002}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 16.6, y: 9.5}
+  m_AnchoredPosition: {x: 16.6, y: 50.5}
   m_SizeDelta: {x: 38, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &269595105
@@ -15469,7 +15469,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 7378745131585924527, guid: 5320b5dca0799f84ab7415a708c772d4,
+  m_Sprite: {fileID: -3604555860609090022, guid: 5320b5dca0799f84ab7415a708c772d4,
     type: 3}
   m_Type: 0
   m_PreserveAspect: 0
@@ -26344,7 +26344,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.0000038147, y: 76.2}
+  m_AnchoredPosition: {x: -0.0000038147, y: 60.5}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &483659205
@@ -26383,7 +26383,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -8823601811615640526, guid: 5320b5dca0799f84ab7415a708c772d4,
+  m_Sprite: {fileID: -8301984756242063678, guid: 5320b5dca0799f84ab7415a708c772d4,
     type: 3}
   m_Type: 0
   m_PreserveAspect: 0
@@ -49181,7 +49181,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: The Witch
+  m_text: The Killer
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a4e1cada146b4da48a62ef55767fd867, type: 2}
   m_sharedMaterial: {fileID: 5579299669017881965, guid: a4e1cada146b4da48a62ef55767fd867,
@@ -90018,12 +90018,12 @@ GameObject:
   m_Component:
   - component: {fileID: 2057177935}
   m_Layer: 5
-  m_Name: Witch
+  m_Name: Killer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2057177935
 RectTransform:
   m_ObjectHideFlags: 0
