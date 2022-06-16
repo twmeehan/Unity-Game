@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -25,7 +26,14 @@ public class Kill : MonoBehaviour
             {
                 player.collider.gameObject.GetComponent<Controller>().Kill(controller.character.transform.localScale.x);
             }
+            if (controller.holdingStaff)
+            {
+                GameObject newStaff = PhotonNetwork.Instantiate(controller.staff.name, transform.position, Quaternion.identity);
+                newStaff.GetComponent<Rigidbody2D>().velocity = new Vector2(5 * controller.character.transform.localScale.x, 10);
+                newStaff.GetComponent<Rigidbody2D>().angularVelocity = 250;
+                controller.RemoveStaff();
 
+            }
 
         }
     }
