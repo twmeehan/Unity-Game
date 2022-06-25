@@ -14,6 +14,7 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
 
     private bool day = true;
     private bool infected = false;
+    private float pastTime = 0;
 
     private Shelter shelter;
     private System.Random rand = new System.Random();
@@ -40,6 +41,7 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
     public Kill kill;
     public Use use;
     public Darkness darkness;
+    public Countdown countdown;
     public GameObject character;
     public GameObject log;
     public GameObject staff;
@@ -126,6 +128,18 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
         // freeze other players if they are not sending movement through PhotonView
         if (!view.enabled && !view.IsMine)
             this.movement.GetRigidbody().velocity = Vector2.zero;
+
+        if (timer.TimeRemaining() == 0 && timer.TimeRemaining() != pastTime)
+        {
+            if (role == "killer")
+            {
+                ((WinLoseScreen[])FindObjectsOfType(typeof(WinLoseScreen)))[0].Lose();
+            } else if (role == "gloomling")
+            {
+                ((WinLoseScreen[])FindObjectsOfType(typeof(WinLoseScreen)))[0].Win();
+            }
+        }
+        pastTime = timer.TimeRemaining();
 
     }
 
@@ -682,6 +696,7 @@ public class Controller : MonoBehaviourPunCallbacks, IOnEventCallback, IPunObser
             // GLOOMLING
             case 1:
                 this.role = "gloomling";
+                countdown.Destroy();
                 break;
         }
 

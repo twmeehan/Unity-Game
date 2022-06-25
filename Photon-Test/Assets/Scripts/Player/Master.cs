@@ -64,7 +64,7 @@ public class Master : MonoBehaviour
         controller.timer.stopwatch.Reset();
 
         // set timer
-        object[] content = new object[] { 127, PhotonNetwork.Time };
+        object[] content = new object[] { 240, PhotonNetwork.Time };
         PhotonNetwork.RaiseEvent(3, content, new RaiseEventOptions { Receivers = ReceiverGroup.All }, SendOptions.SendReliable);
 
         AssignRoles(players);
