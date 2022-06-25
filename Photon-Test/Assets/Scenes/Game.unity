@@ -29012,12 +29012,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Objective: kill 3 players without being caught by the other Gloomlings
-
-
-    Action:
-    choose 1 player to infect that is in the same room as you or another infected
-    player'
+  m_text: "Objective: stop the Gloomlings from keeping the fire alive \n\nSpecial
+    Ability: can disable Gloomlings temporarily "
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 52cb95421939b3343ade2a7579e71c06, type: 2}
   m_sharedMaterial: {fileID: 21307179227807236, guid: 52cb95421939b3343ade2a7579e71c06,
@@ -50077,11 +50073,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Objective: uncover the witch before 3 other Gloomlings are killed
-
-
-    Action:
-    every night you will recieve a new random action that will help uncover the witch'
+  m_text: 'Objective: pick up and add logs to the fire so that the fire doesn''t
+    go out'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 52cb95421939b3343ade2a7579e71c06, type: 2}
   m_sharedMaterial: {fileID: 21307179227807236, guid: 52cb95421939b3343ade2a7579e71c06,
