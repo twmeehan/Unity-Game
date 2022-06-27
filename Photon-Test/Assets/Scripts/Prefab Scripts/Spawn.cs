@@ -82,7 +82,7 @@ public class Spawn : MonoBehaviour
     // Method SpawnLog() - creates log
     private void SpawnLog()
     {
-        GameObject newLog = PhotonNetwork.Instantiate(log.name, transform.position + new Vector3(0,50,0), Quaternion.identity);
+        GameObject newLog = PhotonNetwork.Instantiate(log.name, transform.position, Quaternion.identity);
         newLog.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
         newLog.GetComponent<Rigidbody2D>().angularVelocity = -150;
         timeTillNextLog = Mathf.Floor(Random.value * 10) + timeBetweenLogs;

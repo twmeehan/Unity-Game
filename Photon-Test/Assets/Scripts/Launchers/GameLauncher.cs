@@ -30,7 +30,7 @@ public class GameLauncher : MonoBehaviour
         audio.volume = PlayerPrefs.GetFloat("musicVolume");
 
         // Create players
-        Vector2 StartingPos = new Vector2(0, 0);
+        Vector2 StartingPos = new Vector2(91, -8);
         GameObject player = PhotonNetwork.Instantiate(CharacterPrefab.name, StartingPos, Quaternion.identity);
         player.GetComponent<Controller>().camera.SetActive(true);
         player.GetComponent<Controller>().transitionState = (int)States.startingGame;

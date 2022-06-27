@@ -56,6 +56,6 @@ public class WaitingRoomHandler : MonoBehaviourPunCallbacks, IOnEventCallback
         Debug.Log("Switching to Game");
 
         if (photonEvent.Code == 1)
-            SceneManager.LoadScene("Game");
+            SceneManager.LoadScene("ShadyHollows");
     }
 }
